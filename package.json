@@ -1,0 +1,21 @@
+{
+  "name": "Island-IV",
+  "version": "0.0.1",
+  "description": "Ante keksii tähän jotain",
+  "repository": "https://github.com/AnttiSarjanoja/IslandIV",
+  "main": "main.ts",
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-typescript": "^3.1.5",
+    "typescript": "^2.2.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "contributors": [
+    "Antti Sarjanoja",
+    "Teemu Mäkinen <culkah@gmail.com>"
+  ],
+  "license": "GPL-3.0"
+}

@@ -1,4 +1,4 @@
-/// <reference path="./pixi-typescript/pixi.js.d.ts" />
+/// <reference path="../../pixi-typescript/pixi.js.d.ts" />
 
 // Style:
 // KEEP EVERYTHING IN CODE FILES ENGLISH
@@ -21,11 +21,11 @@ let loader : PIXI.loaders.Loader = new PIXI.loaders.Loader('./img/');
 loader.add('tausta', 'devmap.png');
 
 // TODO: Do we want spritesheets? TexturePacker produces simple spritesheets with JSON, is free
-// loader.add(sprite_sheets_arr); 
+// loader.add(sprite_sheets_arr);
 
 loader.load(function(loader : PIXI.loaders.Loader, resources : PIXI.loaders.Resource) {
 	let tausta = new PIXI.Sprite(resources['tausta'].texture);
-	app.stage.addChild(tausta);	
+	app.stage.addChild(tausta);
 });
 
 function handleEvt (evt : KeyboardEvent) {
