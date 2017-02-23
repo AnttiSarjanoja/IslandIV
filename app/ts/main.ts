@@ -1,4 +1,4 @@
-/// <reference path="../../pixi-typescript/pixi.js.d.ts" />
+/// <reference path="../pixi-typescript/pixi.js.d.ts" />
 
 // Style:
 // KEEP EVERYTHING IN CODE FILES ENGLISH
