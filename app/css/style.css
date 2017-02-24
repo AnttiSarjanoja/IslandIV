@@ -1,0 +1,16 @@
+body {
+	/* no seams */
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+
+	/*font-family: Consolas, monaco, monospace;*/
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 16px;
+	
+	
+	background-color: black;
+	color: white;
+	
+	text-align: center;
+}

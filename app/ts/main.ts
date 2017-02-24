@@ -100,8 +100,8 @@ const CANVAS_SCALE = 2;
 // PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 // TODO: Make rows below as a function and put into window.onresize()
-// TODO: css or something that centers the canvas element
-renderer.resize((window.innerWidth - 20) / CANVAS_SCALE, (window.innerHeight - 20) / CANVAS_SCALE); /// 2 / 2
-renderer.view.style.width = window.innerWidth - 20 + "px";
-renderer.view.style.height = window.innerHeight - 20 + "px";
-// renderer.view.style.display = "block";
+renderer.resize((window.innerWidth) / CANVAS_SCALE, (window.innerHeight) / CANVAS_SCALE); /// 2 / 2
+renderer.view.style.width = window.innerWidth + "px";
+renderer.view.style.height = window.innerHeight + "px";
+renderer.view.style.display = "block";
+renderer.view.style.margin = "0";

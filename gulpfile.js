@@ -18,6 +18,10 @@ gulp.task('html', function() {
     return gulp.src('app/html/**')
     .pipe(gulp.dest(BUILD_DIR));
 });
+gulp.task('css', function() {
+    return gulp.src('app/css/**')
+    .pipe(gulp.dest(BUILD_DIR));
+});
 gulp.task('watch-html', function() {
     gulp.watch('app/html/**', ['html']);
 });
@@ -32,4 +36,4 @@ gulp.task('lib', function() {
     return gulp.src('app/pixi.js/pixi.js')
     .pipe(gulp.dest(BUILD_DIR + '/lib'));
 });
-gulp.task('default', ['typescript', 'html', 'img', 'lib', 'watch-ts', 'watch-html', 'watch-img']);
+gulp.task('default', ['typescript', 'html', 'css', 'img', 'lib', 'watch-ts', 'watch-html', 'watch-img']);
