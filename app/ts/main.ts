@@ -2,7 +2,7 @@
 
 // Style:
 // Use tabs for indenting, no spaces
-// KEEP EVERYTHING IN CODE FILES ENGLISH
+// KEEP EVERYTHING IN ENGLISH IN CODE FILES 
 // weLikeCamels, not_this_at_all
 // Use 'TODO: asdf' to show stuff needing fixing
 // Use 'NOTE: asdf' to mention important stuff in comments
@@ -30,28 +30,32 @@ loader.load(function(loader : PIXI.loaders.Loader, resources : PIXI.loaders.Reso
 	let tausta = new PIXI.Sprite(resources['tausta'].texture);
 	tausta.name = 'tausta';
 
-
 	MainContainer.addChild(tausta);
 	MainContainer.interactive = true;
 
-	//tausta //app.stage.getChildByName('tausta')
 	MainContainer.on('pointerdown', onPointerStart) // (evt : PIXI.interaction.InteractionEvent) => onPointerStart(evt))
 				.on('pointerup', onPointerEnd)
 				.on('pointerupoutside', onPointerEnd)
-				.on('pointermove', onPointerMove); //('mousemove', onMouseMove);
-
-	
+				.on('pointermove', onPointerMove);	
 });
 
 function handleEvt (evt : KeyboardEvent) {
 	console.log(evt.keyCode);
 	switch(evt.keyCode) {
 		// TODO: Ugly. But temporary
-		case 37: MainContainer.position.x += 5; break;
-		case 38: MainContainer.position.y += 5; break;
-		case 39: MainContainer.position.x -= 5; break;
-		case 40: MainContainer.position.y -= 5; break;
+		case 37: moveContainer(5,0); break; // Left
+		case 38: moveContainer(0,5); break; // Up
+		case 39: moveContainer(-5,0); break; // Right
+		case 40: moveContainer(0,-5); break; // Down
+		case 171: canvasScale += 0.1; resize(); break; // '+'
+		case 173: canvasScale -= 0.1; resize(); break; // '-'
 	}
+};
+
+// Prevent from going over edges
+function moveContainer (x : number = 0, y : number = 0) {
+	MainContainer.position.x = Math.min(Math.max(MainContainer.position.x + x, -MainContainer.width + renderer.width), 0);
+	MainContainer.position.y = Math.min(Math.max(MainContainer.position.y + y, -MainContainer.height + renderer.height), 0);
 };
 
 document.addEventListener("keydown", handleEvt.bind(this));
@@ -89,19 +93,24 @@ function onPointerMove (evt : PIXI.interaction.InteractionEvent) {
 
 // NOTE: If any kind of clock is needed, use this kind of function
 // app.ticker.add(function() {
-// DO STUFF HERE
+//   DO STUFF HERE
 // });
 
 // Mb needed if canvas seems way too small for window
 // Acts as zoom level, decimals may *duck* things up by smoothing
-const CANVAS_SCALE = 2;
+// const CANVAS_SCALE = 2;
+let canvasScale = 2;
 // To unsmooth:
-// TODO: NOTE: This is cuurently broken in pixi.js.d.ts :((( Should be "export var SCALE_MODE: number;" in that file
+// TODO: NOTE: This is currently broken in pixi.js.d.ts :((( Should be "export var SCALE_MODE: number;" in that file
 // PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
-// TODO: Make rows below as a function and put into window.onresize()
-renderer.resize((window.innerWidth) / CANVAS_SCALE, (window.innerHeight) / CANVAS_SCALE); /// 2 / 2
-renderer.view.style.width = window.innerWidth + "px";
-renderer.view.style.height = window.innerHeight + "px";
-renderer.view.style.display = "block";
-renderer.view.style.margin = "0";
+function resize() {
+	renderer.resize((window.innerWidth) / canvasScale, (window.innerHeight) / canvasScale); /// 2 / 2
+	renderer.view.style.width = window.innerWidth + "px";
+	renderer.view.style.height = window.innerHeight + "px";
+	renderer.view.style.display = "block";
+	renderer.view.style.margin = "0";
+};
+
+resize(); // Needs to be done once
+window.onresize = resize;
