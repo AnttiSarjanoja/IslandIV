@@ -23,6 +23,9 @@ class IslandIV {
 	private static input : Input;
 	
 	public static Init() {
+		// TODO: More sensible place for this
+		PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+
 		this.app.stage.addChild(this.MainContainer);
 		let renderer : PIXI.WebGLRenderer | PIXI.CanvasRenderer = this.app.renderer;
 		this.input = new Input(this.MainContainer, this.app.renderer);
@@ -54,7 +57,4 @@ class IslandIV {
 	// app.ticker.add(function() {
 	//   DO STUFF HERE
 	// });
-
-	// TODO: NOTE: This is currently broken in pixi.js.d.ts :((( Should be "export var SCALE_MODE: number;" in that file
-	// PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 }
