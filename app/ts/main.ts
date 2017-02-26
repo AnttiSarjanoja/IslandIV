@@ -20,11 +20,12 @@ class IslandIV {
 	// NOTE: All code below is just a most basic PIXI app to show stuff
 	private static app : PIXI.Application = new PIXI.Application();
 	private static MainContainer : PIXI.Container = new PIXI.Container(); // Must have separate container for scrolling
+	private static input : Input;
 	
 	public static Init() {
 		this.app.stage.addChild(this.MainContainer);
 		let renderer : PIXI.WebGLRenderer | PIXI.CanvasRenderer = this.app.renderer;
-		Input.Init(this.MainContainer, renderer);
+		this.input = new Input(this.MainContainer, this.app.renderer);
 		this.loadImages();
 	}
 

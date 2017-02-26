@@ -6,7 +6,10 @@ var BUILD_DIR = 'build';
 gulp.task('typescript', function() {
 	return gulp.src('app/ts/**/*.ts')
     .on('change', function(file) { console.log(file + " changed."); })
-    .pipe(ts({ outFile: "main.js" }))
+    .pipe(ts({
+        outFile: "main.js",
+        strictNullChecks: true
+    }))
     .on('error', function(error) { console.log(error); })
 	.pipe(gulp.dest(BUILD_DIR));
 
