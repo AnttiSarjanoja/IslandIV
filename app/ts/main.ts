@@ -1,5 +1,6 @@
 /// <reference path="../pixi-typescript/pixi.js.d.ts" />
 /// <reference path="input.ts" />
+/// <reference path="drawable.ts" />
 
 // Style:
 // Use tabs for indenting, no spaces
@@ -12,6 +13,8 @@
 // Set first element of enum = 1 to avoid if(var) checking issues
 
 document.body.onload = function () { IslandIV.Init(); };
+
+// TODO: Namespace? (like PIXI.stuff)
 
 // TODO: Rename base class
 class IslandIV {
@@ -29,6 +32,8 @@ class IslandIV {
 		this.app.stage.addChild(this.MainContainer);
 		let renderer : PIXI.WebGLRenderer | PIXI.CanvasRenderer = this.app.renderer;
 		this.input = new Input(this.MainContainer, this.app.renderer);
+		Drawable.Init(this.MainContainer);
+
 		this.loadImages();
 	}
 
@@ -36,6 +41,8 @@ class IslandIV {
 		// TODO: Need dynamic loader, probably clone from QTL
 		let loader : PIXI.loaders.Loader = new PIXI.loaders.Loader('./img/');
 		loader.add('tausta', 'devmap.png');
+		loader.add('bunny', 'bunny.png'); // TODO: Just temporary
+
 		// TODO: Do we want spritesheets? TexturePacker produces simple spritesheets with JSON, is free
 		// loader.add(sprite_sheets_arr);
 
@@ -48,6 +55,8 @@ class IslandIV {
 
 		this.MainContainer.addChild(tausta);
 		this.MainContainer.interactive = true;
+
+		Drawable.Create();
 
 		// TODO: Is right place for this? Should be done after all loading etc.
 		document.body.appendChild(this.app.view);
