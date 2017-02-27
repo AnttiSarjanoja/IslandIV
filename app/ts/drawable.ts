@@ -7,12 +7,6 @@
 // TODO: Ok name?
 // TODO: Abstract?
 class Drawable {
-	// TODO: Factory at lower classes, is here for testing purposes
-	public static Create() {
-		new Drawable(100, 100);
-		new Drawable(200, 100);
-	}
-
 	private static container : PIXI.Container;
 
 	public static Init(container : PIXI.Container) {
@@ -23,20 +17,25 @@ class Drawable {
 		this.container.addChild(sprite);
 	}
 
+	private _sprite : PIXI.Sprite;
 
+	/* TODO: Actually, why should we ever give the sprite out?
+	get Sprite() : PIXI.Sprite {
+		return this._sprite;
+	} */
 
-	// var bunny = new PIXI.Sprite(texture);
-	// TODO: Getter for this
-	private sprite : PIXI.Sprite;
+	// Pls use 0xFFFFFF like numbers
+	public changeTint(tint : number) {
+		this._sprite.tint = tint;
+	}
 
 	// TODO: Interface instead of x / y + etc
 	// TODO: Picture as parameter
-	constructor(x : number, y : number) {
-		this.sprite = PIXI.Sprite.fromImage('img/bunny.png'); // TODO: Should use loader resources
-		this.sprite.anchor.set(0.5, 0.5); // Pic position is center of the image
-		this.sprite.x = x;
-		this.sprite.y = y;
-		Drawable.AddSprite(this.sprite); // TODO: Is ok to place already in constructor?
-		console.log(this.sprite);
+	protected constructor(x : number, y : number) {
+		this._sprite = PIXI.Sprite.fromImage('img/bunny.png'); // TODO: Should use loader resources
+		this._sprite.anchor.set(0.5, 0.5); // Pic position is center of the image
+		this._sprite.x = x;
+		this._sprite.y = y;
+		Drawable.AddSprite(this._sprite); // TODO: Is ok to place already in constructor?
 	}
 }

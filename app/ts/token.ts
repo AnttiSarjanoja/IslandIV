@@ -1,8 +1,11 @@
+/// <reference path="drawable.ts" />
+/// <reference path="player_color.ts" />
+
 // This class will be used for all game-mechanic related units including troops and settlements
 
 // TODO: Separate classes for effects etc.
 // TODO: Inherit Drawable
-class Token {
+class Token extends Drawable {
 	// NOTE: Does not need coordinates mb? Understood via drawable.sprite
 
 	// TODO: What does token actually contain? Should cover basically all the pieces in the game
@@ -13,6 +16,11 @@ class Token {
 	private type : string; // TODO: Cannot be enum since types may come from the configuration from server, string is ok ?
 	// TODO: If string, must have getter and setter that check the type validation from configurations
 
-	// TODO: Factory? As is atm. in drawable
+	// TODO: Do we use factories?
+	public static Create(x : number, y : number, color : PlayerColor) : Token {
+		let created : Token = new Token(x, y);
+		created.changeTint(ColorToNumber(color));
+		return created;
+	}
 }
 

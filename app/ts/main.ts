@@ -1,6 +1,7 @@
 /// <reference path="../pixi-typescript/pixi.js.d.ts" />
 /// <reference path="input.ts" />
 /// <reference path="drawable.ts" />
+/// <reference path="loader.ts" />
 
 // Style:
 // Use tabs for indenting, no spaces
@@ -24,15 +25,16 @@ class IslandIV {
 	private static app : PIXI.Application = new PIXI.Application();
 	private static MainContainer : PIXI.Container = new PIXI.Container(); // Must have separate container for scrolling
 	private static input : Input;
+	private static loader : Loader;
 	
 	public static Init() {
 		// TODO: More sensible place for this
-		// Constant, cannot be set?
-		// PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+		PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; // NOTE: If this doesn't work, make sure pixi.js.d.ts is updated
 
 		this.app.stage.addChild(this.MainContainer);
 		let renderer : PIXI.WebGLRenderer | PIXI.CanvasRenderer = this.app.renderer;
 		this.input = new Input(this.MainContainer, this.app.renderer);
+		this.loader = new Loader(tempData); // TODO: UGLY !!!
 		Drawable.Init(this.MainContainer);
 
 		this.loadImages();
@@ -57,7 +59,7 @@ class IslandIV {
 		this.MainContainer.addChild(tausta);
 		this.MainContainer.interactive = true;
 
-		Drawable.Create();
+		this.loader.Init();
 
 		// TODO: Is right place for this? Should be done after all loading etc.
 		document.body.appendChild(this.app.view);
