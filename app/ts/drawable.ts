@@ -1,4 +1,5 @@
 /// <reference path="../pixi-typescript/pixi.js.d.ts" />
+/// <reference path="effects.ts" />
 
 // Base class for all drawable objects, such as units, effects, move-orders
 // Basically this class exists to wrap all PIXI stuff, child classes will not understand PIXI stuff
@@ -9,13 +10,23 @@
 class Drawable {
 	private static container : PIXI.Container;
 
-	public static Init(container : PIXI.Container) {
+	public static Init(container : PIXI.Container) : void {
 		this.container = container;
 	}
 
-	public static AddSprite(sprite : PIXI.Sprite) {
+	public static AddSprite(sprite : PIXI.Sprite) : void {
 		this.container.addChild(sprite);
 	}
+
+	private hoverOn() {
+		this._sprite.filters = [Effects.WHITE_OUTLINE];
+	}
+
+	private hoverOff() {
+		this._sprite.filters = [];
+	}
+
+	// -- Non-statics --
 
 	private _sprite : PIXI.Sprite;
 
@@ -24,8 +35,10 @@ class Drawable {
 		return this._sprite;
 	} */
 
+
+
 	// Pls use 0xFFFFFF like numbers
-	public changeTint(tint : number) {
+	public changeTint(tint : number) : void {
 		this._sprite.tint = tint;
 	}
 
@@ -37,5 +50,10 @@ class Drawable {
 		this._sprite.x = x;
 		this._sprite.y = y;
 		Drawable.AddSprite(this._sprite); // TODO: Is ok to place already in constructor?
+
+		// TODO: bad place for this
+		this._sprite.interactive = true;
+		this._sprite.on('pointerover', () => this.hoverOn())
+        .on('pointerout', () => this.hoverOff());
 	}
 }

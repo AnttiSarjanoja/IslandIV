@@ -3,7 +3,7 @@
 
 // This class opens the dataobject received from server and instancifies all objects to the game
 
-// TODO: These are just temp stuff for loader to work -> Make real classes
+// TODO: These are just temp stuff for loader to work -> Use real classes such as province + unit (tbd)
 // Dummydata to load
 interface DummyObject {
 	x : number,

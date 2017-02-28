@@ -1,3 +1,6 @@
 [submodule "pixi-typescript"]
 	path = app/pixi-typescript
 	url = https://github.com/pixijs/pixi-typescript
+[submodule "app/pixi-extra-filters"]
+	path = app/pixi-extra-filters
+	url = https://github.com/pixijs/pixi-extra-filters

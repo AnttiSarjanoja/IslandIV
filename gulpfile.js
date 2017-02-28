@@ -36,7 +36,7 @@ gulp.task('watch-img', function() {
     gulp.watch('app/img/**', ['img']);
 });
 gulp.task('lib', function() {
-    return gulp.src('app/pixi.js/pixi.js')
+    return gulp.src(['app/pixi.js/pixi.js', 'app/pixi-extra-filters/bin/pixi-extra-filters.js'])
     .pipe(gulp.dest(BUILD_DIR + '/lib'));
 });
 gulp.task('default', ['typescript', 'html', 'css', 'img', 'lib', 'watch-ts', 'watch-html', 'watch-img']);
