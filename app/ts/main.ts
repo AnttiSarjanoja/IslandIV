@@ -34,7 +34,7 @@ class IslandIV {
 		this.app.stage.addChild(this.MainContainer);
 		let renderer : PIXI.WebGLRenderer | PIXI.CanvasRenderer = this.app.renderer;
 		this.input = new Input(this.MainContainer, this.app.renderer);
-		this.loader = new Loader(tempData); // TODO: UGLY !!!
+		this.loader = new Loader();
 		Drawable.Init(this.MainContainer);
 
 		this.loadImages();

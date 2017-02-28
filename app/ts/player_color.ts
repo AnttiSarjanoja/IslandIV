@@ -1,5 +1,16 @@
 // TODO: Relocate
 
+function StringToColor(text : string) : PlayerColor {
+    switch(text) {
+        case "GREEN":    return PlayerColor.GREEN;
+        case "RED":    return PlayerColor.RED;
+        case "BLUE":    return PlayerColor.BLUE;
+        case "YELLOW":    return PlayerColor.YELLOW;
+        case "PURPLE":    return PlayerColor.PURPLE;
+        case "ORANGE":    return PlayerColor.ORANGE;
+    }
+}
+
 function ColorToNumber(color : PlayerColor) : number {
 	switch(color) {
 	case PlayerColor.GREEN:  return 0x00FF00;

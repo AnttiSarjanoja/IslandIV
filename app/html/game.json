@@ -1,0 +1,26 @@
+[
+    { "x": 100, "y": 100, "player": {
+        "id": 1, 
+        "color": "BLUE",
+        "name": "This is one rediculously long name to *duck* UI up"
+        }
+     },
+    { "x": 200, "y": 100, "player": {
+        "id":2,
+        "color": "GREEN",
+        "name": "Mao Työmies"
+        }
+    },
+    { "x": 300, "y": 100, "player": {
+        "id": 3,
+        "color": "ORANGE", 
+        "name": "Urkki Kalamies"
+        }
+    },
+    { "x": 400, "y": 100, "player": {
+        "id": 4,
+        "color": "PURPLE",
+        "name": "Bob"
+        }
+    }
+]

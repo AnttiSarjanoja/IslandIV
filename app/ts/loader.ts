@@ -14,7 +14,7 @@ interface DummyObject {
 interface DummyData {
 	stuf : DummyObject[]
 }
-
+/*
 let dummyPlayer1 = new Player(1, PlayerColor.BLUE, "This is one rediculously long name to *duck* UI up");
 let dummyPlayer2 = new Player(2, PlayerColor.GREEN, "Mao Työmies");
 let dummyPlayer3 = new Player(3, PlayerColor.ORANGE, "Urkki Kalamies");
@@ -27,18 +27,29 @@ let tempData : DummyData = {
 		{ x: 300, y: 100, player: dummyPlayer3 },
 		{ x: 400, y: 100, player: dummyPlayer4 }]
 };
-
+*/
 //
 class Loader {
 	private data : DummyData;
 
-	constructor(data : DummyData) {
-		this.data = data;
+	constructor() {
+		//this.data = data;
 	}
 
+	// Use this when server supports it
 	public Init() {
-		for(let obj of this.data.stuf) {
-			Token.Create(obj.x, obj.y, obj.player.color);
+		function dummyDataListener () {
+			console.log(JSON.parse(this.responseText));
+			this.data = JSON.parse(this.responseText);
+			for(let obj of this.data) {
+				console.log(obj);
+				Token.Create(obj.x, obj.y, StringToColor(obj.player.color));
+			}
 		}
+
+		let request = new XMLHttpRequest();
+		request.onload = dummyDataListener;
+		request.open("get", "game.json", true);
+		request.send();
 	}
 }
