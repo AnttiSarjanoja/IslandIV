@@ -49,7 +49,7 @@ gulp.task('watch-img', function() {
     gulp.watch('app/img/**', ['img']);
 });
 gulp.task('lib', function() {
-    return gulp.src(['app/pixi.js/pixi.js', 'app/pixi-extra-filters/bin/pixi-extra-filters.js'])
+    return gulp.src(['node_modules/pixi.js/dist/pixi.js', 'app/pixi-extra-filters/bin/pixi-extra-filters.js'])
     .pipe(gulp.dest(PUBLIC_DIR + '/lib'));
 });
 gulp.task('default', ['app-typescript', 'server-typescript', 'html', 'css', 'img', 'lib', 'watch-app-ts', 'watch-server-ts', 'watch-html', 'watch-img']);
