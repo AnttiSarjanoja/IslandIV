@@ -1,8 +1,11 @@
+/// <reference path="army.ts" />
+/// <reference path="drawable.ts" />
 /// <reference path="player.ts" />
-/// <reference path="unit_type.ts" />
+/// <reference path="../../server/interfaces.ts" />
 
-// TODO: Inherits Drawable? Probably yes
-class Province {
-	private owner : Player; // TODO: Player class 
-    private units : { [ unit in UnitType] : number };
+class Province extends Drawable implements IProvince {
+	public _id : string;
+	public owner : Player;
+	public armies : Army[];
+	public number : number;
 }

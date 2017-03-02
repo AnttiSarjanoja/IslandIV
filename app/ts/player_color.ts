@@ -9,6 +9,7 @@ function StringToColor(text : string) : PlayerColor {
         case "PURPLE":    return PlayerColor.PURPLE;
         case "ORANGE":    return PlayerColor.ORANGE;
     }
+    return PlayerColor.ERROR;
 }
 
 function ColorToNumber(color : PlayerColor) : number {
@@ -20,6 +21,7 @@ function ColorToNumber(color : PlayerColor) : number {
 	case PlayerColor.PURPLE: return 0x800080;
 	case PlayerColor.ORANGE: return 0xFFA500;
 	}
+    return 0xFFFFFF; // TODO: Error color
 }
 
 enum PlayerColor {
@@ -28,5 +30,7 @@ enum PlayerColor {
     BLUE,
     YELLOW,
     PURPLE,
-    ORANGE
+    ORANGE,
+
+    ERROR // TODO: Should use this?
 }

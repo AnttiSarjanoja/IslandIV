@@ -6,16 +6,15 @@
 
 // TODO: Namespace (do in main.ts first)
 // TODO: Ok name?
-// TODO: Abstract?
-class Drawable {
-	private static container : PIXI.Container;
+abstract class Drawable {
+	private static baseContainer : PIXI.Container; // The container into which all drawables are put
 
 	public static Init(container : PIXI.Container) : void {
-		this.container = container;
+		this.baseContainer = container;
 	}
 
 	public static AddSprite(sprite : PIXI.Sprite) : void {
-		this.container.addChild(sprite);
+		this.baseContainer.addChild(sprite);
 	}
 
 	private hoverOn() {
@@ -35,8 +34,6 @@ class Drawable {
 		return this._sprite;
 	} */
 
-
-
 	// Pls use 0xFFFFFF like numbers
 	public changeTint(tint : number) : void {
 		this._sprite.tint = tint;
@@ -44,8 +41,8 @@ class Drawable {
 
 	// TODO: Interface instead of x / y + etc
 	// TODO: Picture as parameter
-	protected constructor(x : number, y : number) {
-		this._sprite = PIXI.Sprite.fromImage('img/bunny.png'); // TODO: Should use loader resources
+	protected constructor(x : number, y : number, image : string) {
+		this._sprite = PIXI.Sprite.fromImage(image); // TODO: Should use loader resources
 		this._sprite.anchor.set(0.5, 0.5); // Pic position is center of the image
 		this._sprite.x = x;
 		this._sprite.y = y;
