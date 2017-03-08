@@ -4,6 +4,8 @@
 // Base class for all drawable objects, such as units, effects, move-orders
 // Basically this class exists to wrap all PIXI stuff, child classes will not understand PIXI stuff
 
+// Big TODO: Container for subdrawables e.g. units in army in province
+
 // TODO: Namespace (do in main.ts first)
 // TODO: Ok name?
 abstract class Drawable {

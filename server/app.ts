@@ -2,6 +2,8 @@ import * as path from 'path';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 
+import * as db from "./db";
+
 // Creates and configures an ExpressJS web server.
 class App {
 
@@ -24,6 +26,11 @@ class App {
   // Configure API endpoints.
   private routes(): void {
     this.express.use(express.static(__dirname + '/public'));
+
+    this.express.get('/data/', (req, res) => {
+      let parsedJSON = require('./public/game.json');
+      res.json(parsedJSON);
+    });
   }
 }
 

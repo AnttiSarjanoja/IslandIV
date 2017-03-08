@@ -1,8 +1,11 @@
-// TODO: Must be server compatible
-class Order {
-	private type : string;
-	private parameters : string[] = [];
-	private comment : string; // May be used, user can write notes for themselves when giving order
+/// <reference path="player.ts" />
+/// <reference path="../../server/interfaces.ts" />
+
+class Order implements IOrder {
+	readonly turn: number;
+	readonly type: string;
+	readonly state: string;
+	readonly parameters: string[] = [];
 
 	// Ok, something like this:
 	// Type = Moveorder

@@ -6,7 +6,6 @@
 
 // NOTE: Probably needs drawable, or at least container for units
 class Unit extends Token implements IUnit {
-	_id: string;
 	amount: number;
 	type: UnitType; // Used in combination with config files
 

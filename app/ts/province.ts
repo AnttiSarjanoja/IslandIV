@@ -4,8 +4,9 @@
 /// <reference path="../../server/interfaces.ts" />
 
 class Province extends Drawable implements IProvince {
-	public _id : string;
-	public owner : Player;
-	public armies : Army[];
-	public number : number;
+	readonly id: number;
+	readonly armies: Army[];
+	readonly size: number;
+	readonly population: number;
+	readonly resources: string[];
 }

@@ -3,8 +3,7 @@
 /// <reference path="../../server/interfaces.ts" />
 
 // NOTE: Probably needs drawable, or at least container for units
-class Army implements IArmy {
-    _id: string;
+class Army extends Drawable implements IArmy {
     owner: Player;
     units: Unit[];
 }

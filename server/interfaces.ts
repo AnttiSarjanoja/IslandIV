@@ -1,36 +1,67 @@
 /// <reference path="../app/ts/player_color.ts" />
 /// <reference path="../app/ts/unit_type.ts" />
 
-// TODO: IGame-interface, used in multiple games at the same time
+// TODO: Users + pw
+// IUser { inGame: IPlayer[]; } // All games are shown? But can only check out games that is a player in
 
-// S = schema
-// TODO: Possibly rename
-interface SPlayer<IdType> {
-	_id: IdType;
-	color: PlayerColor
+interface IGame {
+	name: string; // e.g. "Awesomegame6616"
+	players: IPlayer[];
+	messages: IMessage[];
+	turn: number; // Current turn
+}
+
+interface IMessage {
+	from: number; // Player "id"
+	to: number[]; // Player "id", multiple recipients or none == all
+	topic: string; // TODO: Unnecessary? Could just be chat-like
+	text: string;
+}
+
+// NOTE: Is not same as login user! Is a game related instance of user
+// This is what the player sees
+interface IPlayer {
+	id: number; // TODO: Is ok identifier? Could mb use name too
+
+	color: PlayerColor;
+	name: string; // e.g. "METRIN SLERBA"
+	description: string; // e.g. "The pillar that is purity"
+	orders: IOrder[];
+
+	// Nation related
+	provinces: IProvince[];
+	gold: number;
+	mp: number; // Magic points
+	faith: number[]; // TODO: Really needs thinking, contains faith-points related to a specific religion
+	techs: string[]; // TODO: Class or smth	
+}
+
+interface IOrder {
+	turn: number; // Must match current to be valid? Otherwise is used as history of player orders?
+	state: string; // TODO: Enum
+	type: string; // TODO: Enum
+	parameters: string[]; // TODO: Can we do anything better than this?
+}
+
+interface IReligion {
 	name: string;
+	description: string;
+	bonuses: string[]; // TODO: Class or smth
 }
 
-interface SProvince<IdType> {
-	_id: IdType;
-	owner: SPlayer<IdType>;
-	number: number; // Used in combination with config files
-	armies: SArmy<IdType>[];
+interface IProvince {
+	id: number; // Used in combination with config files // Should be unique!
+	size: number; // Number of ppl allowed
+	population: number; // Number of ppl // TODO: Is mixed population allowed?
+	armies: IArmy[];
+	resources: string[]; // TODO: Class or smth
 }
 
-interface SArmy<IdType> {
-	_id: IdType;
-	owner: SPlayer<IdType>;
-	units: SUnit<IdType>[];
+interface IArmy {
+	units: IUnit[];
 }
 
-interface SUnit<IdType> {
-	_id: IdType;
+interface IUnit {
 	amount: number;
 	type: UnitType; // Used in combination with config files
 }
-
-type IPlayer = SPlayer<string>;
-type IProvince = SProvince<string>;
-type IArmy = SArmy<string>;
-type IUnit = SUnit<string>;

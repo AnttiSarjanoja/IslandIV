@@ -1,7 +1,5 @@
 /// <reference path="../pixi-typescript/pixi.js.d.ts" />
 
-/// <reference path="main.ts" />
-
 class Input {
 	// TODO: Rename ?
 	private dragging : boolean = false;

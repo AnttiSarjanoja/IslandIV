@@ -13,7 +13,6 @@ gulp.task('app-typescript', function() {
     }))
     .on('error', function(error) { console.log(error); })
 	.pipe(gulp.dest(PUBLIC_DIR));
-
 });
 gulp.task('watch-app-ts', function() {
     gulp.watch('app/ts/**/*.ts', ['app-typescript']);
