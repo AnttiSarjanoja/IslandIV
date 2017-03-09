@@ -25,7 +25,7 @@ class IslandIV {
 	private static app : PIXI.Application = new PIXI.Application();
 	private static MainContainer : PIXI.Container = new PIXI.Container(); // Must have separate container for scrolling
 	private static input : Input;
-	private static loader : Loader;
+	// private static loader : Loader;
 	
 	public static Init() {
 		// TODO: More sensible place for this
@@ -34,7 +34,7 @@ class IslandIV {
 		this.app.stage.addChild(this.MainContainer);
 		let renderer : PIXI.WebGLRenderer | PIXI.CanvasRenderer = this.app.renderer;
 		this.input = new Input(this.MainContainer, this.app.renderer);
-		this.loader = new Loader();
+		// this.loader = new Loader();
 		Drawable.Init(this.MainContainer);
 
 		this.loadImages();
@@ -59,7 +59,7 @@ class IslandIV {
 		this.MainContainer.addChild(tausta);
 		this.MainContainer.interactive = true;
 
-		this.loader.Init();
+		Loader.InitServer();
 
 		// TODO: Is right place for this? Should be done after all loading etc.
 		document.body.appendChild(this.app.view);

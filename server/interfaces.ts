@@ -9,6 +9,9 @@ interface IGame {
 	players: IPlayer[];
 	messages: IMessage[];
 	turn: number; // Current turn
+	settingsFile: string; // "DefaultSettings.json" located in public/settings/
+	provinceFile: string; // "DefaultProvinces.json" located in public/settings/
+	religions: IReligion[];
 }
 
 interface IMessage {
@@ -23,7 +26,7 @@ interface IMessage {
 interface IPlayer {
 	id: number; // TODO: Is ok identifier? Could mb use name too
 
-	color: PlayerColor;
+	color: string;
 	name: string; // e.g. "METRIN SLERBA"
 	description: string; // e.g. "The pillar that is purity"
 	orders: IOrder[];

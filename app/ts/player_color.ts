@@ -25,7 +25,7 @@ function ColorToNumber(color : PlayerColor) : number {
 }
 
 enum PlayerColor {
-    GREEN,
+    GREEN = 1,
     RED,
     BLUE,
     YELLOW,

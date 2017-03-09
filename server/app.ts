@@ -28,8 +28,10 @@ class App {
     this.express.use(express.static(__dirname + '/public'));
 
     this.express.get('/data/', (req, res) => {
-      let parsedJSON = require('./public/game.json');
-      res.json(parsedJSON);
+      // let parsedJSON = require('./public/game.json');
+      // res.json(parsedJSON);
+
+      res.json(db.createGame()); // JSON.stringify(
     });
   }
 }

@@ -1,0 +1,8 @@
+[
+  { "x": 100, "y": 100, "color": "GREEN" },
+  { "x": 200, "y": 100, "color": "RED" },
+  { "x": 300, "y": 100, "color": "BLUE" },
+  { "x": 100, "y": 200, "color": "YELLOW" },
+  { "x": 200, "y": 200, "color": "PURPLE" },
+  { "x": 300, "y": 200, "color": "ORANGE" }
+]

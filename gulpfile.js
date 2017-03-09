@@ -18,7 +18,7 @@ gulp.task('watch-app-ts', function() {
     gulp.watch('app/ts/**/*.ts', ['app-typescript']);
 });
 gulp.task('server-typescript', function() {
-    return gulp.src('server/**/*.ts')
+    return gulp.src(['server/**/*.ts', 'app/ts/player_color.ts'])
     .on('change', function(file) { console.log(file + " changed."); })
     .pipe(ts({
         strictNullChecks: true
@@ -30,8 +30,15 @@ gulp.task('watch-server-ts', function() {
     gulp.watch('server/**/*.ts', ['server-typescript']);
 });
 gulp.task('html', function() {
-    return gulp.src('app/html/**')
+    return gulp.src('app/html/**/*.html')
     .pipe(gulp.dest(PUBLIC_DIR));
+});
+gulp.task('json', function() {
+    return gulp.src('app/settings/**/*.json')
+    .pipe(gulp.dest(PUBLIC_DIR + '/settings'));
+});
+gulp.task('watch-json', function() {
+    gulp.watch('app/settings/**/*.json', ['json']);
 });
 gulp.task('css', function() {
     return gulp.src('app/css/**')
@@ -51,4 +58,4 @@ gulp.task('lib', function() {
     return gulp.src(['node_modules/pixi.js/dist/pixi.js', 'app/pixi-extra-filters/bin/pixi-extra-filters.js'])
     .pipe(gulp.dest(PUBLIC_DIR + '/lib'));
 });
-gulp.task('default', ['app-typescript', 'server-typescript', 'html', 'css', 'img', 'lib', 'watch-app-ts', 'watch-server-ts', 'watch-html', 'watch-img']);
+gulp.task('default', ['app-typescript', 'server-typescript', 'html', 'json', 'css', 'img', 'lib', 'watch-app-ts', 'watch-server-ts', 'watch-html', 'watch-img', 'watch-json']);
