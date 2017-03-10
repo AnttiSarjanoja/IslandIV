@@ -39,12 +39,12 @@ export function SaveStuff(game : IGame) : void {
 ////////// Inits
 
 export function InitAll() : void {
-	runningPlayer = 0; 
-	runningProvince = 0;
 	SaveStuff(createGame());
 }
 
 export function createGame() : IGame {
+	runningPlayer = 0; 
+	runningProvince = 0;
 	return {
 		name: "Awesomegame6616",
 		players: [createPlayer(), createPlayer()],

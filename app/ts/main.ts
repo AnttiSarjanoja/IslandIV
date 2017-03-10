@@ -59,7 +59,7 @@ class IslandIV {
 		this.MainContainer.addChild(tausta);
 		this.MainContainer.interactive = true;
 
-		Loader.InitServer();
+		Loader.Init();
 
 		// TODO: Is right place for this? Should be done after all loading etc.
 		document.body.appendChild(this.app.view);

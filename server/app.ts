@@ -25,14 +25,10 @@ class App {
 
   // Configure API endpoints.
   private routes(): void {
-    this.express.use(express.static(__dirname + '/public'));
-
-    this.express.get('/data/', (req, res) => {
-      // let parsedJSON = require('./public/game.json');
-      // res.json(parsedJSON);
-
-      res.json(db.createGame()); // JSON.stringify(
+    this.express.use('/data', (req, res) => {
+      res.json(db.createGame());
     });
+    this.express.use(express.static(__dirname + '/public'));
   }
 }
 

@@ -30,7 +30,7 @@ gulp.task('watch-server-ts', function() {
     gulp.watch('server/**/*.ts', ['server-typescript']);
 });
 gulp.task('html', function() {
-    return gulp.src('app/html/**/*.html')
+    return gulp.src('app/html/**')
     .pipe(gulp.dest(PUBLIC_DIR));
 });
 gulp.task('json', function() {

@@ -39,16 +39,8 @@ abstract class Loader {
 		this.gameData = data;
 	}
 
-	public static InitServer() {
-		this.Init('/data/');
-	}
-
-	public static InitLocal() {
-		this.Init('settings/DefaultData.json');
-	}
-
 	// Use this when server supports it
-	private static Init(address : string) {
+	public static Init() {
 		function provinceResponseHandler() {
 			Loader.SaveProvinceSettings(this.response);
 			Loader.CreateEverything();
@@ -66,7 +58,7 @@ abstract class Loader {
 		}
 
 		let request = new XMLHttpRequest();
-		request.open('GET', address, true);
+		request.open('GET', 'data', true);
 		request.responseType = 'json';
 		request.onload = gameResponseHandler;
 		request.send();
