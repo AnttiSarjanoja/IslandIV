@@ -57,7 +57,7 @@ class Input {
 		this.pointOrigin = new PIXI.Point();  // position is ObservablePoint which doesn't have clone :I // this.container.position.clone();
 		this.pointOrigin.copy(this.container.position);
 
-		console.log(this.pointClicked);
+		console.log(evt.data.getLocalPosition(this.container));
 	}
 
 	private onPointerEnd (evt : PIXI.interaction.InteractionEvent) {

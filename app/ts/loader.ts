@@ -19,16 +19,12 @@ abstract class Loader {
 		console.log("Yay");
 
 		this.gameData.players.forEach(function (player : Player) {
+			let tempColor : string = player.color;
 			player.provinces.forEach(function (province : Province) {
 				let obj = Loader.provinceSettings[province.id - 1]; // TEMPORARY AND VERY UGLY YES
-				Unit.Create(obj.x, obj.y, StringToColor(obj.color));
+				new Province(obj.x, obj.y, StringToColor(tempColor));
 			});
 		});
-		//for(let obj of this.gameData) {
-			/*
-			console.log(obj);
-			Unit.Create(obj.x, obj.y, StringToColor(obj.player.color));*/
-		//}
 	}
 
 	public static SaveProvinceSettings(data : any) {

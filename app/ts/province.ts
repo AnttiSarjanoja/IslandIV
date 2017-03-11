@@ -9,4 +9,9 @@ class Province extends Drawable implements IProvince {
 	readonly size: number;
 	readonly population: number;
 	readonly resources: string[];
+
+	public constructor(x : number, y : number, color : PlayerColor) {
+		super(x, y, 'img/bunny.png');
+		this.changeTint(ColorToNumber(color));
+	}
 }

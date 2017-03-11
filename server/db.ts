@@ -47,7 +47,7 @@ export function createGame() : IGame {
 	runningProvince = 0;
 	return {
 		name: "Awesomegame6616",
-		players: [createPlayer(), createPlayer()],
+		players: [createPlayer(6), createPlayer(6)],
 		messages: [],
 		turn: 1,
 		settingsFile: "settings/DefaultSettings.json",
@@ -57,17 +57,31 @@ export function createGame() : IGame {
 }
 
 let runningPlayer : number = 0;
-function createPlayer() : IPlayer {
+function createPlayer(provinceAmt : number) : IPlayer {
 	runningPlayer += 1;
+	let color: string = "ERROR";
+	switch (runningPlayer) {
+		case 1: color = "RED"; break;
+		case 2: color = "GREEN"; break;
+		case 3: color = "ORANGE"; break;
+		case 4: color = "PURPLE"; break;
+		case 5: color = "BLUE"; break;
+		case 6: color = "YELLOW"; break;
+	}
+	let provinces : IProvince[] = [];
+	for(var i = 0; i < provinceAmt; i++) {
+		provinces.push(createProvince());
+	}
+
 	return {
 		id: runningPlayer,
-		color: "RED",
+		color: color,
 		name: "METRIN SLERBA",
 		description: "The pillar that is purity",
 		orders: [],
 
 		// Nation related
-		provinces: [createProvince(), createProvince(), createProvince()],
+		provinces: provinces,
 		gold: 5,
 		mp: 3,
 		faith: [],
