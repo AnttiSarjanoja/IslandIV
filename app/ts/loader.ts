@@ -18,11 +18,11 @@ abstract class Loader {
 
 		console.log("Yay");
 
-		this.gameData.players.forEach(function (player : Player) {
+		this.gameData.players.forEach(function (player : IPlayer) {
 			let tempColor : string = player.color;
-			player.provinces.forEach(function (province : Province) {
+			player.provinces.forEach(function (province : IProvince) {
 				let obj = Loader.provinceSettings[province.id - 1]; // TEMPORARY AND VERY UGLY YES
-				new Province(obj.x, obj.y, StringToColor(tempColor));
+				new Province(province, obj.x, obj.y, StringToColor(tempColor));
 			});
 		});
 	}

@@ -29,7 +29,7 @@ class IslandIV {
 	
 	public static Init() {
 		// TODO: More sensible place for this
-		PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; // NOTE: If this doesn't work, make sure pixi.js.d.ts is updated
+		// PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; // NOTE: If this doesn't work, make sure pixi.js.d.ts is updated
 
 		this.app.stage.addChild(this.MainContainer);
 		let renderer : PIXI.WebGLRenderer | PIXI.CanvasRenderer = this.app.renderer;

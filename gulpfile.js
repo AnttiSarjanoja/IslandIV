@@ -9,6 +9,7 @@ gulp.task('app-typescript', function() {
     .on('change', function(file) { console.log(file + " changed."); })
     .pipe(ts({
         outFile: "main.js",
+        target: "ES6",
         strictNullChecks: true
     }))
     .on('error', function(error) { console.log(error); })

@@ -90,27 +90,27 @@ function createPlayer(provinceAmt : number) : IPlayer {
 }
 
 
-let runningProvince : number = 0;
-function createProvince() : IProvince {
+let runningProvince: number = 0;
+function createProvince(): IProvince {
 	runningProvince += 1;
 	return {
 		id: runningProvince,
 		size: 3,
 		population: 1,
-		armies: [createArmy()],
+		armies: [createArmy(3)],
 		resources: []
 	}
 }
 
-function createArmy() : IArmy {
+function createArmy(unitAmount: number): IArmy {
 	return {
-		units: [createUnit(), createUnit()]
+		units: [createUnit(unitAmount)]
 	}
 }
 
-function createUnit() : IUnit {
+function createUnit(amount: number): IUnit {
 	return {
-		amount: 1,
+		amount: amount,
 		type: "infantry"
 	}
 }

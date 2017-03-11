@@ -4,8 +4,6 @@
 // Base class for all drawable objects, such as units, effects, move-orders
 // Basically this class exists to wrap all PIXI stuff, child classes will not understand PIXI stuff
 
-// Big TODO: Container for subdrawables e.g. units in army in province
-
 // TODO: Namespace (do in main.ts first)
 // TODO: Ok name?
 abstract class Drawable {
@@ -15,8 +13,8 @@ abstract class Drawable {
 		this.baseContainer = container;
 	}
 
-	public static AddSprite(sprite : PIXI.Sprite) : void {
-		this.baseContainer.addChild(sprite);
+	public static AddContainer(container : PIXI.Container) : void {
+		this.baseContainer.addChild(container);
 	}
 
 	private hoverOn() {
@@ -30,6 +28,7 @@ abstract class Drawable {
 	// -- Non-statics --
 
 	private _sprite : PIXI.Sprite;
+	private _container : PIXI.Container;
 
 	/* TODO: Actually, why should we ever give the sprite out?
 	get Sprite() : PIXI.Sprite {
@@ -41,14 +40,33 @@ abstract class Drawable {
 		this._sprite.tint = tint;
 	}
 
+	get Container() : PIXI.Container {
+		return this._container;
+	}
+
 	// TODO: Interface instead of x / y + etc
 	// TODO: Picture as parameter
-	protected constructor(x : number, y : number, image : string) {
+	// TODO: Redo this whole container business
+	constructor(x : number, y : number, image : string, container? : PIXI.Container, scale? : number) {
 		this._sprite = PIXI.Sprite.fromImage(image); // TODO: Should use loader resources
 		this._sprite.anchor.set(0.5, 0.5); // Pic position is center of the image
-		this._sprite.x = x;
-		this._sprite.y = y;
-		Drawable.AddSprite(this._sprite); // TODO: Is ok to place already in constructor?
+		
+		if (scale) {
+			this._sprite.scale.set(scale, scale);
+		}
+
+		if (container) {
+			this._sprite.x = x;
+			this._sprite.y = y;
+			container.addChild(this._sprite);
+		}
+		else {
+			this._container = new PIXI.Container();
+			this._container.addChild(this._sprite);
+			this._container.x = x;
+			this._container.y = y;
+			Drawable.AddContainer(this._container); // TODO: Is ok to place already in constructor?
+		}
 
 		// TODO: bad place for this
 		this._sprite.interactive = true;
