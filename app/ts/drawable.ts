@@ -17,28 +17,13 @@ abstract class Drawable {
 		this.baseContainer.addChild(container);
 	}
 
-	private hoverOn() {
-		this._sprite.filters = [Effects.WHITE_OUTLINE];
-	}
-
-	private hoverOff() {
-		this._sprite.filters = [];
-	}
-
 	// -- Non-statics --
+	private _sprite: PIXI.Sprite; // Write getter if needed
+	private _container: PIXI.Container;
 
-	private _sprite : PIXI.Sprite;
-	private _container : PIXI.Container;
-
-	/* TODO: Actually, why should we ever give the sprite out?
-	get Sprite() : PIXI.Sprite {
-		return this._sprite;
-	} */
-
-	// Pls use 0xFFFFFF like numbers
-	public changeTint(tint : number) : void {
-		this._sprite.tint = tint;
-	}
+	// If _sprite.interactive
+	private dragged: boolean = false;
+	private origPos?: PIXI.Point;
 
 	get Container() : PIXI.Container {
 		return this._container;
@@ -70,7 +55,22 @@ abstract class Drawable {
 
 		// TODO: bad place for this
 		this._sprite.interactive = true;
-		this._sprite.on('pointerover', () => this.hoverOn())
-        .on('pointerout', () => this.hoverOff());
+		this._sprite.buttonMode = true;
+		this._sprite
+			.on('pointerover', () => this.hoverOn())
+			.on('pointerout', () => this.hoverOff())
+			.on('pointerdown', () => { console.log("Unit Clicked!"); });
+	}
+	
+	private hoverOn() {
+		this._sprite.filters = [Effects.WHITE_OUTLINE];
+	}
+	private hoverOff() {
+		this._sprite.filters = [];
+	}
+
+	// Pls use 0xFFFFFF like numbers
+	public changeTint(tint : number) : void {
+		this._sprite.tint = tint;
 	}
 }

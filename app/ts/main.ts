@@ -16,26 +16,19 @@
 document.body.onload = function () { IslandIV.Init(); };
 
 // TODO: Namespace? (like PIXI.stuff)
-
 // TODO: Rename base class
 class IslandIV {
 	private static version : string = "0.0";
-
-	// NOTE: All code below is just a most basic PIXI app to show stuff
 	private static app : PIXI.Application = new PIXI.Application();
 	private static MainContainer : PIXI.Container = new PIXI.Container(); // Must have separate container for scrolling
-	private static input : Input;
-	// private static loader : Loader;
+	private static input : Input; // TODO: Static
 	
 	public static Init() {
-		// TODO: More sensible place for this
 		// PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; // NOTE: If this doesn't work, make sure pixi.js.d.ts is updated
 
 		this.app.stage.addChild(this.MainContainer);
-		let renderer : PIXI.WebGLRenderer | PIXI.CanvasRenderer = this.app.renderer;
-		this.input = new Input(this.MainContainer, this.app.renderer);
-		// this.loader = new Loader();
-		Drawable.Init(this.MainContainer);
+		this.input = new Input(this.app.stage, this.MainContainer, this.app.renderer);
+		Drawable.Init(this.app.stage);
 
 		this.loadImages();
 	}
