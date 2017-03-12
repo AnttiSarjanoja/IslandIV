@@ -5,7 +5,7 @@
 
 class Province extends Drawable implements IProvince {
 	readonly id: number;
-	readonly armies: Army[];
+	readonly armies: Army[] = [];
 	readonly size: number;
 	readonly population: number;
 	readonly resources: string[];

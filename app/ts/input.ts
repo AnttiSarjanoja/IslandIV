@@ -50,6 +50,14 @@ class Input {
 	}
 
 	private onPointerStart (evt : PIXI.interaction.InteractionEvent) {
+		let a: boolean = false;
+		if (evt.data.originalEvent instanceof MouseEvent) {
+			// evt.data.originalEvent.shiftKey; // etc
+			console.log("Yayyy");
+		} 
+		// var a: MouseEvent = evt.data.originalEvent;
+
+
 		// TODO: Get pointerdata.button for different button interactions
 		this.dragging = true;
 		this.pointClicked = evt.data.global.clone(); // Clones to not use same object
