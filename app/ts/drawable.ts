@@ -1,15 +1,15 @@
 /// <reference path="../pixi-typescript/pixi.js.d.ts" />
 /// <reference path="effects.ts" />
 
-// Base class for all drawable objects, such as units, effects, move-orders
+// Base class for all drawable objects, such as units, effects, move-orders (?)
 // Basically this class exists to wrap all PIXI stuff, child classes will not understand PIXI stuff
 
 // TODO: Namespace (do in main.ts first)
-// TODO: Ok name?
 abstract class Drawable {
 	private static baseContainer : PIXI.Container; // The container into which all drawables are put
 
 	public static Init(container : PIXI.Container) : void {
+		if (container === undefined) throw new Error("Drawable initiation error!");
 		this.baseContainer = container;
 	}
 

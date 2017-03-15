@@ -12,11 +12,8 @@ abstract class Loader {
 
 	public static CreateEverything() {
 		if(this.provinceSettings === undefined || this.gameData === undefined) { // TODO: this.gameSettings
-			console.log("Murr");
-			return;
+			throw new Error("Data loader error!");
 		}
-
-		console.log("Yay");
 
 		this.gameData.players.forEach(function (player : IPlayer) {
 			let tempColor : string = player.color;

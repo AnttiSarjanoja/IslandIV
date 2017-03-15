@@ -1,22 +1,27 @@
 /// <reference path="../pixi-typescript/pixi.js.d.ts" />
 /// <reference path="unit.ts" />
 
-// TODO: static
 class Input {
 	// General settings
-	private canvasScale = 2; // Acts as zoom level
+	private static canvasScale = 2; // Acts as zoom level default
+
+	// NOTE: Cannot merge these two since units etc. are added to stage, and children share same interactions
+	private static stage: PIXI.Container; // This contains everything -> no interaction, just move if scrolled
+	private static container: PIXI.Container; // This is the map container that has interaction stuff
+	private static renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer;
 
 	// Interaction temps
-	private dragging : boolean = false;
-	private pointClicked? : PIXI.Point;
-	private pointNow? : PIXI.Point;
-	private pointOrigin? : PIXI.Point;
+	private static dragging : boolean = false;
+	private static pointClicked? : PIXI.Point;
+	private static pointNow? : PIXI.Point;
+	private static pointOrigin? : PIXI.Point;
 
-	constructor(
-		// NOTE: Cannot merge these two since units etc. are added to stage, and children share same interactions
-		private stage: PIXI.Container, // This contains everything -> no interaction, just move if scrolled
-		private container: PIXI.Container, // This is the map container that has interaction stuff
-		private renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer) {
+	public static Init(stage: PIXI.Container, container: PIXI.Container, renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer) {
+		if (stage === undefined || container === undefined || renderer === undefined) throw new Error("Input initiation error!");
+
+		this.stage = stage;
+		this.container = container;
+		this.renderer = renderer;
 
 		this.container
 			.on('pointerdown', (evt : PIXI.interaction.InteractionEvent) => this.onPointerStart(evt))
@@ -30,7 +35,7 @@ class Input {
 	}
 
 	// General UI Input, affects everything
-	private resize() {
+	private static resize() {
 		this.renderer.resize((window.innerWidth) / this.canvasScale, (window.innerHeight) / this.canvasScale); /// 2 / 2
 		this.renderer.view.style.width = window.innerWidth + "px";
 		this.renderer.view.style.height = window.innerHeight + "px";
@@ -38,7 +43,7 @@ class Input {
 		this.renderer.view.style.margin = "0";
 	}
 
-	public handleEvt (evt : KeyboardEvent) {
+	public static handleEvt (evt : KeyboardEvent) {
 		// DEBUG: console.log(evt.keyCode);
 		switch(evt.keyCode) {
 			// TODO: Ugly. But temporary
@@ -52,7 +57,7 @@ class Input {
 	}
 
 	// Child specific UI Input
-	public UnitClicked (unit: Unit, evt: PIXI.interaction.InteractionEvent): void {
+	public static UnitClicked (unit: Unit, evt: PIXI.interaction.InteractionEvent): void {
 		if (evt.data.originalEvent instanceof MouseEvent) {
 
 			// evt.data.originalEvent.shiftKey; // etc
@@ -62,12 +67,12 @@ class Input {
 	}
 
 	// Prevents from going over edges
-	private setStagePos (x? : number, y? : number) {
+	private static setStagePos (x? : number, y? : number) {
 		if (x !== undefined ) this.stage.position.x = Math.min(Math.max(x, -this.stage.width + this.renderer.width), 0);
 		if (y !== undefined )	this.stage.position.y = Math.min(Math.max(y, -this.stage.height + this.renderer.height), 0);
 	}
 
-	private onPointerStart (evt : PIXI.interaction.InteractionEvent) {
+	private static onPointerStart (evt : PIXI.interaction.InteractionEvent) {
 		// TODO: Get pointerdata.button for different button interactions
 		this.dragging = true;
 		this.pointClicked = evt.data.global.clone(); // Clones to not use same object
@@ -78,11 +83,11 @@ class Input {
 		console.log(evt.data.getLocalPosition(this.stage));
 	}
 
-	private onPointerEnd (evt : PIXI.interaction.InteractionEvent) {
+	private static onPointerEnd (evt : PIXI.interaction.InteractionEvent) {
 		this.dragging = false;
 	}
 
-	private onPointerMove (evt : PIXI.interaction.InteractionEvent) {
+	private static onPointerMove (evt : PIXI.interaction.InteractionEvent) {
 		if (this.dragging) {
 			if(this.pointNow === undefined ||
 				this.pointClicked === undefined ||
@@ -96,5 +101,3 @@ class Input {
 		}
 	}
 }
-
-

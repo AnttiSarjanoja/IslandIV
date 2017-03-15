@@ -21,18 +21,17 @@ class IslandIV {
 	private static version : string = "0.0";
 	private static app : PIXI.Application = new PIXI.Application();
 	private static MainContainer : PIXI.Container = new PIXI.Container(); // Must have separate container for scrolling
-	private static input : Input; // TODO: Static
 	
 	public static Init() {
 		// PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; // NOTE: If this doesn't work, make sure pixi.js.d.ts is updated
-
 		this.app.stage.addChild(this.MainContainer);
-		this.input = new Input(this.app.stage, this.MainContainer, this.app.renderer);
+		Input.Init(this.app.stage, this.MainContainer, this.app.renderer);
 		Drawable.Init(this.app.stage);
 
-		this.loadImages();
+		this.loadImages(); // TODO: Loader.Init()
 	}
 
+	// TODO: Move to loader.ts
 	private static loadImages() {
 		// TODO: Need dynamic loader, probably clone from QTL
 		let loader : PIXI.loaders.Loader = new PIXI.loaders.Loader('./img/');
