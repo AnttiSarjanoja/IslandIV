@@ -5,11 +5,13 @@
 /// <reference path="../../server/interfaces.ts" />
 
 class Unit extends Token implements IUnit {
+	private static readonly PICTURE: string = 'img/bunny.png';
+
 	amount: number;
 	type: UnitType; // Used in combination with config files
 
-	constructor (data: IUnit, x: number, y: number, color: PlayerColor, container: PIXI.Container) {
-		super(x, y, 'img/bunny.png', container, 0.4);
+	constructor (data: IUnit, color: PlayerColor) {
+		super({image: Unit.PICTURE, interactive: true, scale: 0.4});
 		this.changeTint(ColorToNumber(color));
 
 		this.amount = data.amount;

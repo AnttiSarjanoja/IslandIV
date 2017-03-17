@@ -8,5 +8,6 @@
 
 namespace Effects {
 	export const WHITE_OUTLINE = new PIXI.filters.OutlineFilter(2, 0xFFFFFF);
+	export const RED_OUTLINE = new PIXI.filters.OutlineFilter(2, 0xFF0000);
 	// let whatsThis = new PIXI.filters.BloomFilter(); 
 }

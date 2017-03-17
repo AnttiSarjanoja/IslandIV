@@ -26,7 +26,7 @@ class IslandIV {
 		// PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; // NOTE: If this doesn't work, make sure pixi.js.d.ts is updated
 		this.app.stage.addChild(this.MainContainer);
 		Input.Init(this.app.stage, this.MainContainer, this.app.renderer);
-		Drawable.Init(this.app.stage);
+		DrawableBase.Init(this.app.stage, this.app.ticker);
 
 		this.loadImages(); // TODO: Loader.Init()
 	}
@@ -51,14 +51,13 @@ class IslandIV {
 		this.MainContainer.addChild(tausta);
 		this.MainContainer.interactive = true;
 
-		Loader.Init();
-
-		// TODO: Is right place for this? Should be done after all loading etc.
+		Loader.Init(); // TODO: Load-window :3
 		document.body.appendChild(this.app.view);
 	}
 
-	// NOTE: If any kind of clock is needed, use this kind of function
-	// app.ticker.add(function() {
-	//   DO STUFF HERE
-	// });
+	/* Moved to Drawable
+	public static Ticker(f : (deltatime : number) => void) {
+		// NOTE: If any kind of clock is needed, use this kind of function
+		this.app.ticker.add(f);
+	} */
 }

@@ -5,23 +5,43 @@
 // Basically this class exists to wrap all PIXI stuff, child classes will not understand PIXI stuff
 
 // TODO: Namespace (do in main.ts first)
-abstract class Drawable {
-	private static baseContainer : PIXI.Container; // The container into which all drawables are put
 
-	public static Init(container : PIXI.Container) : void {
-		if (container === undefined) throw new Error("Drawable initiation error!");
+// This is just static to contain stuff
+abstract class DrawableBase {
+	private static baseContainer: PIXI.Container; // The container into which all drawables are put
+	private static ticker: PIXI.ticker.Ticker;
+
+	public static Init(container: PIXI.Container, ticker: PIXI.ticker.Ticker) : void {
+		if (container === undefined || ticker === undefined) throw new Error("Drawable initiation error!");
 		this.baseContainer = container;
+		this.ticker = ticker;
 	}
 
-	public static AddContainer(container : PIXI.Container) : void {
-		this.baseContainer.addChild(container);
+	public static Add(drawable : PIXI.Sprite | PIXI.Container) : void {
+		if (this.baseContainer === undefined || this.ticker === undefined) throw new Error("Drawable not initiated error!");
+		this.baseContainer.addChild(drawable);
 	}
 
-	// -- Non-statics --
-	private _sprite: PIXI.Sprite; // Write getter if needed
-	private _container: PIXI.Container;
+	public static Ticker(fn: (delta: number) => void) {
+		if (this.baseContainer === undefined || this.ticker === undefined) throw new Error("Drawable not initiated error!");
+		this.ticker.add(fn);
+	}
+}
 
-	// If _sprite.interactive
+interface DrawableSprite {
+	image: string,
+	interactive: boolean,
+	x?: number, // Positions are used only for multisprite drawables
+	y?: number,
+	scale?: number
+};
+
+abstract class Drawable {
+	// Let's assume that there can be multiple sprites contained by one Drawable
+	private sprites: PIXI.Sprite[] = [];
+	private _container: PIXI.Container = new PIXI.Container();
+
+	// If interactive
 	private dragged: boolean = false;
 	private origPos?: PIXI.Point;
 
@@ -29,48 +49,55 @@ abstract class Drawable {
 		return this._container;
 	}
 
-	// TODO: Interface instead of x / y + etc
-	// TODO: Picture as parameter
-	// TODO: Redo this whole container business
-	constructor(x : number, y : number, image : string, container? : PIXI.Container, scale? : number) {
-		this._sprite = PIXI.Sprite.fromImage(image); // TODO: Should use loader resources
-		this._sprite.anchor.set(0.5, 0.5); // Pic position is center of the image
-		
-		if (scale) {
-			this._sprite.scale.set(scale, scale);
-		}
+	constructor(spritedata?: DrawableSprite) {
+		if (spritedata !== undefined) this.AddSprite(spritedata);
+	}
 
-		if (container) {
-			this._sprite.x = x;
-			this._sprite.y = y;
-			container.addChild(this._sprite);
-		}
-		else {
-			this._container = new PIXI.Container();
-			this._container.addChild(this._sprite);
-			this._container.x = x;
-			this._container.y = y;
-			Drawable.AddContainer(this._container); // TODO: Is ok to place already in constructor?
-		}
+	public AddToContainer(drawable: Drawable) {
+		this.Container.addChild(drawable.Container);
+		this.Container.pivot = new PIXI.Point(this.Container.width / 2, this.Container.height / 2);
+	}
 
-		// TODO: bad place for this
-		this._sprite.interactive = true;
-		this._sprite.buttonMode = true;
-		this._sprite
+	// TODO: Mb one day use combined sprites to RenderTexture, which is used as images
+	public AddSprite(spritedata: DrawableSprite) {
+		let sprite: PIXI.Sprite = PIXI.Sprite.fromImage(spritedata.image); // TODO: Should use loader resources
+		this.sprites.push(sprite);
+		this.Container.addChild(sprite);
+
+		sprite.anchor.set(0.5, 0.5); // TODO: Not sure why without this army container positions are *ducked*
+		if (spritedata.x !== undefined) sprite.x = spritedata.x;
+		if (spritedata.y !== undefined) sprite.y = spritedata.y;
+		if (spritedata.scale !== undefined) sprite.scale.set(spritedata.scale, spritedata.scale);
+
+		// TODO: Always use centered containers? Probably yes.
+		this.Container.pivot = new PIXI.Point(this.Container.width / 2, this.Container.height / 2); 
+		if (spritedata.interactive) this.interactions(sprite);
+	}
+
+	private interactions(sprite: PIXI.Sprite) {
+		sprite.interactive = true;
+		sprite.buttonMode = true;
+		sprite
 			.on('pointerover', () => this.hoverOn())
 			.on('pointerout', () => this.hoverOff())
 			.on('pointerdown', () => { console.log("Unit Clicked!"); });
 	}
-	
+
 	private hoverOn() {
-		this._sprite.filters = [Effects.WHITE_OUTLINE];
+		for (var sprite of this.sprites) {
+			sprite.filters = [Effects.RED_OUTLINE];
+		}
 	}
 	private hoverOff() {
-		this._sprite.filters = [];
+		for (var sprite of this.sprites) {
+			sprite.filters = [];
+		}
 	}
 
 	// Pls use 0xFFFFFF like numbers
 	public changeTint(tint : number) : void {
-		this._sprite.tint = tint;
+		for (var sprite of this.sprites) {
+			sprite.tint = tint;
+		}
 	}
 }
