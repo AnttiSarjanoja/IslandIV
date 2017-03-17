@@ -15,11 +15,19 @@ abstract class DrawableBase {
 		if (container === undefined || ticker === undefined) throw new Error("Drawable initiation error!");
 		this.baseContainer = container;
 		this.ticker = ticker;
+		this.Ticker((delta: number) => {
+			this._TickerTime += delta;
+		});
 	}
 
 	public static Add(drawable : PIXI.Sprite | PIXI.Container) : void {
 		if (this.baseContainer === undefined || this.ticker === undefined) throw new Error("Drawable not initiated error!");
 		this.baseContainer.addChild(drawable);
+	}
+
+	private static _TickerTime: number = 0;
+	static get TickerTime(): number {
+		return this._TickerTime;
 	}
 
 	public static Ticker(fn: (delta: number) => void) {
@@ -30,7 +38,6 @@ abstract class DrawableBase {
 
 interface DrawableSprite {
 	image: string,
-	interactive: boolean,
 	x?: number, // Positions are used only for multisprite drawables
 	y?: number,
 	scale?: number
@@ -43,7 +50,8 @@ abstract class Drawable {
 
 	// If interactive
 	private dragged: boolean = false;
-	private origPos?: PIXI.Point;
+	private dragData: PIXI.interaction.InteractionData | null = null;
+	private origPos: PIXI.Point | null = null;
 
 	get Container() : PIXI.Container {
 		return this._container;
@@ -71,31 +79,58 @@ abstract class Drawable {
 
 		// TODO: Always use centered containers? Probably yes.
 		this.Container.pivot = new PIXI.Point(this.Container.width / 2, this.Container.height / 2); 
-		if (spritedata.interactive) this.interactions(sprite);
 	}
 
-	private interactions(sprite: PIXI.Sprite) {
-		sprite.interactive = true;
-		sprite.buttonMode = true;
-		sprite
+	protected SetInteractions(draggable: boolean = false) {
+		this.Container.interactive = true;
+		this.Container.buttonMode = true;
+		this.Container
 			.on('pointerover', () => this.hoverOn())
-			.on('pointerout', () => this.hoverOff())
-			.on('pointerdown', () => { console.log("Unit Clicked!"); });
+			.on('pointerout', () => this.hoverOff());
+		if (draggable) {
+			this.Container
+				.on('pointerdown', (evt : PIXI.interaction.InteractionEvent) => this.onDragStart(evt))
+        .on('pointerup', (evt : PIXI.interaction.InteractionEvent) => this.onDragEnd(evt))
+        .on('pointerupoutside', (evt : PIXI.interaction.InteractionEvent) => this.onDragEnd(evt))
+        .on('pointermove', (evt : PIXI.interaction.InteractionEvent) => this.onDragMove(evt));
+		}
 	}
 
 	private hoverOn() {
-		for (var sprite of this.sprites) {
-			sprite.filters = [Effects.RED_OUTLINE];
-		}
+		if (this.dragged) return; // Avoid *duckery* when cursor moves off the object when dragging
+		this.Container.filters = [Effects.RED_OUTLINE];
 	}
 	private hoverOff() {
-		for (var sprite of this.sprites) {
-			sprite.filters = [];
+		if (this.dragged) return; // Avoid *duckery* when cursor moves off the object when dragging
+		this.Container.filters = [];
+	}
+	private onDragStart(evt : PIXI.interaction.InteractionEvent) {
+		console.log("Dragstart");
+		this.dragged = true;
+		this.dragData = evt.data;
+		this.Container.alpha = 0.5;
+		this.origPos = new PIXI.Point();  // position is ObservablePoint which doesn't have clone :I // this.container.position.clone();
+		this.origPos.copy(this.Container.position);
+	}
+	private onDragEnd(evt : PIXI.interaction.InteractionEvent) {
+		console.log("Dragend");
+		if (this.origPos) this.Container.position = this.origPos;
+		this.dragged = false;
+		this.dragData = null;
+		this.Container.alpha = 1;
+		this.hoverOff();
+	}
+	private onDragMove(evt : PIXI.interaction.InteractionEvent) {
+		if (this.dragged && this.dragData !== null) {
+			var newPosition = this.dragData.getLocalPosition(this.Container.parent);
+			this.Container.x = newPosition.x;
+			this.Container.y = newPosition.y;
 		}
 	}
 
+	// Prolly obsolete
 	// Pls use 0xFFFFFF like numbers
-	public changeTint(tint : number) : void {
+	protected changeTint(tint : number) : void {
 		for (var sprite of this.sprites) {
 			sprite.tint = tint;
 		}

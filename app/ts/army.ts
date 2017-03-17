@@ -24,7 +24,7 @@ class Army extends Drawable implements IArmy {
 		}
 
 		DrawableBase.Ticker((delta: number) => {
-			this.Container.rotation += delta * 0.01;
+			this.Container.y -= Math.sin(DrawableBase.TickerTime / 2);
 		});
 	}
 }

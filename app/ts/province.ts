@@ -13,11 +13,12 @@ class Province extends Drawable implements IProvince {
 	readonly resources: string[];
 
 	public constructor(data : IProvince, x : number, y : number, color : PlayerColor) {
-		super({image: Province.PICTURE, interactive: true});
+		super({image: Province.PICTURE});
 		this.Container.x = x;
 		this.Container.y = y;
 		DrawableBase.Add(this.Container); // TODO: Move to loader
 		this.changeTint(ColorToNumber(color));
+		this.SetInteractions();
 
 		this.id = data.id;
 		this.size = data.size;
@@ -26,9 +27,10 @@ class Province extends Drawable implements IProvince {
 
 		for (let army of data.armies) {
 			let newArmy: Army = new Army(army, color);
-			newArmy.Container.y = 30;
+			newArmy.Container.x = this.Container.x; // TODO: Smarter way to do this
+			newArmy.Container.y = this.Container.y + 30;
 			this.armies.push(newArmy);
-			this.AddToContainer(newArmy);
+			DrawableBase.Add(newArmy.Container);
 		}
 	}
 }
