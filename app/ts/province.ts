@@ -19,6 +19,7 @@ class Province extends Drawable implements IProvince {
 		DrawableBase.Add(this.Container); // TODO: Move to loader
 		this.changeTint(ColorToNumber(color));
 		this.SetInteractions();
+		this.AddText("Mehlandia 670", 0, 30);
 
 		this.id = data.id;
 		this.size = data.size;
@@ -28,7 +29,7 @@ class Province extends Drawable implements IProvince {
 		for (let army of data.armies) {
 			let newArmy: Army = new Army(army, color);
 			newArmy.Container.x = this.Container.x; // TODO: Smarter way to do this
-			newArmy.Container.y = this.Container.y + 30;
+			newArmy.Container.y = this.Container.y + 50;
 			this.armies.push(newArmy);
 			DrawableBase.Add(newArmy.Container);
 		}

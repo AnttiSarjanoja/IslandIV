@@ -43,6 +43,17 @@ interface DrawableSprite {
 	scale?: number
 };
 
+let font: PIXI.TextStyle = new PIXI.TextStyle({
+    fontFamily: ['Courier New', 'Courier', 'monospace'], // 'Courier New', Courier, monospace;
+    fontSize: 12,
+    fontWeight: 'bold',
+    fill: '#000000',
+    /*stroke: '#ffffff',
+    strokeThickness: ,*/
+    wordWrap: true,
+    wordWrapWidth: 120
+});
+
 abstract class Drawable {
 	// Let's assume that there can be multiple sprites contained by one Drawable
 	private sprites: PIXI.Sprite[] = [];
@@ -64,6 +75,14 @@ abstract class Drawable {
 	public AddToContainer(drawable: Drawable) {
 		this.Container.addChild(drawable.Container);
 		this.Container.pivot = new PIXI.Point(this.Container.width / 2, this.Container.height / 2);
+	}
+
+	public AddText(text: string, x: number, y: number) {
+		let newText: PIXI.Text = new PIXI.Text(text, font); // TODO: Fonts
+		newText.anchor.set(0.5, 0.5);
+		newText.x = x;
+		newText.y = y;
+		this.Container.addChild(newText);
 	}
 
 	// TODO: Mb one day use combined sprites to RenderTexture, which is used as images
