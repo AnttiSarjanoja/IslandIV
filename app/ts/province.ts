@@ -4,7 +4,7 @@
 /// <reference path="../../server/interfaces.ts" />
 
 class Province extends Drawable implements IProvince {
-	private static readonly PICTURE: string = 'img/bunny.png';
+	public static Picture: string = 'province'; // Default value
 
 	readonly id: number;
 	readonly armies: Army[] = [];
@@ -13,7 +13,7 @@ class Province extends Drawable implements IProvince {
 	readonly resources: string[];
 
 	public constructor(data : IProvince, x : number, y : number, color : PlayerColor) {
-		super({image: Province.PICTURE});
+		super({image: Province.Picture});
 		this.Container.x = x;
 		this.Container.y = y;
 		DrawableBase.Add(this.Container); // TODO: Move to loader

@@ -10,6 +10,7 @@
 abstract class DrawableBase {
 	private static baseContainer: PIXI.Container; // The container into which all drawables are put
 	private static ticker: PIXI.ticker.Ticker;
+	public static Resource: PIXI.loaders.Resource;
 
 	public static Init(container: PIXI.Container, ticker: PIXI.ticker.Ticker) : void {
 		if (container === undefined || ticker === undefined) throw new Error("Drawable initiation error!");
@@ -87,15 +88,15 @@ abstract class Drawable {
 
 	// TODO: Mb one day use combined sprites to RenderTexture, which is used as images
 	public AddSprite(spritedata: DrawableSprite) {
-		let sprite: PIXI.Sprite = PIXI.Sprite.fromImage(spritedata.image); // TODO: Should use loader resources
+		let sprite: PIXI.Sprite = new PIXI.Sprite(DrawableBase.Resource[spritedata.image].texture);
 		this.sprites.push(sprite);
-		this.Container.addChild(sprite);
-
+		
 		sprite.anchor.set(0.5, 0.5); // TODO: Not sure why without this army container positions are *ducked*
 		if (spritedata.x !== undefined) sprite.x = spritedata.x;
 		if (spritedata.y !== undefined) sprite.y = spritedata.y;
 		if (spritedata.scale !== undefined) sprite.scale.set(spritedata.scale, spritedata.scale);
 
+		this.Container.addChild(sprite);
 		// TODO: Always use centered containers? Probably yes.
 		this.Container.pivot = new PIXI.Point(this.Container.width / 2, this.Container.height / 2); 
 	}

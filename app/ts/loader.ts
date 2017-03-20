@@ -7,19 +7,19 @@
 // This class opens the received dataobject from server and instancifies all objects to the game
 // Atm. works with Init () -> handler-chain -> LoadImages() -> CreateEverything()
 abstract class Loader {
-	private static _provinceSettings : any;
-	private static _gameSettings : any;
-	private static _gameData : Game; // TODO: Game
+	private static _provinceSettings: ProvinceSettings;
+	private static _gameSettings: GameSettings;
+	private static _gameData: IGame; // TODO: Game
 
 	public static MapContainer: PIXI.Container;
 
-	static get ProvinceSettings(): any {
+	static get ProvinceSettings(): ProvinceSettings {
 		return this._provinceSettings;
 	}
-	static get GameSettings(): any {
+	static get GameSettings(): GameSettings {
 		return this._gameSettings;
 	}
-	static get GameData(): any {
+	static get GameData(): IGame {
 		return this._gameData;
 	}
 
@@ -40,12 +40,16 @@ abstract class Loader {
 	public static LoadImages() {
 		let loader: PIXI.loaders.Loader = new PIXI.loaders.Loader('./img/');
 		loader.add('tausta', Loader.ProvinceSettings.map);
-		loader.add('bunny', 'bunny.png'); // TODO: Just temporary
+		loader.add('unit', Loader.GameSettings.unitIMG);
+		loader.add('province', Loader.GameSettings.provinceIMG);
 
 		// TODO: Do we want spritesheets? TexturePacker produces simple spritesheets with JSON, is free
 		// loader.add(sprite_sheets_arr);
 		function onLoad(loader: PIXI.loaders.Loader, resources: PIXI.loaders.Resource) {
-			let tausta = new PIXI.Sprite(resources['tausta'].texture);
+			DrawableBase.Resource = resources;
+
+			// Add background
+			let tausta: PIXI.Sprite = new PIXI.Sprite(resources['tausta'].texture);
 			tausta.name = 'tausta';
 
 			Loader.MapContainer.addChild(tausta);
@@ -56,14 +60,17 @@ abstract class Loader {
 		loader.load((loader : PIXI.loaders.Loader, resources : PIXI.loaders.Resource) => onLoad(loader, resources));
 	}
 
-	public static SaveProvinceSettings(data : any) {
+	public static SaveProvinceSettings(data: any) { // Any since it really can be anything (?)
 		// TODO: Validate
+		if (data === undefined) throw new Error("No response for ProvinceSettings!");
 		this._provinceSettings = data;
 	}
-	public static SaveGameSettings(data : any) {
+	public static SaveGameSettings(data: any) {
+		if (data === undefined) throw new Error("No response for GameSettings!");
 		this._gameSettings = data;
 	}
-	public static SaveGameData(data : any) {
+	public static SaveGameData(data: any) {
+		if (data === undefined) throw new Error("No response for GameData!");
 		this._gameData = data;
 	}
 
@@ -101,4 +108,21 @@ abstract class Loader {
 		request.onload = gameResponseHandler;
 		request.send();
 	}
+}
+
+interface ProvinceData {
+	x: number,
+	y: number
+	// name: string
+}
+
+interface ProvinceSettings {
+	map: string,
+	provinces: ProvinceData[]
+}
+
+interface GameSettings {
+	// Images for stuff, must be located at /img/
+	provinceIMG: string,
+	unitIMG: string
 }
