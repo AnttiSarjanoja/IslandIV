@@ -25,8 +25,8 @@ export function GetStuff(cb: (games: IGame[]) => void) {
 	});
 }
 
-// TODO: save all game-related
-export function SaveStuff(game : IGame) : void {
+// TODO: save all game-related, used by backend mechanics
+export function SaveStuff(game: IGame) : void {
 	db.collection('games'), function (error, games_c) {
 		if(error) {
 			console.error(error);
@@ -34,6 +34,10 @@ export function SaveStuff(game : IGame) : void {
 		}
 		games_c.save(game);
 	}
+}
+
+export function SaveOrders(orders: any[]) {
+
 }
 
 ////////// Inits

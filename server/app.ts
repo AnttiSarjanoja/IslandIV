@@ -25,8 +25,13 @@ class App {
 
   // Configure API endpoints.
   private routes(): void {
-    this.express.use('/data', (req, res) => {
+    this.express.get('/data', (req, res) => {
+      console.log("Got data request.");
       res.json(db.createGame());
+    });
+    this.express.post('/orders', (req, res) => {
+      console.log(req.body);
+      // db.SaveOrders(req.body);
     });
     this.express.use(express.static(__dirname + '/public'));
   }
