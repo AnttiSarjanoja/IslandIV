@@ -133,7 +133,7 @@ abstract class Drawable {
 		this.origPos.copy(this.Container.position);
 	}
 	private onDragEnd(evt : PIXI.interaction.InteractionEvent) {
-		console.log("Dragend");
+		console.log("Dragend"); // MAJOR TODO: Get province under dragging and make a order from it
 		if (this.origPos) this.Container.position = this.origPos;
 		this.dragged = false;
 		this.dragData = null;

@@ -24,13 +24,15 @@ class App {
   }
 
   // Configure API endpoints.
+  // TODO: Better responses, codes, etc.
   private routes(): void {
     this.express.get('/data', (req, res) => {
       console.log("Got data request.");
-      res.json(db.createGame());
+      res.status(200).json(db.createGame()); // TODO: Status does not work here :(
     });
     this.express.post('/orders', (req, res) => {
-      console.log(req.body);
+      console.log(req.body); // TODO: Just a dummy
+      res.sendStatus(200);
       // db.SaveOrders(req.body);
     });
     this.express.use(express.static(__dirname + '/public'));

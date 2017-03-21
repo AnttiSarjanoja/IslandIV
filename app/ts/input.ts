@@ -51,6 +51,7 @@ class Input {
 			case 38: this.setStagePos(undefined, this.stage.position.y + 5); break; // Up
 			case 39: this.setStagePos(this.stage.position.x - 5,); break; // Right
 			case 40: this.setStagePos(undefined, this.stage.position.y - 5); break; // Down
+			case 83: Order.SendOrders(); break; // 's' // TODO: Kinda uglish
 			case 171: this.canvasScale += 0.1; this.resize(); break; // '+'
 			case 173: this.canvasScale -= 0.1; this.resize(); break; // '-'
 		}

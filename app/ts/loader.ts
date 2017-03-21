@@ -40,7 +40,7 @@ abstract class Loader {
 	public static LoadImages() {
 		let loader: PIXI.loaders.Loader = new PIXI.loaders.Loader('./img/');
 		loader.add('tausta', Loader.ProvinceSettings.map);
-		loader.add('unit', Loader.GameSettings.unitIMG);
+		loader.add('unit', Loader.GameSettings.unitIMG); // Prolly temporary, if using spritesheets
 		loader.add('province', Loader.GameSettings.provinceIMG);
 
 		// TODO: Do we want spritesheets? TexturePacker produces simple spritesheets with JSON, is free
