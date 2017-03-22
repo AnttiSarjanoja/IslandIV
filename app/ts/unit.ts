@@ -1,5 +1,4 @@
-/// <reference path="drawable.ts" />
-/// <reference path="player.ts" />
+/// <reference path="drawable/drawable.ts" />
 /// <reference path="token.ts" />
 /// <reference path="unit_type.ts" />
 /// <reference path="../../server/interfaces.ts" />

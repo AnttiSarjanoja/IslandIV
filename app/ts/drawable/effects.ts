@@ -1,5 +1,5 @@
-/// <reference path="../pixi-typescript/pixi.js.d.ts" />
-/// <reference path="../pixi-extra-filters-typescript/pixi-extra-filters.js.d.ts" />
+/// <reference path="../../pixi-typescript/pixi.js.d.ts" />
+/// <reference path="../../pixi-extra-filters-typescript/pixi-extra-filters.js.d.ts" />
 
 // We also can use
 // https://github.com/pixijs/pixi-filters

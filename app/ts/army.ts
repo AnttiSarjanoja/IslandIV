@@ -1,5 +1,5 @@
 /// <reference path="player.ts" />
-/// <reference path="drawable.ts" />
+/// <reference path="drawable/drawable.ts" />
 /// <reference path="unit.ts" />
 /// <reference path="../../server/interfaces.ts" />
 

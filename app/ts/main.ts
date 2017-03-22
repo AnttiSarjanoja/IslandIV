@@ -1,6 +1,6 @@
 /// <reference path="../pixi-typescript/pixi.js.d.ts" />
-/// <reference path="input.ts" />
-/// <reference path="drawable.ts" />
+/// <reference path="input/input.ts" />
+/// <reference path="drawable/drawableBase.ts" />
 /// <reference path="loader.ts" />
 
 // Style:
@@ -30,10 +30,4 @@ class IslandIV {
 		Loader.Init(this.MainContainer); // TODO: Load-window :3
 		document.body.appendChild(this.app.view);
 	}
-
-	/* Moved to Drawable
-	public static Ticker(f : (deltatime : number) => void) {
-		// NOTE: If any kind of clock is needed, use this kind of function
-		this.app.ticker.add(f);
-	} */
 }

@@ -1,4 +1,4 @@
-/// <reference path="drawable.ts" />
+/// <reference path="drawable/drawable.ts" />
 
 // This class will be used for all game-mechanic related units including troops and settlements
 

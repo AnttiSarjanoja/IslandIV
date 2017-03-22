@@ -1,6 +1,5 @@
 /// <reference path="army.ts" />
-/// <reference path="drawable.ts" />
-/// <reference path="player.ts" />
+/// <reference path="drawable/drawable.ts" />
 /// <reference path="../../server/interfaces.ts" />
 
 class Province extends Drawable implements IProvince {
