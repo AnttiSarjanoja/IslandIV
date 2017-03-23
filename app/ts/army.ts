@@ -22,6 +22,7 @@ class Army extends Drawable implements IArmy {
 				this.AddUnit(new Unit(unit, color));
 			}
 		}
+		this.CenterContainer();
 
 		DrawableBase.Ticker((delta: number) => {
 			this.Container.y -= Math.sin(DrawableBase.TickerTime / 2);

@@ -1,5 +1,6 @@
 /// <reference path="../../pixi-typescript/pixi.js.d.ts" />
 /// <reference path="effects.ts" />
+/// <reference path="drawableBase.ts" />
 
 // Base class for all drawable objects, such as units, effects, move-orders (?)
 // Basically this class exists to wrap all PIXI stuff, child classes will not understand PIXI stuff
@@ -7,6 +8,7 @@
 // TODO: Namespace (do in main.ts first)
 interface DrawableSprite {
 	image: string,
+	// centered?: boolean, // TODO: If needed
 	x?: number, // Positions are used only for multisprite drawables
 	y?: number,
 	scale?: number
@@ -28,22 +30,25 @@ abstract class Drawable {
 	private sprites: PIXI.Sprite[] = [];
 	private _container: PIXI.Container = new PIXI.Container();
 
-	// If interactive
-	private dragged: boolean = false;
-	private dragData: PIXI.interaction.InteractionData | null = null;
-	private origPos: PIXI.Point | null = null;
-
 	get Container() : PIXI.Container {
 		return this._container;
 	}
 
 	constructor(spritedata?: DrawableSprite) {
-		if (spritedata !== undefined) this.AddSprite(spritedata);
+		if (spritedata !== undefined) {
+			this.AddSprite(spritedata);
+		}
+	}
+
+	// This truly centers the container even when sprite bounds go -x or -y
+	public CenterContainer() {
+		let bound: PIXI.Rectangle = this.Container.getLocalBounds();
+		this.Container.pivot.x = bound.x + (bound.width / 2);
+		this.Container.pivot.y = bound.y + (bound.height / 2);
 	}
 
 	public AddToContainer(drawable: Drawable) {
 		this.Container.addChild(drawable.Container);
-		this.Container.pivot = new PIXI.Point(this.Container.width / 2, this.Container.height / 2);
 	}
 
 	public AddText(text: string, x: number, y: number) {
@@ -59,61 +64,13 @@ abstract class Drawable {
 		let sprite: PIXI.Sprite = new PIXI.Sprite(DrawableBase.Resource[spritedata.image].texture);
 		this.sprites.push(sprite);
 		
-		sprite.anchor.set(0.5, 0.5); // TODO: Not sure why without this army container positions are *ducked*
+		// All sprites must be centered for dragging to look nice
+		sprite.anchor.set(0.5, 0.5);
 		if (spritedata.x !== undefined) sprite.x = spritedata.x;
 		if (spritedata.y !== undefined) sprite.y = spritedata.y;
 		if (spritedata.scale !== undefined) sprite.scale.set(spritedata.scale, spritedata.scale);
 
 		this.Container.addChild(sprite);
-		// TODO: Always use centered containers? Probably yes.
-		this.Container.pivot = new PIXI.Point(this.Container.width / 2, this.Container.height / 2); 
-	}
-
-	protected SetInteractions(draggable: boolean = false) {
-		this.Container.interactive = true;
-		this.Container.buttonMode = true;
-		this.Container
-			.on('pointerover', () => this.hoverOn())
-			.on('pointerout', () => this.hoverOff());
-		if (draggable) {
-			this.Container
-				.on('pointerdown', (evt : PIXI.interaction.InteractionEvent) => this.onDragStart(evt))
-        .on('pointerup', (evt : PIXI.interaction.InteractionEvent) => this.onDragEnd(evt))
-        .on('pointerupoutside', (evt : PIXI.interaction.InteractionEvent) => this.onDragEnd(evt))
-        .on('pointermove', (evt : PIXI.interaction.InteractionEvent) => this.onDragMove(evt));
-		}
-	}
-
-	private hoverOn() {
-		if (this.dragged) return; // Avoid *duckery* when cursor moves off the object when dragging
-		this.Container.filters = [Effects.RED_OUTLINE];
-	}
-	private hoverOff() {
-		if (this.dragged) return; // Avoid *duckery* when cursor moves off the object when dragging
-		this.Container.filters = [];
-	}
-	private onDragStart(evt : PIXI.interaction.InteractionEvent) {
-		console.log("Dragstart");
-		this.dragged = true;
-		this.dragData = evt.data;
-		this.Container.alpha = 0.5;
-		this.origPos = new PIXI.Point();  // position is ObservablePoint which doesn't have clone :I // this.container.position.clone();
-		this.origPos.copy(this.Container.position);
-	}
-	private onDragEnd(evt : PIXI.interaction.InteractionEvent) {
-		console.log("Dragend"); // MAJOR TODO: Get province under dragging and make a order from it
-		if (this.origPos) this.Container.position = this.origPos;
-		this.dragged = false;
-		this.dragData = null;
-		this.Container.alpha = 1;
-		this.hoverOff();
-	}
-	private onDragMove(evt : PIXI.interaction.InteractionEvent) {
-		if (this.dragged && this.dragData !== null) {
-			var newPosition = this.dragData.getLocalPosition(this.Container.parent);
-			this.Container.x = newPosition.x;
-			this.Container.y = newPosition.y;
-		}
 	}
 
 	// Prolly obsolete

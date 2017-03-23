@@ -1,3 +1,4 @@
+/// <reference path="input/tokenInput.ts" />
 /// <reference path="army.ts" />
 /// <reference path="drawable/drawable.ts" />
 /// <reference path="../../server/interfaces.ts" />
@@ -17,7 +18,7 @@ class Province extends Drawable implements IProvince {
 		this.Container.y = y;
 		DrawableBase.Add(this.Container); // TODO: Move to loader
 		this.changeTint(ColorToNumber(color));
-		this.SetInteractions();
+		TokenInput.SetTokenInteractions(this);
 		this.AddText("Mehlandia 670", 0, 30);
 
 		this.id = data.id;
@@ -27,8 +28,8 @@ class Province extends Drawable implements IProvince {
 
 		for (let army of data.armies) {
 			let newArmy: Army = new Army(army, color);
-			newArmy.Container.x = this.Container.x; // TODO: Smarter way to do this
-			newArmy.Container.y = this.Container.y + 50;
+			newArmy.Container.x = x; // TODO: Smarter way to do this
+			newArmy.Container.y = y + 50;
 			this.armies.push(newArmy);
 			DrawableBase.Add(newArmy.Container);
 		}

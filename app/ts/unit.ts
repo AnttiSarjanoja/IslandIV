@@ -11,7 +11,7 @@ class Unit extends Token implements IUnit {
 
 	constructor (data: IUnit, color: PlayerColor) {
 		super({image: Unit.Picture, scale: 0.4});
-		this.SetInteractions(true);
+		TokenInput.SetTokenInteractions(this, true);
 		this.changeTint(ColorToNumber(color));
 
 		this.amount = data.amount;

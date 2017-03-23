@@ -58,17 +58,17 @@ class MapContainer {
 		if (y !== undefined )	this.stage.position.y = Math.min(Math.max(this.stage.position.y + y, yMax), 0);
 	}
 
-	public handleEvt (evt : KeyboardEvent) {
-		// DEBUG: console.log(evt.keyCode);
+	public handleEvt (evt: KeyboardEvent): boolean {
 		switch(evt.keyCode) {
 			case 37: this.moveStage( 5,  0); break; // Left
 			case 38: this.moveStage( 0,  5); break; // Up
 			case 39: this.moveStage(-5,  0); break; // Right
 			case 40: this.moveStage( 0, -5); break; // Down
-			case 83: Order.SendOrders(); break; // 's' // TODO: 'Move to input.ts'
 			case 171: this.canvasScale += 0.1; this.resize(); break; // '+'
 			case 173: this.canvasScale -= 0.1; this.resize(); break; // '-'
+			default: return false;
 		}
+		return true;
 	}
 
 	// General UI Input, affects everything

@@ -1,6 +1,8 @@
 /// <reference path="../../pixi-typescript/pixi.js.d.ts" />
 /// <reference path="../unit.ts" />
 /// <reference path="mapContainer.ts" />
+/// <reference path="../order.ts" />
+/// <reference path="tokenInput.ts" />
 
 // Static class
 abstract class Input {
@@ -12,7 +14,15 @@ abstract class Input {
 		this.mapContainer = new MapContainer(container, stage, renderer);
 
 		// TODO: Make a masterhandler to slice the correspondent keys for handlers in possible separate classes
-		document.addEventListener("keydown", (evt : KeyboardEvent) => this.mapContainer.handleEvt(evt));
+		document.addEventListener("keydown", (evt : KeyboardEvent) => this.handleKeyDown(evt));
+	}
+
+	// TODO: Should work, just feels a bit shady. Could use a sorted array of handlers of (evt) => boolean
+	private static handleKeyDown (evt: KeyboardEvent) {
+		// Add all keyboard handlers 
+		if (this.mapContainer.handleEvt(evt)) return;
+		if (evt.keyCode === 83) Order.SendOrders(); // 's'
+		else console.log("No handler for key '" + evt.key + "'");
 	}
 
 	// Child specific UI Input
