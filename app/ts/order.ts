@@ -37,8 +37,9 @@ class MoveOrder extends Order {
 		// 1. Validate
 		// TODO:
 		// 2. Update sprites
-		toProvince.AddUnit(unit); // TODO: Temp -> make arrow or something with the moving unit
 		fromProvince.RemoveUnit(unit);
+		toProvince.AddUnit(unit); // TODO: Temp -> make arrow or something with the moving unit
+		
 
 		// 3. Create and store orders
 

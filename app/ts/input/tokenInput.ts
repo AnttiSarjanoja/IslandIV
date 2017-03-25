@@ -25,7 +25,7 @@ class TokenInput {
 		if (this.dragged) return; // Avoid *duckery* when cursor moves off the object when dragging
 		this.token.GlowOn(); //.Container.filters = [Effects.RED_OUTLINE];
 	}
-	
+
 	private hoverOff() {
 		if (this.dragged) return; // Avoid *duckery* when cursor moves off the object when dragging
 		this.token.GlowOff();
@@ -52,7 +52,7 @@ class TokenInput {
 			if (province !== null) {
 				// Tempstuff
 				console.log("Found " + province.id);
-				if (this.token instanceof Unit) { // TODO: Tempp
+				if ((this.token instanceof Unit) && this.token.Province !== null) { // TODO: Tempp
 					MoveOrder.Create(this.token.Province, province, this.token);
 				}
 			}

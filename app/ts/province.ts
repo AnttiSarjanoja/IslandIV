@@ -45,9 +45,11 @@ class Province extends Token implements IProvince {
 	}
 
 	public RemoveUnit(unit: Unit) {
+		unit.Province = null;
 		this.armies[0].RemoveUnit(unit); // TEMP
 	}
 	public AddUnit(unit: Unit) {
+		unit.Province = this;
 		this.armies[0].AddUnit(unit); // TEMP	
 	}
 }

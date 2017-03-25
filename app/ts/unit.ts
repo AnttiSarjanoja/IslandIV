@@ -9,7 +9,7 @@ class Unit extends Token implements IUnit {
 
 	readonly amount: number;
 	readonly type: UnitType; // Used in combination with config files
-	public Province: Province;
+	public Province: Province | null = null;
 
 	constructor (data: IUnit, color: PlayerColor, province: Province) {
 		super({image: Unit.Picture, scale: 0.4});
