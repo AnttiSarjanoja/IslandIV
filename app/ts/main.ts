@@ -25,6 +25,7 @@ class IslandIV {
 	public static Init() {
 		PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; // NOTE: If this doesn't work, make sure pixi.js.d.ts is updated
 		this.app.stage.addChild(this.MainContainer);
+		console.log(this.app.renderer instanceof PIXI.WebGLRenderer ? "Right renderer" : "Using some slower renderer");
 		Input.Init(this.app.stage, this.MainContainer, this.app.renderer);
 		DrawableBase.Init(this.app.stage, this.app.ticker);
 		Loader.Init(this.MainContainer); // TODO: Load-window :3

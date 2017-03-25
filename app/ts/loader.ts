@@ -32,7 +32,7 @@ abstract class Loader {
 			let tempColor : string = player.color;
 			player.provinces.forEach(function (province : IProvince) {
 				let obj = Loader.ProvinceSettings.provinces[province.id - 1]; // TEMPORARY AND VERY UGLY YES
-				new Province(province, obj.x, obj.y, StringToColor(tempColor));
+				new Province(obj.x, obj.y, obj.name, province, StringToColor(tempColor));
 			});
 		});
 	}
@@ -112,8 +112,8 @@ abstract class Loader {
 
 interface ProvinceData {
 	x: number,
-	y: number
-	// name: string
+	y: number,
+	name: string
 }
 
 interface ProvinceSettings {

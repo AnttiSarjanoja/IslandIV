@@ -2,17 +2,17 @@
   "map": "devmap.png",
   "provinces":
   [
-    { "x": 591, "y": 41 },
-    { "x": 780, "y": 66 },
-    { "x": 428, "y": 139 },
-    { "x": 675, "y": 157 },
-    { "x": 524, "y": 241 },
-    { "x": 367, "y": 269 },
-    { "x": 711, "y": 297 },
-    { "x": 201, "y": 321 },
-    { "x": 147, "y": 475 },
-    { "x": 324, "y": 470 },
-    { "x": 547, "y": 441 },
-    { "x": 784, "y": 470 }
+    { "x": 591, "y": 41, "name": "Provinssi Yksi" },
+    { "x": 780, "y": 66, "name": "Provinssi Kaksi" },
+    { "x": 428, "y": 139, "name": "Provinssi Kolme" },
+    { "x": 675, "y": 157, "name": "Provinssi Neljä" },
+    { "x": 524, "y": 241, "name": "Provinssi Viisi" },
+    { "x": 367, "y": 269, "name": "Provinssi Kuusi" },
+    { "x": 711, "y": 297, "name": "Provinssi Seiska" },
+    { "x": 201, "y": 321, "name": "Provinssi Kasi" },
+    { "x": 147, "y": 475, "name": "Provinssi Ysi" },
+    { "x": 324, "y": 470, "name": "Provinssi Kybä" },
+    { "x": 547, "y": 441, "name": "Provinssi Ykstoist" },
+    { "x": 784, "y": 470, "name": "Provinssi Kakstoist" }
   ]
 }

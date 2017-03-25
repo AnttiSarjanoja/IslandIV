@@ -6,7 +6,7 @@ class MapContainer {
 	private canvasScale = 2; // Acts as zoom level default
 
 	// Interaction temps
-	private dragging: boolean = false;
+	private panning: boolean = false;
 	private previousPoint? : PIXI.Point;
 	
 	constructor (
@@ -27,18 +27,18 @@ class MapContainer {
 
 	private onPointerStart (evt : PIXI.interaction.InteractionEvent) {
 		// TODO: Get pointerdata.button for different button interactions
-		this.dragging = true;
+		this.panning = true;
 		this.previousPoint = evt.data.global.clone(); // Clones to not use same object, 
 
 		console.log(evt.data.getLocalPosition(this.stage));
 	}
 
 	private onPointerEnd (evt : PIXI.interaction.InteractionEvent) {
-		this.dragging = false;
+		this.panning = false;
 	}
 
 	private onPointerMove (evt : PIXI.interaction.InteractionEvent) {
-		if (!this.dragging || this.previousPoint === undefined) return;
+		if (!this.panning || this.previousPoint === undefined) return;
 			
 		// Get diff from current pointer location, restrict it to the size of this.container
 		let curPoint: PIXI.Point = evt.data.global.clone();

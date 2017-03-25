@@ -15,14 +15,15 @@ interface DrawableSprite {
 };
 
 let font: PIXI.TextStyle = new PIXI.TextStyle({
-    fontFamily: ['Courier New', 'Courier', 'monospace'], // 'Courier New', Courier, monospace;
-    fontSize: 12,
-    fontWeight: 'bold',
-    fill: '#000000',
-    /*stroke: '#ffffff',
-    strokeThickness: ,*/
-    wordWrap: true,
-    wordWrapWidth: 120
+	align: 'center',
+	fontFamily: ['Courier New', 'Courier', 'monospace'], // 'Courier New', Courier, monospace;
+	fontSize: 12,
+	fontWeight: 'bold',
+	fill: '#000000',
+	/*stroke: '#ffffff',
+	strokeThickness: ,*/
+	wordWrap: true,
+	wordWrapWidth: 120
 });
 
 abstract class Drawable {
@@ -47,9 +48,10 @@ abstract class Drawable {
 		this.Container.pivot.y = bound.y + (bound.height / 2);
 	}
 
+	/* Obsolete?
 	public AddToContainer(drawable: Drawable) {
 		this.Container.addChild(drawable.Container);
-	}
+	} */
 
 	public AddText(text: string, x: number, y: number) {
 		let newText: PIXI.Text = new PIXI.Text(text, font); // TODO: Fonts
@@ -71,6 +73,14 @@ abstract class Drawable {
 		if (spritedata.scale !== undefined) sprite.scale.set(spritedata.scale, spritedata.scale);
 
 		this.Container.addChild(sprite);
+	}
+
+	public GlowOn(): void {
+		this.Container.filters = [Effects.RED_OUTLINE];
+	}
+
+	public GlowOff(): void {
+		this.Container.filters = [];
 	}
 
 	// Prolly obsolete

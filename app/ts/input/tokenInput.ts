@@ -2,10 +2,6 @@
 /// <reference path="../token.ts" />
 
 class TokenInput {
-	public static SetTokenInteractions (token: Token, drag: boolean = false) {
-		new TokenInput(token, drag);
-	}
-
 	private dragged: boolean = false;
 	private dragData: PIXI.interaction.InteractionData | null = null;
 	private origPos: PIXI.Point | null = null;
@@ -27,28 +23,45 @@ class TokenInput {
 
 	private hoverOn() {
 		if (this.dragged) return; // Avoid *duckery* when cursor moves off the object when dragging
-		this.token.Container.filters = [Effects.RED_OUTLINE];
+		this.token.GlowOn(); //.Container.filters = [Effects.RED_OUTLINE];
 	}
+	
 	private hoverOff() {
 		if (this.dragged) return; // Avoid *duckery* when cursor moves off the object when dragging
-		this.token.Container.filters = [];
+		this.token.GlowOff();
 	}
+
 	private onDragStart(evt : PIXI.interaction.InteractionEvent) {
-		console.log("Dragstart");
+		// DEBUG: console.log("Dragstart");
 		this.dragged = true;
 		this.dragData = evt.data;
 		this.token.Container.alpha = 0.5;
 		this.origPos = new PIXI.Point();  // position is ObservablePoint which doesn't have clone :I // this.container.position.clone();
 		this.origPos.copy(this.token.Container.position);
 	}
+
 	private onDragEnd(evt : PIXI.interaction.InteractionEvent) {
-		console.log("Dragend"); // MAJOR TODO: Get province under dragging and make a order from it
-		if (this.origPos) this.token.Container.position = this.origPos;
+		// DEBUG: console.log("Dragend");
+		if (this.dragged) {
+			// Original position must be restored in all cases
+			if (this.origPos) this.token.Container.position = this.origPos;
+			this.token.Container.alpha = 1;
+
+			let a = 2;
+			let province: Province | null = Input.GetProvinceUnder(evt.data.global);
+			if (province !== null) {
+				// Tempstuff
+				console.log("Found " + province.id);
+				if (this.token instanceof Unit) { // TODO: Tempp
+					MoveOrder.Create(this.token.Province, province, this.token);
+				}
+			}
+		}
 		this.dragged = false;
 		this.dragData = null;
-		this.token.Container.alpha = 1;
 		this.hoverOff();
 	}
+
 	private onDragMove(evt : PIXI.interaction.InteractionEvent) {
 		if (this.dragged && this.dragData !== null) {
 			var newPosition = this.dragData.getLocalPosition(this.token.Container.parent);
