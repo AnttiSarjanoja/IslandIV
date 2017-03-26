@@ -17,7 +17,7 @@ class Province extends Token implements IProvince {
 	public constructor(
 		private readonly x: number, // Must be saved for army placings 
 		private readonly y: number,
-		name: string,
+		public Name: string,
 		data: IProvince, 
 		color: PlayerColor) 
 	{
@@ -27,7 +27,7 @@ class Province extends Token implements IProvince {
 		DrawableBase.Add(this.Container); // TODO: Move to loader
 		this.changeTint(ColorToNumber(color));
 		Input.SetProvinceInteractions(this);
-		this.AddText(name, 0, 30);
+		this.AddText(Name, 0, 30);
 
 		// Go through data
 		this.id = data.id;

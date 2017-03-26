@@ -43,6 +43,7 @@ abstract class Drawable {
 
 	// This truly centers the container even when sprite bounds go -x or -y
 	public CenterContainer() {
+		this.Container.calculateBounds(); // Bounds won't update if nothing moves but e.g. something is removed
 		let bound: PIXI.Rectangle = this.Container.getLocalBounds();
 		this.Container.pivot.x = bound.x + (bound.width / 2);
 		this.Container.pivot.y = bound.y + (bound.height / 2);
@@ -59,6 +60,26 @@ abstract class Drawable {
 		newText.x = x;
 		newText.y = y;
 		this.Container.addChild(newText);
+	}
+
+	// TODO: Atm only for 'Arrow'
+	public AddGraphics(type: string, point: PIXI.Point, point2?: PIXI.Point) {
+		if (point2 === undefined) return;
+		let shadow: PIXI.Graphics = new PIXI.Graphics();
+		shadow.lineStyle(3, 0x000000);
+		shadow.moveTo(point.x, point.y);
+		shadow.lineTo(point2.x, point2.y);
+		this.Container.addChild(shadow);
+
+		let arrow: PIXI.Graphics = new PIXI.Graphics();
+		arrow.lineStyle(4, 0xFF0000);
+		arrow.moveTo(point.x, point.y);
+		arrow.quadraticCurveTo(
+			0, -30, // Curve peak is always at x = 0
+			point2.x,
+			point2.y);
+		arrow.drawEllipse(point2.x, point2.y, 12, 6);
+		this.Container.addChild(arrow);
 	}
 
 	// TODO: Mb one day use combined sprites to RenderTexture, which is used as images

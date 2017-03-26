@@ -26,6 +26,8 @@ class Army extends Drawable implements IArmy {
 	public RemoveUnit(unit: Unit) {
 		let index: number = this.units.indexOf(unit);
 		if (index > -1) {
+			unit.Container.x = 0; // Just to be sure
+			unit.Container.y = 0;
 			this.units.splice(index, 1);
 			this.rearrangeUnits();
 		}
@@ -33,9 +35,10 @@ class Army extends Drawable implements IArmy {
 		this.CenterContainer();
 	}
 
-	public constructor(data: IArmy, color: PlayerColor, province: Province) {
+	public constructor(data: IArmy, color?: PlayerColor, province?: Province) {
 		super(); // Does not have a basic picture
 
+		if (color === undefined || province === undefined) return;
 		for (var i = 0; i < data.units.length; i++) {
 			let unit: IUnit = data.units[i];
 			for (var j = 0; j < unit.amount; j++) {
@@ -43,9 +46,5 @@ class Army extends Drawable implements IArmy {
 			}
 		}
 		this.CenterContainer();
-
-		DrawableBase.Ticker((delta: number) => {
-			this.Container.y -= Math.sin(DrawableBase.TickerTime / 2);
-		});
 	}
 }
