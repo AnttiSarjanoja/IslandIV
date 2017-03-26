@@ -32,7 +32,7 @@ abstract class Loader {
 			let tempColor : string = player.color;
 			player.provinces.forEach(function (province : IProvince) {
 				let obj = Loader.ProvinceSettings.provinces[province.id - 1]; // TEMPORARY AND VERY UGLY YES
-				new Province(obj.x, obj.y, obj.name, province, StringToColor(tempColor));
+				new Province(obj.x, obj.y, obj.name, obj.neighbours, province, StringToColor(tempColor));
 			});
 		});
 	}
@@ -61,9 +61,21 @@ abstract class Loader {
 	}
 
 	public static SaveProvinceSettings(data: any) { // Any since it really can be anything (?)
-		// TODO: Validate
 		if (data === undefined) throw new Error("No response for ProvinceSettings!");
-		this._provinceSettings = data;
+		this._provinceSettings = data; // TODO: Need to validate map and array?
+		this._provinceSettings.provinces.forEach((province: ProvinceData, index: number) => {
+			if (province.x === undefined) throw new Error("Provincedata error: (" + index + ") No x-coord!");
+			if (province.y === undefined) throw new Error("Provincedata error: (" + index + ") No y-coord!");
+			// Name can be empty?
+			if (province.neighbours === undefined) throw new Error("Provincedata error: (" + index + ") No neighbours!");
+			if (province.neighbours.length === 0) throw new Error("Provincedata error: (" + index + ") Empty neighbours!");
+			if (province.neighbours.indexOf(index) !== -1) throw new Error("Provincedata error: (" + index + ") Self as neighbour!");
+			province.neighbours.forEach((neighbour) => {
+				if (!this._provinceSettings.provinces[neighbour].neighbours.some((i) => { return index === i; })) {
+					throw new Error("Provincedata error: (" + index + ") No pair neighbour with (" + neighbour + ")!");
+				}
+			});
+		});
 	}
 	public static SaveGameSettings(data: any) {
 		if (data === undefined) throw new Error("No response for GameSettings!");
@@ -113,7 +125,8 @@ abstract class Loader {
 interface ProvinceData {
 	x: number,
 	y: number,
-	name: string
+	name: string,
+	neighbours: number[] // Cannot be empty!
 }
 
 interface ProvinceSettings {

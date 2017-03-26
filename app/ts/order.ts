@@ -40,7 +40,10 @@ class MoveOrder extends Order {
 
 	public static Create(fromProvince: Province, toProvince: Province, unit: Unit) {
 		// 1. Validate
-		// TODO: Neighbour check
+		if (!fromProvince.Neighbours.some((value: number) => { return value === (toProvince.id - 1); })) {
+			console.log("Not a neighbour!");
+			return;
+		}
 
 		// Remove from old container
 		fromProvince.RemoveUnit(unit);

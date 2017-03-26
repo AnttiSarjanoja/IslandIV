@@ -18,6 +18,7 @@ class Province extends Token implements IProvince {
 		private readonly x: number, // Must be saved for army placings 
 		private readonly y: number,
 		public Name: string,
+		public Neighbours: number[],
 		data: IProvince, 
 		color: PlayerColor) 
 	{
