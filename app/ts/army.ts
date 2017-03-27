@@ -6,6 +6,10 @@
 class Army extends Drawable implements IArmy {
 	units: Unit[] = []; // Ehh, cannot be private :(
 
+	get Empty(): boolean {
+		return this.units.length <= 0;
+	}
+
 	public AddUnit(unit: Unit, updateContainer: boolean = true) {
 		if (unit === undefined) throw new Error("Unit adding error!");
 		this.units.push(unit);
@@ -42,7 +46,7 @@ class Army extends Drawable implements IArmy {
 		for (var i = 0; i < data.units.length; i++) {
 			let unit: IUnit = data.units[i];
 			for (var j = 0; j < unit.amount; j++) {
-				this.AddUnit(new Unit(unit, color, province), false); // Unit contains amount, this is somewhat messed up
+				this.AddUnit(new Unit(unit, color, province, this), false); // Unit contains amount, this is somewhat messed up
 			}
 		}
 		this.CenterContainer();

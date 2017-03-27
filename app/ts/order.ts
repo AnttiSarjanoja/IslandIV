@@ -46,7 +46,8 @@ class MoveOrder extends Order {
 		}
 
 		// Remove from old container
-		fromProvince.RemoveUnit(unit);
+		//unit.Container.;
+		if (unit.Order !== null && unit.Order instanceof MoveOrder) unit.Order.RemoveUnit(unit);
 
 		// Check if identical order already exists
 		let found: MoveOrder[] = this.created.filter(function (order: MoveOrder) {
@@ -67,7 +68,16 @@ class MoveOrder extends Order {
 			toProvince.Container.position);
 		newOrder.AddUnit(unit);
 
+		if (unit.Army !== null) unit.Army.RemoveUnit(unit);
+		
 		this.created.push(newOrder);
+	}
+
+	private static remove(order: MoveOrder) {
+		let index: number = this.created.indexOf(order);
+		if (index > -1) {
+			this.created.splice(index, 1);
+		}
 	}
 
 	private army: Army;
@@ -96,14 +106,32 @@ class MoveOrder extends Order {
 		this.army.Container.y = calcEnd.y - 10;
 		this.Container.addChild(this.army.Container);
 
+		DrawableBase.Ticker(this.TickFn);
 		DrawableBase.Add(this.Container);
 	}
 
 	public AddUnit(unit: Unit) {
-		this.army.AddUnit(unit); // TEMP	
-		DrawableBase.Ticker((delta: number) => {
-			unit.Container.y -= Math.sin(DrawableBase.TickerTime / 2);
-		});
+		this.army.AddUnit(unit); // TEMP
+		unit.Order = this;
+	}
+
+	public RemoveUnit(unit: Unit) {
+		this.army.RemoveUnit(unit);
+		console.log("Hep2");
+		if (this.army.Empty) {
+			console.log("Hep");
+			this.destroy();
+		}
+	}
+
+	private destroy() {
+		this.Container.destroy();
+		MoveOrder.remove(this);
+		DrawableBase.RemoveTicker(this.TickFn);
+	}
+
+	private TickFn = (delta: number) => {
+		this.army.Container.y -= Math.sin(DrawableBase.TickerTime / 2);
 	}
 }
 

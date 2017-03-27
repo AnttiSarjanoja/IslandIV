@@ -29,4 +29,8 @@ abstract class DrawableBase {
 		if (this.baseContainer === undefined || this.ticker === undefined) throw new Error("Drawable not initiated error!");
 		this.ticker.add(fn);
 	}
+
+	public static RemoveTicker(fn: (delta: number) => void) {
+		this.ticker.remove(fn);
+	}
 }
