@@ -26,7 +26,7 @@ interface IMessage {
 interface IPlayer {
 	id: number; // TODO: Is ok identifier? Could mb use name too
 
-	color: string;
+	color: PlayerColor;
 	name: string; // e.g. "METRIN SLERBA"
 	description: string; // e.g. "The pillar that is purity"
 	orders: IOrder[];
@@ -61,10 +61,7 @@ interface IProvince {
 }
 
 interface IArmy {
-	units: IUnit[];
+	// UnitType is used in combination with config files
+	units: { [unit in UnitType]: number };
 }
 
-interface IUnit {
-	amount: number;
-	type: UnitType; // Used in combination with config files
-}

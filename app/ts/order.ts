@@ -38,37 +38,38 @@ class MoveOrder extends Order {
 
 	private static created: MoveOrder[] = [];
 
-	public static Create(fromProvince: Province, toProvince: Province, unit: Unit) {
+	public static Create(fromProvince: Province, toProvince: Province, unit: UnitToken) {
 		// 1. Validate
-		if (!fromProvince.Neighbours.some((value: number) => { return value === (toProvince.id - 1); })) {
+		if (!fromProvince.Neighbours.some((value: number) => { return value === (toProvince.id); })) {
 			console.log("Not a neighbour!");
 			return;
 		}
 
 		// Remove from old container
 		//unit.Container.;
-		if (unit.Order !== null && unit.Order instanceof MoveOrder) unit.Order.RemoveUnit(unit);
+		if (unit.Order !== null && unit.Order instanceof MoveOrder) unit.Order.RemoveToken(unit);
 
 		// Check if identical order already exists
 		let found: MoveOrder[] = this.created.filter(function (order: MoveOrder) {
 			return order.parameters[0] === fromProvince.id.toString() &&
 				order.parameters[1] === toProvince.id.toString() &&
-				order.parameters[2] === unit.type;
+				order.parameters[2] === unit.Type;
 		});
 		if (found.length > 0) {
 			console.log("Found already");
-			found[0].AddUnit(unit);
+			found[0].AddToken(unit);
 			return;
 		}
 
 		// Otherwise create new and store it
 		let newOrder: MoveOrder = new MoveOrder(
-			[fromProvince.id.toString(), toProvince.id.toString(), unit.type],
+			[fromProvince.id.toString(), toProvince.id.toString(), unit.Type],
 			fromProvince.Container.position,
-			toProvince.Container.position);
-		newOrder.AddUnit(unit);
+			toProvince.Container.position,
+			fromProvince);
+		newOrder.AddToken(unit);
 
-		if (unit.Army !== null) unit.Army.RemoveUnit(unit);
+		unit.Army.RemoveToken(unit);
 		
 		this.created.push(newOrder);
 	}
@@ -82,7 +83,8 @@ class MoveOrder extends Order {
 
 	private army: Army;
 
-	private constructor (parameters: string[], start: PIXI.Point, end: PIXI.Point) { 
+	// Private for validation reasons
+	private constructor (parameters: string[], start: PIXI.Point, end: PIXI.Point, province: Province) { 
 		super({
 			turn: 0, // TODO: turn from Game
 			type: "Move",
@@ -101,7 +103,7 @@ class MoveOrder extends Order {
 		this.Container.y = mapPos.y;
 		this.AddGraphics("Arrow", calcStart, calcEnd); // This does not even need CenterContainer()
 
-		this.army = new Army({units: []}); // Dummyarmy for order
+		this.army = new Army(null, "RED", province); // Dummyarmy for order
 		this.army.Container.x = calcEnd.x;
 		this.army.Container.y = calcEnd.y - 10;
 		this.Container.addChild(this.army.Container);
@@ -110,16 +112,14 @@ class MoveOrder extends Order {
 		DrawableBase.Add(this.Container);
 	}
 
-	public AddUnit(unit: Unit) {
-		this.army.AddUnit(unit); // TEMP
-		unit.Order = this;
+	public AddToken(unit: UnitToken) {
+		this.army.AddToken(unit); // TEMP
+		unit.Army.Order = this;
 	}
 
-	public RemoveUnit(unit: Unit) {
-		this.army.RemoveUnit(unit);
-		console.log("Hep2");
+	public RemoveToken(unit: UnitToken) {
+		this.army.RemoveToken(unit);
 		if (this.army.Empty) {
-			console.log("Hep");
 			this.destroy();
 		}
 	}

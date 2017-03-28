@@ -1,54 +1,60 @@
-/// <reference path="player.ts" />
+/// <reference path="player_color.ts" />
 /// <reference path="drawable/drawable.ts" />
-/// <reference path="unit.ts" />
+/// <reference path="unitToken.ts" />
 /// <reference path="../../server/interfaces.ts" />
 
+// An army consists of all units of a single player in a single province / order
 class Army extends Drawable implements IArmy {
-	units: Unit[] = []; // Ehh, cannot be private :(
+	units: { [unit in UnitType]: number }; // Ehh, cannot be private :(, but must be modifiable
+
+	readonly Province: Province;
+	public Order: Order | null = null; // Any better solution?
+	private tokens: UnitToken[] = [];
 
 	get Empty(): boolean {
-		return this.units.length <= 0;
-	}
-
-	public AddUnit(unit: Unit, updateContainer: boolean = true) {
-		if (unit === undefined) throw new Error("Unit adding error!");
-		this.units.push(unit);
-		this.rearrangeUnits();
-		this.Container.addChild(unit.Container);
-		if (updateContainer) {
-			this.CenterContainer();
+		for (var key in this.units) {
+			if (this.units[key] > 0) return false;
 		}
+		return true;
 	}
 
-	private rearrangeUnits() {
-		this.units.forEach((unit: Unit, i: number) => {
-			unit.Container.x = i * 6;
-			unit.Container.y = 0; // Just to be sure
-		});
-	}
-
-	public RemoveUnit(unit: Unit) {
-		let index: number = this.units.indexOf(unit);
-		if (index > -1) {
-			unit.Container.x = 0; // Just to be sure
-			unit.Container.y = 0;
-			this.units.splice(index, 1);
-			this.rearrangeUnits();
-		}
-		// this.Container.removeChild(unit.Container);
-		this.CenterContainer();
-	}
-
-	public constructor(data: IArmy, color?: PlayerColor, province?: Province) {
+	constructor(data: IArmy | null, color: PlayerColor, province: Province) {
 		super(); // Does not have a basic picture
+		this.Province = province;
 
-		if (color === undefined || province === undefined) return;
-		for (var i = 0; i < data.units.length; i++) {
-			let unit: IUnit = data.units[i];
-			for (var j = 0; j < unit.amount; j++) {
-				this.AddUnit(new Unit(unit, color, province, this), false); // Unit contains amount, this is somewhat messed up
+		if (data === null) return; // Must be able to create empty containers
+		this.units = data.units;
+		for (var key in this.units) {
+			for (var i = 0; i < this.units[key]; i++) {
+				this.AddToken(new UnitToken(this, <UnitType>key)); // TODO: Sooo ugly, works?
 			}
 		}
+		this.changeTint(ColorToNumber(color));
+	}
+
+	public AddToken(token: UnitToken): void {
+		this.tokens.push(token);
+		this.Container.addChild(token.Container);
+		this.rearrangeTokens();
+	}
+
+	public RemoveToken(token: UnitToken): void {
+		let index: number = this.tokens.indexOf(token);
+		if (index > -1) {
+			token.Container.x = 0; // Just to be sure
+			token.Container.y = 0;
+			this.tokens.splice(index, 1);
+			this.rearrangeTokens();
+		}
+		// TODO: if this.tokens.length === 0
+	}
+
+	private rearrangeTokens () {
+		// TODO: Sort by type
+		this.tokens.forEach((token: Token, i: number) => {
+			token.Container.x = i * 6;
+			token.Container.y = 0; // Just to be sure
+		});
 		this.CenterContainer();
 	}
 }

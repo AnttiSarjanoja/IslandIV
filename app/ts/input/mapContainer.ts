@@ -1,8 +1,9 @@
 /// <reference path="../../pixi-typescript/pixi.js.d.ts" />
 
 // This class handles basically everything concerning Map-element and the window containing it
+// No sense to split into separate inputclass
 class MapContainer {
-	// Settings
+	private container: PIXI.Container = new PIXI.Container();
 	private canvasScale = 2; // Acts as zoom level default
 
 	// Interaction temps
@@ -10,10 +11,13 @@ class MapContainer {
 	private previousPoint? : PIXI.Point;
 	
 	constructor (
-		// NOTE: Cannot merge these two since units etc. are added to stage, and children share same interactions
-		private container: PIXI.Container, // The interactive container for map
+		// NOTE: Cannot use stage as container since units etc. are added to stage, and children share interactions
 		private stage: PIXI.Container, // The non-interactive basecontainer, should be same size as container
 		private renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer) {
+
+		let tausta: PIXI.Sprite = new PIXI.Sprite(DrawableBase.Resource['tausta'].texture);
+		this.container.addChild(tausta);
+		this.container.interactive = true;
 
 		this.container
 			.on('pointerdown', (evt : PIXI.interaction.InteractionEvent) => this.onPointerStart(evt))
@@ -21,8 +25,8 @@ class MapContainer {
 			.on('pointerupoutside', (evt : PIXI.interaction.InteractionEvent) => this.onPointerEnd(evt))
 			.on('pointermove', (evt : PIXI.interaction.InteractionEvent) => this.onPointerMove(evt));
 
-		this.resize(); // Needs to be done once at first
-		window.onresize = () => this.resize();
+		this.stage.addChild(this.container);
+		this.Resize(); // Needs to be done once at first
 	}
 
 	private onPointerStart (evt : PIXI.interaction.InteractionEvent) {
@@ -64,15 +68,15 @@ class MapContainer {
 			case 38: this.moveStage( 0,  5); break; // Up
 			case 39: this.moveStage(-5,  0); break; // Right
 			case 40: this.moveStage( 0, -5); break; // Down
-			case 171: this.canvasScale += 0.1; this.resize(); break; // '+'
-			case 173: this.canvasScale -= 0.1; this.resize(); break; // '-'
+			case 171: this.canvasScale += 0.1; this.Resize(); break; // '+'
+			case 173: this.canvasScale -= 0.1; this.Resize(); break; // '-'
 			default: return false;
 		}
 		return true;
 	}
 
 	// General UI Input, affects everything
-	private resize() {
+	public Resize() {
 		this.renderer.resize((window.innerWidth) / this.canvasScale, (window.innerHeight) / this.canvasScale); /// 2 / 2
 		this.renderer.view.style.width = window.innerWidth + "px";
 		this.renderer.view.style.height = window.innerHeight + "px";

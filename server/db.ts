@@ -62,21 +62,22 @@ export function createGame() : IGame {
 
 let runningPlayer : number = 0;
 function createPlayer(provinceAmt : number) : IPlayer {
-	runningPlayer += 1;
-	let color: string = "ERROR";
+	let color: PlayerColor = "ERROR";
 	switch (runningPlayer) {
-		case 1: color = "RED"; break;
-		case 2: color = "GREEN"; break;
-		case 3: color = "ORANGE"; break;
-		case 4: color = "PURPLE"; break;
-		case 5: color = "BLUE"; break;
-		case 6: color = "YELLOW"; break;
+		case 0: color = "RED"; break;
+		case 1: color = "GREEN"; break;
+		case 2: color = "ORANGE"; break;
+		case 3: color = "PURPLE"; break;
+		case 4: color = "BLUE"; break;
+		case 5: color = "YELLOW"; break;
 	}
 	let provinces : IProvince[] = [];
 	for(var i = 0; i < provinceAmt; i++) {
 		provinces.push(createProvince());
+		runningProvince += 1;
 	}
 
+	runningPlayer += 1;
 	return {
 		id: runningPlayer,
 		color: color,
@@ -96,7 +97,6 @@ function createPlayer(provinceAmt : number) : IPlayer {
 
 let runningProvince: number = 0;
 function createProvince(): IProvince {
-	runningProvince += 1;
 	return {
 		id: runningProvince,
 		size: 3,
@@ -108,13 +108,10 @@ function createProvince(): IProvince {
 
 function createArmy(unitAmount: number): IArmy {
 	return {
-		units: [createUnit(unitAmount)]
-	}
-}
-
-function createUnit(amount: number): IUnit {
-	return {
-		amount: amount,
-		type: "infantry"
+		units: {
+			infantry: unitAmount,
+			cavalry: 0,
+			ship: 0
+		}
 	}
 }

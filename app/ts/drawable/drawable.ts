@@ -104,11 +104,20 @@ abstract class Drawable {
 		this.Container.filters = [];
 	}
 
-	// Prolly obsolete
+	// Prolly obsolete after proper images
 	// Pls use 0xFFFFFF like numbers
 	protected changeTint(tint : number) : void {
-		for (var sprite of this.sprites) {
-			sprite.tint = tint;
+		// Go through whole PIXI object tree and change tints
+		function recursiveTint(child: PIXI.DisplayObject, tint: number) {
+			if (child instanceof PIXI.Sprite) {
+				child.tint = tint;
+			}
+			else if(child instanceof PIXI.Container) {
+				for (var subchild of child.children) {
+					recursiveTint(subchild, tint);
+				}	
+			}
 		}
+		recursiveTint(this.Container, tint);
 	}
 }

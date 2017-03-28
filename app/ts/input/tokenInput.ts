@@ -52,7 +52,7 @@ class TokenInput {
 			if (province !== null) {
 				// Tempstuff
 				console.log("Found " + province.id);
-				if ((this.token instanceof Unit) && this.token.Province !== null) { // TODO: Tempp
+				if ((this.token instanceof UnitToken) && this.token.Province !== null) { // TODO: Tempp
 					MoveOrder.Create(this.token.Province, province, this.token);
 				}
 			}

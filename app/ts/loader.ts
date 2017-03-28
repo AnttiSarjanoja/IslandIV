@@ -1,8 +1,8 @@
-/// <reference path="army.ts" />
 /// <reference path="player.ts" />
 /// <reference path="province.ts" />
-/// <reference path="unit.ts" />
 /// <reference path="game.ts" />
+/// <reference path="main.ts" />
+/// <reference path="settings.ts" />
 
 // This class opens the received dataobject from server and instancifies all objects to the game
 // Atm. works with Init () -> handler-chain -> LoadImages() -> CreateEverything()
@@ -10,8 +10,9 @@ abstract class Loader {
 	private static _provinceSettings: ProvinceSettings;
 	private static _gameSettings: GameSettings;
 	private static _gameData: IGame; // TODO: Game
+	private static cb: () => void;
 
-	public static MapContainer: PIXI.Container;
+	// public static MapContainer: PIXI.Container;
 
 	static get ProvinceSettings(): ProvinceSettings {
 		return this._provinceSettings;
@@ -24,17 +25,10 @@ abstract class Loader {
 	}
 
 	public static CreateEverything() {
-		if(this.ProvinceSettings === undefined || this.GameData === undefined) { // TODO: this.gameSettings
+		if(this.ProvinceSettings === undefined || this.GameData === undefined || this.GameSettings === undefined) {
 			throw new Error("Data loader error!");
 		}
-
-		this.GameData.players.forEach(function (player : IPlayer) {
-			let tempColor : string = player.color;
-			player.provinces.forEach(function (province : IProvince) {
-				let obj = Loader.ProvinceSettings.provinces[province.id - 1]; // TEMPORARY AND VERY UGLY YES
-				new Province(obj.x, obj.y, obj.name, obj.neighbours, province, StringToColor(tempColor));
-			});
-		});
+		IslandIV.Game = new Game(this.GameData, this.ProvinceSettings, this.GameSettings);
 	}
 
 	public static LoadImages() {
@@ -45,19 +39,11 @@ abstract class Loader {
 
 		// TODO: Do we want spritesheets? TexturePacker produces simple spritesheets with JSON, is free
 		// loader.add(sprite_sheets_arr);
-		function onLoad(loader: PIXI.loaders.Loader, resources: PIXI.loaders.Resource) {
+		loader.load((loader : PIXI.loaders.Loader, resources : PIXI.loaders.Resource) => {
 			DrawableBase.Resource = resources;
-
-			// Add background
-			let tausta: PIXI.Sprite = new PIXI.Sprite(resources['tausta'].texture);
-			tausta.name = 'tausta';
-
-			Loader.MapContainer.addChild(tausta);
-			Loader.MapContainer.interactive = true; // TODO: Mb set interaction functions here too
+			this.cb();
 			Loader.CreateEverything();
-		}
-
-		loader.load((loader : PIXI.loaders.Loader, resources : PIXI.loaders.Resource) => onLoad(loader, resources));
+		});//onLoad(loader, resources));
 	}
 
 	public static SaveProvinceSettings(data: any) { // Any since it really can be anything (?)
@@ -87,8 +73,8 @@ abstract class Loader {
 	}
 
 	// Use this when server supports it
-	public static Init(container: PIXI.Container) {
-		this.MapContainer = container;
+	public static Init(cb: () => void) { // vcontainer: PIXI.Container
+		this.cb = cb;
 
 		function gameSettingsResponseHandler() {
 			Loader.SaveGameSettings(this.response);
@@ -120,22 +106,4 @@ abstract class Loader {
 		request.onload = gameResponseHandler;
 		request.send();
 	}
-}
-
-interface ProvinceData {
-	x: number,
-	y: number,
-	name: string,
-	neighbours: number[] // Cannot be empty!
-}
-
-interface ProvinceSettings {
-	map: string,
-	provinces: ProvinceData[]
-}
-
-interface GameSettings {
-	// Images for stuff, must be located at /img/
-	provinceIMG: string,
-	unitIMG: string
 }

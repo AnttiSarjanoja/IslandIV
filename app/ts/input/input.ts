@@ -1,23 +1,18 @@
 /// <reference path="../../pixi-typescript/pixi.js.d.ts" />
-/// <reference path="../unit.ts" />
 /// <reference path="mapContainer.ts" />
-/// <reference path="../order.ts" />
+/// <reference path="../drawable/drawable.ts" />
 /// <reference path="tokenInput.ts" />
+/// <reference path="../order.ts" />
 
 // Static class
 abstract class Input {
 	private static mapContainer: MapContainer;
 	private static selected: Drawable[] = [];
-	private static provinces: Drawable[] = [];
+	private static provinces: Drawable[] = []; // Needed for getting province under dragged sprite
 
-	public static Init(stage: PIXI.Container, container: PIXI.Container, renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer) {
-		if (stage === undefined || container === undefined || renderer === undefined) throw new Error("Input initiation error!");
-
-		renderer.plugins.interaction.autoPreventDefault = false;
-		renderer.plugins.interaction.interactionFrequency = 1; // This doesn't work?
-
-		this.mapContainer = new MapContainer(container, stage, renderer);
-
+	public static Init(map: MapContainer) {
+		this.mapContainer = map;
+		window.onresize = () => this.mapContainer.Resize();
 		document.addEventListener("keydown", (evt : KeyboardEvent) => this.handleKeyDown(evt));
 	}
 
@@ -28,7 +23,6 @@ abstract class Input {
 		if (evt.keyCode === 83) Order.SendOrders(); // 's'
 		else console.log("No handler for key '" + evt.key + "'");
 	}
-
 	public static SetTokenInteractions (token: Token, drag: boolean = false) {
 		new TokenInput(token, drag);
 	}
@@ -47,16 +41,9 @@ abstract class Input {
 		return retVal;
 	}
 
-	// TODO: Move to x-input.ts, Child specific UI Input
-	public static UnitClicked (unit: Unit, evt: PIXI.interaction.InteractionEvent): void {
-		if (evt.data.originalEvent instanceof MouseEvent) {
+	// TODO: Selection in here or in specific input-classes
 
-			// evt.data.originalEvent.shiftKey; // etc
-			// 0 = leftie
-			// 2 = rightie
-		}
-	}
-
+	/*
 	public static Select (drawable: Drawable) {
 		this.selected.push(drawable);
 	}
@@ -68,4 +55,5 @@ abstract class Input {
 	public static ClearSelect () {
 		this.selected = [];
 	}
+	*/
 }

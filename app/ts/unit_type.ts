@@ -1,3 +1,4 @@
-type UnitType = "infantry" | 
-                "cavalry" | 
-                "ship";
+type UnitType =
+	"infantry" | 
+	"cavalry" | 
+	"ship";

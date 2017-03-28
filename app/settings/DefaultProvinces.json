@@ -2,17 +2,17 @@
   "map": "devmap.png",
   "provinces":
   [
-    { "x": 591, "y": 41, "name": "Provinssi Yksi", "neighbours": [1,3] },
-    { "x": 780, "y": 66, "name": "Provinssi Kaksi", "neighbours": [0,3] },
-    { "x": 428, "y": 139, "name": "Provinssi Kolme", "neighbours": [4,5] },
-    { "x": 675, "y": 157, "name": "Provinssi Neljä", "neighbours": [0,1,4,6] },
-    { "x": 524, "y": 241, "name": "Provinssi Viisi", "neighbours": [2,3,5,6,10] },
-    { "x": 367, "y": 269, "name": "Provinssi Kuusi", "neighbours": [2,4,7,9,10] },
-    { "x": 711, "y": 297, "name": "Provinssi Seiska", "neighbours": [3,4,10,11] },
-    { "x": 201, "y": 321, "name": "Provinssi Kasi", "neighbours": [5,8,9] },
-    { "x": 147, "y": 475, "name": "Provinssi Ysi", "neighbours": [7,9] },
-    { "x": 324, "y": 470, "name": "Provinssi Kybä", "neighbours": [5,7,8,10] },
-    { "x": 547, "y": 441, "name": "Provinssi Ykstoist", "neighbours": [4,5,6,9,11] },
-    { "x": 784, "y": 470, "name": "Provinssi Kakstoist", "neighbours": [6,10] }
+    { "x": 591, "y": 41, "name": "Provinssi Nolla", "neighbours": [1,3] },
+    { "x": 780, "y": 66, "name": "Provinssi Yksi", "neighbours": [0,3] },
+    { "x": 428, "y": 139, "name": "Provinssi Kaksi", "neighbours": [4,5] },
+    { "x": 675, "y": 157, "name": "Provinssi Kolme", "neighbours": [0,1,4,6] },
+    { "x": 524, "y": 241, "name": "Provinssi Neljä", "neighbours": [2,3,5,6,10] },
+    { "x": 367, "y": 269, "name": "Provinssi Viisi", "neighbours": [2,4,7,9,10] },
+    { "x": 711, "y": 297, "name": "Provinssi Kuusi", "neighbours": [3,4,10,11] },
+    { "x": 201, "y": 321, "name": "Provinssi Seitsemän", "neighbours": [5,8,9] },
+    { "x": 147, "y": 475, "name": "Provinssi Kahdeksan", "neighbours": [7,9] },
+    { "x": 324, "y": 470, "name": "Provinssi Yhdeksän", "neighbours": [5,7,8,10] },
+    { "x": 547, "y": 441, "name": "Provinssi Kymmenen", "neighbours": [4,5,6,9,11] },
+    { "x": 784, "y": 470, "name": "Provinssi Yksitoista", "neighbours": [6,10] }
   ]
 }
