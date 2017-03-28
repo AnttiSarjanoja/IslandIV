@@ -1,7 +1,7 @@
 /// <reference path="player.ts" />
 /// <reference path="drawable/drawable.ts" />
 /// <reference path="drawable/drawableBase.ts" />
-/// <reference path="../../server/interfaces.ts" />
+/// <reference path="../../common/interfaces.ts" />
 
 abstract class Order extends Drawable implements IOrder {
 	readonly turn: number;

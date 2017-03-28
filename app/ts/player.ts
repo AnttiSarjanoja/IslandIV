@@ -1,8 +1,9 @@
 /// <reference path="loader.ts" />
 /// <reference path="order.ts" />
-/// <reference path="player_color.ts" />
 /// <reference path="province.ts" />
-/// <reference path="../../server/interfaces.ts" />
+/// <reference path="../../common/interfaces.ts" />
+/// <reference path="../../common/player_color.ts" />
+
 
 // Holds general information about the player. Any need for more complicated implementation?
 class Player implements IPlayer {

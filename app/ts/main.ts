@@ -1,9 +1,9 @@
-/// <reference path="../pixi-typescript/pixi.js.d.ts" />
+/// <reference path="game.ts" />
+/// <reference path="loader.ts" />
+/// <reference path="drawable/drawableBase.ts" />
 /// <reference path="input/input.ts" />
 /// <reference path="input/mapContainer.ts" />
-/// <reference path="drawable/drawableBase.ts" />
-/// <reference path="loader.ts" />
-/// <reference path="game.ts" />
+/// <reference path="../pixi-typescript/pixi.js.d.ts" />
 
 // Style:
 // Use tabs for indenting, no spaces

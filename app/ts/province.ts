@@ -1,8 +1,9 @@
-/// <reference path="input/input.ts" />
 /// <reference path="army.ts" />
-/// <reference path="drawable/drawable.ts" />
 /// <reference path="token.ts" />
-/// <reference path="../../server/interfaces.ts" />
+/// <reference path="drawable/drawable.ts" />
+/// <reference path="input/input.ts" />
+/// <reference path="../../common/player_color.ts" />
+/// <reference path="../../common/interfaces.ts" />
 
 class Province extends Token implements IProvince {
 	public static Picture: string = 'province'; // Default value

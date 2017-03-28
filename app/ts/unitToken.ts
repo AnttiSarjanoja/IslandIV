@@ -1,7 +1,7 @@
-/// <reference path="token.ts" />
-/// <reference path="order.ts" />
-/// <reference path="unit_type.ts" />
 /// <reference path="input/input.ts" />
+/// <reference path="order.ts" />
+/// <reference path="token.ts" />
+/// <reference path="../../common/unit_type.ts" />
 
 // Single unit token e.g. 'one infantry'
 class UnitToken extends Token {

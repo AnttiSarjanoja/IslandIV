@@ -1,5 +1,5 @@
-/// <reference path="../app/ts/player_color.ts" />
-/// <reference path="../app/ts/unit_type.ts" />
+/// <reference path="player_color.ts" />
+/// <reference path="unit_type.ts" />
 
 // TODO: Users + pw
 // IUser { inGame: IPlayer[]; } // All games are shown? But can only check out games that is a player in

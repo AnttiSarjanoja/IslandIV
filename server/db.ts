@@ -1,6 +1,6 @@
-/// <reference path="interfaces.ts" />
-/// <reference path="../app/ts/unit_type.ts" />
-/// <reference path="../app/ts/player_color.ts" />
+/// <reference path="../common/interfaces.ts" />
+/// <reference path="../common/unit_type.ts" />
+/// <reference path="../common/player_color.ts" />
 
 // So using non-module .ts file cannot be integrated to this code?
 // Feccckkkkk

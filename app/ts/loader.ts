@@ -1,8 +1,8 @@
-/// <reference path="player.ts" />
-/// <reference path="province.ts" />
 /// <reference path="game.ts" />
 /// <reference path="main.ts" />
-/// <reference path="settings.ts" />
+/// <reference path="player.ts" />
+/// <reference path="province.ts" />
+/// <reference path="../../common/settings.ts" />
 
 // This class opens the received dataobject from server and instancifies all objects to the game
 // Atm. works with Init () -> handler-chain -> LoadImages() -> CreateEverything()

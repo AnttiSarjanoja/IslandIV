@@ -1,6 +1,6 @@
 /// <reference path="player.ts" />
-/// <reference path="settings.ts" />
-/// <reference path="../../server/interfaces.ts" />
+/// <reference path="../../common/interfaces.ts" />
+/// <reference path="../../common/settings.ts" />
 
 // Holds general information about the player. Any need for more complicated implementation?
 class Game implements IGame {

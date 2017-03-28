@@ -1,7 +1,7 @@
-/// <reference path="player_color.ts" />
 /// <reference path="drawable/drawable.ts" />
 /// <reference path="unitToken.ts" />
-/// <reference path="../../server/interfaces.ts" />
+/// <reference path="../../common/interfaces.ts" />
+/// <reference path="../../common/player_color.ts" />
 
 // An army consists of all units of a single player in a single province / order
 class Army extends Drawable implements IArmy {
