@@ -34,10 +34,10 @@ class IslandIV {
 		// The below callback is called when all loading stuff has been done
 		// TODO: Load-window :3
 		Loader.Init(() => {
-			document.body.appendChild(this.app.view);
 			PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; // NOTE: If this doesn't work, make sure pixi.js.d.ts is updated
 			Input.Init(new MapContainer(this.app.stage, this.app.renderer)); // Mb save the container somewhere else?
 			DrawableBase.Init(this.app.stage, this.app.ticker);
+			document.body.appendChild(this.app.view);
 		});
 	}
 }

@@ -5,17 +5,18 @@
 
 // An army consists of all units of a single player in a single province / order
 class Army extends Drawable implements IArmy {
-	units: { [unit in UnitType]: number }; // Ehh, cannot be private :(, but must be modifiable
-
+	readonly units: { [unit in UnitType]: number }; // Modifications are made to tokens mb?
 	readonly Province: Province;
 	public Order: Order | null = null; // Any better solution?
 	private tokens: UnitToken[] = [];
 
 	get Empty(): boolean {
+		return this.tokens.length <= 0; // As we really want only to know if tokens are extinct
+		/*
 		for (var key in this.units) {
 			if (this.units[key] > 0) return false;
 		}
-		return true;
+		return true; */
 	}
 
 	constructor(data: IArmy | null, color: PlayerColor, province: Province) {
@@ -33,6 +34,8 @@ class Army extends Drawable implements IArmy {
 	}
 
 	public AddToken(token: UnitToken): void {
+		// TODO: Add tokens to a baseline, e.g. x = 10 is the lowest point from which all sprites are above
+		token.Army = this;
 		this.tokens.push(token);
 		this.Container.addChild(token.Container);
 		this.rearrangeTokens();
@@ -44,17 +47,27 @@ class Army extends Drawable implements IArmy {
 			token.Container.x = 0; // Just to be sure
 			token.Container.y = 0;
 			this.tokens.splice(index, 1);
+			this.Container.removeChild(token.Container);
 			this.rearrangeTokens();
 		}
+		else console.log("Något gick fel!");
 		// TODO: if this.tokens.length === 0
 	}
 
 	private rearrangeTokens () {
-		// TODO: Sort by type
+		// TODO: Proper sorting!
+		this.tokens.sort((a: UnitToken, b: UnitToken) => {
+			if (a.Type === "cavalry" && b.Type !== "cavalry") return -1;
+			else return 1;
+		});
+		let childArray: PIXI.DisplayObject[] = []; // So ugly
 		this.tokens.forEach((token: Token, i: number) => {
+			childArray.push(token.Container);
 			token.Container.x = i * 6;
 			token.Container.y = 0; // Just to be sure
 		});
+		this.Container.children = childArray;
+
 		this.CenterContainer();
 	}
 }

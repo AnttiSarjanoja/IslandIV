@@ -1,3 +1,4 @@
+/// <reference path="game.ts" />
 /// <reference path="player.ts" />
 /// <reference path="drawable/drawable.ts" />
 /// <reference path="drawable/drawableBase.ts" />
@@ -38,39 +39,44 @@ class MoveOrder extends Order {
 
 	private static created: MoveOrder[] = [];
 
+	// TODO: Tidy this, order is somewhat messy
 	public static Create(fromProvince: Province, toProvince: Province, unit: UnitToken) {
 		// 1. Validate
-		if (!fromProvince.Neighbours.some((value: number) => { return value === (toProvince.id); })) {
+		if (fromProvince !== toProvince && !fromProvince.Neighbours.some((value: number) => { return value === (toProvince.id); })) {
 			console.log("Not a neighbour!");
 			return;
 		}
 
-		// Remove from old container
-		//unit.Container.;
-		if (unit.Order !== null && unit.Order instanceof MoveOrder) unit.Order.RemoveToken(unit);
+		// Remove from old Order and check if returning to Province
+		if (unit.Order !== null && unit.Order instanceof MoveOrder) {
+			unit.Order.RemoveToken(unit);
+			if (fromProvince === toProvince) {
+				unit.Province.AddToken(unit);
+				return;
+			}
+		}
+		unit.Army.RemoveToken(unit);
 
 		// Check if identical order already exists
 		let found: MoveOrder[] = this.created.filter(function (order: MoveOrder) {
 			return order.parameters[0] === fromProvince.id.toString() &&
-				order.parameters[1] === toProvince.id.toString() &&
-				order.parameters[2] === unit.Type;
+				order.parameters[1] === toProvince.id.toString()/* &&
+				order.parameters[2] === unit.Type; */
 		});
 		if (found.length > 0) {
-			console.log("Found already");
+			// DEBUG: console.log("Found already");
 			found[0].AddToken(unit);
 			return;
 		}
 
 		// Otherwise create new and store it
 		let newOrder: MoveOrder = new MoveOrder(
-			[fromProvince.id.toString(), toProvince.id.toString(), unit.Type],
+			[fromProvince.id.toString(), toProvince.id.toString()],
 			fromProvince.Container.position,
 			toProvince.Container.position,
 			fromProvince);
 		newOrder.AddToken(unit);
 
-		unit.Army.RemoveToken(unit);
-		
 		this.created.push(newOrder);
 	}
 
@@ -103,7 +109,8 @@ class MoveOrder extends Order {
 		this.Container.y = mapPos.y;
 		this.AddGraphics("Arrow", calcStart, calcEnd); // This does not even need CenterContainer()
 
-		this.army = new Army(null, "RED", province); // Dummyarmy for order
+		this.army = new Army(null, Game.CurrentPlayer.color, province); // Dummyarmy for order
+		this.army.Order = this;
 		this.army.Container.x = calcEnd.x;
 		this.army.Container.y = calcEnd.y - 10;
 		this.Container.addChild(this.army.Container);
@@ -113,11 +120,12 @@ class MoveOrder extends Order {
 	}
 
 	public AddToken(unit: UnitToken) {
+		// TODO: Update parameters
 		this.army.AddToken(unit); // TEMP
-		unit.Army.Order = this;
 	}
 
 	public RemoveToken(unit: UnitToken) {
+		// TODO: Update parameters
 		this.army.RemoveToken(unit);
 		if (this.army.Empty) {
 			this.destroy();

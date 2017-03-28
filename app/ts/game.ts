@@ -4,6 +4,8 @@
 
 // Holds general information about the player. Any need for more complicated implementation?
 class Game implements IGame {
+	public static CurrentPlayer: Player;
+
 	readonly name: string;
 	readonly players: Player[] = [];
 	readonly messages: IMessage[] = [];
@@ -23,7 +25,8 @@ class Game implements IGame {
 		this.GameSettings = gameSettings;
 
 		for (var playerData of data.players) {
-			new Player(playerData);	
+			this.players.push(new Player(playerData));	
 		}
+		Game.CurrentPlayer = this.players[0];
 	}
 }

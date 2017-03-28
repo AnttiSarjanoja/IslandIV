@@ -47,12 +47,11 @@ class TokenInput {
 			if (this.origPos) this.token.Container.position = this.origPos;
 			this.token.Container.alpha = 1;
 
-			let a = 2;
 			let province: Province | null = Input.GetProvinceUnder(evt.data.global);
 			if (province !== null) {
 				// Tempstuff
-				console.log("Found " + province.id);
-				if ((this.token instanceof UnitToken) && this.token.Province !== null) { // TODO: Tempp
+				// DEBUG: console.log("Found " + province.id);
+				if (this.token instanceof UnitToken && this.token.Province !== null) {
 					MoveOrder.Create(this.token.Province, province, this.token);
 				}
 			}

@@ -15,7 +15,10 @@ class UnitToken extends Token {
 		public readonly OriginalArmy: Army,
 		public readonly Type: UnitType)
 	{
-		super({image: UnitToken.Picture, scale: 0.4}); // TODO: Get image through ownerplayer if not using tint
+		super({
+			image: UnitToken.Picture, // TODO: Get image through ownerplayer if not using tint
+			scale: Type === "infantry" ? 0.4 : 0.6 // Just temp stuff to try out different units
+		}); 
 		Input.SetTokenInteractions(this, true);
 		this.Army = this.OriginalArmy;
 	}	
