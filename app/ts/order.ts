@@ -8,7 +8,7 @@ abstract class Order extends Drawable implements IOrder {
 	readonly turn: number;
 	readonly type: string;
 	readonly state: string;
-	readonly parameters: string[] = [];
+	readonly parameters: any[] = [];
 
 	// NOTE: Just make subclasses for possible orders
 	constructor (data: IOrder, spritedata?: DrawableSprite) {
@@ -19,13 +19,18 @@ abstract class Order extends Drawable implements IOrder {
 		this.parameters = data.parameters;
 	}
 
-	private static newOrders: Order[] = [];
+	protected static newOrders: Order[] = [];
 
-	public static SendOrders() { // 
+	public static SendOrders() {
+		let strippedOrders: IOrder[] = this.newOrders.map((order: Order) => {
+			return { turn: order.turn, type: order.type, state: order.state, parameters: order.parameters };
+		});
+		console.log(JSON.stringify(strippedOrders));
+
 		let request = new XMLHttpRequest();
 		request.open("POST", "/orders");
 		request.setRequestHeader("Content-Type", "application/json");
-		request.send(JSON.stringify(this.newOrders));
+		request.send(JSON.stringify(strippedOrders));
 	}
 }
 
@@ -37,7 +42,7 @@ class MoveOrder extends Order {
 	// Parameter[2] = What moves
 	// Parameter[3] = Where moves (may be a path through provinces?)
 
-	private static created: MoveOrder[] = [];
+	// private static created: MoveOrder[] = [];
 
 	// TODO: Tidy this, order is somewhat messy
 	public static Create(fromProvince: Province, toProvince: Province, unit: UnitToken) {
@@ -55,18 +60,22 @@ class MoveOrder extends Order {
 				return;
 			}
 		}
-		unit.Army.RemoveToken(unit);
+		else unit.Army.RemoveToken(unit);
 
 		// Check if identical order already exists
-		let found: MoveOrder[] = this.created.filter(function (order: MoveOrder) {
-			return order.parameters[0] === fromProvince.id.toString() &&
-				order.parameters[1] === toProvince.id.toString()/* &&
-				order.parameters[2] === unit.Type; */
+		let found: Order[] = Order.newOrders.filter(function (order: Order) {
+			return (
+				order instanceof MoveOrder &&
+				order.parameters[0] === fromProvince.id.toString() &&
+				order.parameters[1] === toProvince.id.toString()
+			);
 		});
 		if (found.length > 0) {
-			// DEBUG: console.log("Found already");
-			found[0].AddToken(unit);
-			return;
+			let mOrder: Order = found[0];
+			if (mOrder instanceof MoveOrder) {
+				mOrder.AddToken(unit);
+				return;
+			}
 		}
 
 		// Otherwise create new and store it
@@ -77,13 +86,13 @@ class MoveOrder extends Order {
 			fromProvince);
 		newOrder.AddToken(unit);
 
-		this.created.push(newOrder);
+		Order.newOrders.push(newOrder);
 	}
 
 	private static remove(order: MoveOrder) {
-		let index: number = this.created.indexOf(order);
+		let index: number = Order.newOrders.indexOf(order);
 		if (index > -1) {
-			this.created.splice(index, 1);
+			Order.newOrders.splice(index, 1);
 		}
 	}
 
@@ -119,20 +128,21 @@ class MoveOrder extends Order {
 		DrawableBase.Add(this.Container);
 	}
 
+	// These exist only to update parameters
 	public AddToken(unit: UnitToken) {
-		// TODO: Update parameters
-		this.army.AddToken(unit); // TEMP
+		this.army.AddToken(unit);
+		this.parameters[2] = this.army.Amounts();
 	}
-
 	public RemoveToken(unit: UnitToken) {
 		// TODO: Update parameters
 		this.army.RemoveToken(unit);
 		if (this.army.Empty) {
-			this.destroy();
+			this.Destroy();
 		}
+		else this.parameters[2] = this.army.Amounts();
 	}
 
-	private destroy() {
+	public Destroy() {
 		this.Container.destroy();
 		MoveOrder.remove(this);
 		DrawableBase.RemoveTicker(this.TickFn);

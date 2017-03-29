@@ -43,7 +43,7 @@ interface IOrder {
 	turn: number; // Must match current to be valid? Otherwise is used as history of player orders?
 	state: string; // TODO: Enum
 	type: string; // TODO: Enum
-	parameters: string[]; // TODO: Can we do anything better than this?
+	parameters: any[]; // TODO: Can we do anything better than this?
 }
 
 interface IReligion {
@@ -62,6 +62,7 @@ interface IProvince {
 
 interface IArmy {
 	// UnitType is used in combination with config files
-	units: { [unit in UnitType]: number };
+	units: UnitList;
 }
 
+type UnitList = { [unit in UnitType]?: number };

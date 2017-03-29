@@ -9,8 +9,8 @@ type PlayerColor =
 
 function ColorToNumber(color: PlayerColor) : number {
 	switch(color) {
-	case "GREEN":  return 0x00FF00;
-	case "RED":    return 0xFF0000;
+	case "GREEN":  return 0x88FF88;
+	case "RED":    return 0xFF8888;
 	case "BLUE":   return 0x0000FF;
 	case "YELLOW": return 0xFFFF00;
 	case "PURPLE": return 0x800080;

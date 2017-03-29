@@ -40,7 +40,7 @@ class Province extends Token implements IProvince {
 		for (let army of data.armies) {
 			let newArmy: Army = new Army(army, color, this);
 			newArmy.Container.x = this.x; // TODO: Smarter way to do this, e.g. "addNewArmy()" in which y = y + 50 * i
-			newArmy.Container.y = this.y + 50;
+			newArmy.Container.y = this.y + 15;
 			this.armies.push(newArmy);
 			DrawableBase.Add(newArmy.Container);
 		}

@@ -31,7 +31,7 @@ class App {
       res.status(200).json(db.createGame()); // TODO: Status does not work here :(
     });
     this.express.post('/orders', (req, res) => {
-      console.log(req.body); // TODO: Just a dummy
+      console.log(JSON.stringify(req.body)); // TODO: Just a dummy
       res.sendStatus(200);
       // db.SaveOrders(req.body);
     });

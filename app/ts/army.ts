@@ -5,8 +5,9 @@
 
 // An army consists of all units of a single player in a single province / order
 class Army extends Drawable implements IArmy {
-	readonly units: { [unit in UnitType]: number }; // Modifications are made to tokens mb?
+	readonly units: UnitList = {};
 	readonly Province: Province;
+	private amounts: UnitList = {};
 	public Order: Order | null = null; // Any better solution?
 	private tokens: UnitToken[] = [];
 
@@ -34,8 +35,12 @@ class Army extends Drawable implements IArmy {
 	}
 
 	public AddToken(token: UnitToken): void {
-		// TODO: Add tokens to a baseline, e.g. x = 10 is the lowest point from which all sprites are above
 		token.Army = this;
+
+		// This horrible hack works with optional string literal type indices
+		let amount: number | undefined = this.amounts[token.Type] !== undefined ? this.amounts[token.Type] : 0;
+		if (amount !== undefined) this.amounts[token.Type] = amount + 1;
+
 		this.tokens.push(token);
 		this.Container.addChild(token.Container);
 		this.rearrangeTokens();
@@ -46,6 +51,10 @@ class Army extends Drawable implements IArmy {
 		if (index > -1) {
 			token.Container.x = 0; // Just to be sure
 			token.Container.y = 0;
+
+			let amount: number | undefined = this.amounts[token.Type];
+			if (amount) this.amounts[token.Type] = amount - 1;
+
 			this.tokens.splice(index, 1);
 			this.Container.removeChild(token.Container);
 			this.rearrangeTokens();
@@ -54,6 +63,11 @@ class Army extends Drawable implements IArmy {
 		// TODO: if this.tokens.length === 0
 	}
 
+	public Amounts(): UnitList {
+		return this.amounts;
+	}
+
+	// This sorts the tokens by type, shows them over a baseline with a small x between tokens
 	private rearrangeTokens () {
 		// TODO: Proper sorting!
 		this.tokens.sort((a: UnitToken, b: UnitToken) => {
@@ -63,8 +77,10 @@ class Army extends Drawable implements IArmy {
 		let childArray: PIXI.DisplayObject[] = []; // So ugly
 		this.tokens.forEach((token: Token, i: number) => {
 			childArray.push(token.Container);
+
+			// TODO: Fix baseline setting when bigger unit enters container
 			token.Container.x = i * 6;
-			token.Container.y = 0; // Just to be sure
+			token.Container.y = 10 - (token.Container.height / 2);
 		});
 		this.Container.children = childArray;
 
