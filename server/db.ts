@@ -2,48 +2,67 @@
 /// <reference path="../common/unit_type.ts" />
 /// <reference path="../common/player_color.ts" />
 
-// So using non-module .ts file cannot be integrated to this code?
-// Feccckkkkk
-
-// Mongodb
 import * as mongodb from "mongodb";
-
 let server : mongodb.Server = new mongodb.Server('localhost', 27017, {});
 let db : mongodb.Db = new mongodb.Db('mydb', server, { w: 1 });
-db.open(function() {});
 
-// TODO: Works?
-export function GetStuff(cb: (games: IGame[]) => void) {
-	db.collection('games', function (error, games_c) {
-		if(error) {
-			console.error(error);
-			return;
-		}
-		games_c.find().toArray(function(error, games) {
-			cb(games);
+db.on('open', function() {
+	console.error("Opened connection to Mongo.");
+});
+db.on('close', function(err) {
+	console.error('Connection to Mongo lost: %s', err);
+});
+
+export function Open(cb) {
+	db.open(cb);
+}
+
+export function Close() {
+	db.close();
+}
+
+// Gets all relevant gamedata from DB for initiating games to server
+export function GetStuff(cb: (gameArray: IGame[]) => void) {
+	db.collection('games', (error, games_c: mongodb.Collection) => {
+		if(error) { console.error(error); return; }
+
+		// No parameters to find since we want to load all games all the time
+		games_c.find().toArray((error, games: IGame[]) => {
+			if(error) { console.error(error); return; }
+
+			if(games.length > 0) cb(games);
+			else { InitAll(cb); } // TODO: Prolly shouldn't exist at some point
 		});
 	});
 }
 
 // TODO: save all game-related, used by backend mechanics
-export function SaveStuff(game: IGame) : void {
-	db.collection('games'), function (error, games_c) {
-		if(error) {
-			console.error(error);
-			return;
-		}
-		games_c.save(game);
-	}
+// NOTE: Will insert the new game if not existing!
+export function UpdateGame(game: IGame, cb?: (games: IGame[]) => void): void {
+	db.collection('games', (error, games_c: mongodb.Collection) => {
+		if(error) { console.error(error); return; }
+		games_c.update({ name: game.name }, game, { upsert: true }, (error, result) => {
+				if(error) { console.error(error); return; }
+			if(cb !== undefined) GetStuff(cb);
+		});
+	});
 }
 
-export function SaveOrders(orders: any[]) {
+// NOTE: Orders are validated already at this point
+// TODO: Right parameters, atm. are dummy values
+export function SaveOrders(player: number, turn: number, orders: any[]) {
+	console.log("From player: " + player + ", turn: " + turn); // TODO: Just a dummy
+	console.log(JSON.stringify(orders)); // TODO: Just a dummy
 
+	// TODO: Insert to correct game and player, should only append
 }
 
-////////// Inits
+// --- Initiating empty game ---
 
-export function InitAll() : void {
-	SaveStuff(createGame());
+// TODO: Contain only dummy game to test out stuff, proper game initialisation values pls.
+export function InitAll(cb: (games: IGame[]) => void) : void {
+	console.log("Creating empty game");
+	UpdateGame(createGame(), cb);
 }
 
 export function createGame() : IGame {
@@ -101,16 +120,16 @@ function createProvince(): IProvince {
 		id: runningProvince,
 		size: 3,
 		population: 1,
-		armies: [createArmy(3)],
+		armies: [createArmy(3, 1)],
 		resources: []
 	}
 }
 
-function createArmy(unitAmount: number): IArmy {
+function createArmy(infantryAmt: number, cavalryAmt: number): IArmy {
 	return {
 		units: {
-			infantry: unitAmount,
-			cavalry: 0,
+			infantry: infantryAmt,
+			cavalry: cavalryAmt,
 			ship: 0
 		}
 	}

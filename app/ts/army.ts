@@ -77,8 +77,6 @@ class Army extends Drawable implements IArmy {
 		let childArray: PIXI.DisplayObject[] = []; // So ugly
 		this.tokens.forEach((token: Token, i: number) => {
 			childArray.push(token.Container);
-
-			// TODO: Fix baseline setting when bigger unit enters container
 			token.Container.x = i * 6;
 			token.Container.y = 10 - (token.Container.height / 2);
 		});

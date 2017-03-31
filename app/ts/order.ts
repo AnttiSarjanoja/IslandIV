@@ -1,4 +1,5 @@
 /// <reference path="game.ts" />
+/// <reference path="main.ts" />
 /// <reference path="player.ts" />
 /// <reference path="drawable/drawable.ts" />
 /// <reference path="drawable/drawableBase.ts" />
@@ -21,16 +22,19 @@ abstract class Order extends Drawable implements IOrder {
 
 	protected static newOrders: Order[] = [];
 
+	// NOTE: Orders are smart and contain complex structures with sprites etc.
+	//	In this function the obsolete stuff are stripped and only IOrder specific data is sent
 	public static SendOrders() {
 		let strippedOrders: IOrder[] = this.newOrders.map((order: Order) => {
 			return { turn: order.turn, type: order.type, state: order.state, parameters: order.parameters };
 		});
-		console.log(JSON.stringify(strippedOrders));
+		let sentObj: Object = { player: Game.CurrentPlayer.id, turn: IslandIV.Game.turn, orders: strippedOrders };
+		console.log(JSON.stringify(sentObj));
 
 		let request = new XMLHttpRequest();
 		request.open("POST", "/orders");
 		request.setRequestHeader("Content-Type", "application/json");
-		request.send(JSON.stringify(strippedOrders));
+		request.send(JSON.stringify(sentObj)); // TODO: Is stringify here ok?
 	}
 }
 
@@ -101,7 +105,7 @@ class MoveOrder extends Order {
 	// Private for validation reasons
 	private constructor (parameters: string[], start: PIXI.Point, end: PIXI.Point, province: Province) { 
 		super({
-			turn: 0, // TODO: turn from Game
+			turn: IslandIV.Game.turn,
 			type: "Move",
 			state: "New",
 			parameters: parameters
