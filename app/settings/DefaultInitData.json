@@ -1,0 +1,38 @@
+{
+	"provinces": [
+		{ "population": 1, "size": 2, "resources": [] },
+		{ "population": 1, "size": 2, "resources": [] },
+		{ "population": 1, "size": 2, "resources": [] },
+		{ "population": 1, "size": 2, "resources": [] },
+		{ "population": 1, "size": 2, "resources": [] },
+		{ "population": 1, "size": 2, "resources": [] },
+		{ "population": 1, "size": 2, "resources": [] },
+		{ "population": 1, "size": 2, "resources": [] },
+		{ "population": 1, "size": 2, "resources": [] },
+		{ "population": 1, "size": 2, "resources": [] },
+		{ "population": 1, "size": 2, "resources": [] },
+		{ "population": 1, "size": 2, "resources": [] }
+	],
+
+	"players": [{
+		"startingLocation": 3,
+		"color": "RED",
+		"name": "Punajänö",
+		"description": "Pahat kommunistit",
+
+		"gold": 666,
+		"mp": 13,
+		"faith": [],
+		"techs": []
+	}, {
+		"startingLocation": 8,
+		"color": "GREEN",
+		"name": "Viherjänö",
+		"description": "Pahemmat hipit",
+
+		"gold": 6616,
+		"mp": 13,
+		"faith": [],
+		"techs": []
+	}]
+}

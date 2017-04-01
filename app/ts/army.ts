@@ -5,6 +5,7 @@
 
 // An army consists of all units of a single player in a single province / order
 class Army extends Drawable implements IArmy {
+	readonly ownerID: number | null = null; 
 	readonly units: UnitList = {};
 	readonly Province: Province;
 	private amounts: UnitList = {};
@@ -20,8 +21,9 @@ class Army extends Drawable implements IArmy {
 		return true; */
 	}
 
-	constructor(data: IArmy | null, color: PlayerColor, province: Province) {
+	constructor(data: IArmy | null, color: PlayerColor, province: Province, id: number | null = null) {
 		super(); // Does not have a basic picture
+		this.ownerID = id; // TODO:
 		this.Province = province;
 
 		if (data === null) return; // Must be able to create empty containers

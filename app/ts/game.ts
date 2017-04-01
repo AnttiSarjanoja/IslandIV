@@ -1,4 +1,5 @@
 /// <reference path="player.ts" />
+/// <reference path="province.ts" />
 /// <reference path="../../common/interfaces.ts" />
 /// <reference path="../../common/settings.ts" />
 
@@ -13,6 +14,7 @@ class Game implements IGame {
 	readonly settingsFile: string = "";
 	readonly provinceFile: string = "";
 	readonly religions: IReligion[] = [];
+	readonly neutralProvinces: Province[] = [];
 
 	readonly ProvinceSettings: ProvinceSettings;
 	readonly GameSettings: GameSettings;
@@ -24,9 +26,15 @@ class Game implements IGame {
 		this.ProvinceSettings = provinceSettings;
 		this.GameSettings = gameSettings;
 
-		for (var playerData of data.players) {
-			this.players.push(new Player(playerData));	
-		}
+		// for (var playerData of data.players) {
+		data.players.forEach((playerData: IPlayer, index: number) => {
+			this.players.push(new Player(playerData, index));
+		});
+		data.neutralProvinces.forEach((provinceData: IProvince, index: number) => {
+			let obj = Loader.ProvinceSettings.provinces[provinceData.id];
+			this.neutralProvinces.push(new Province(obj.x, obj.y, obj.name, obj.neighbours, provinceData, "GRAY"));
+		});
+
 		Game.CurrentPlayer = this.players[0];
 	}
 }

@@ -7,7 +7,6 @@
 
 // Holds general information about the player. Any need for more complicated implementation?
 class Player implements IPlayer {
-	readonly id: number;
 	readonly color: PlayerColor;
 	readonly name: string;
 	readonly description: string;
@@ -19,8 +18,9 @@ class Player implements IPlayer {
 	readonly faith: number[] = [];
 	readonly techs: string[] = [];
 	
-	constructor(data: IPlayer) {
-		this.id = data.id;
+	readonly id: number;
+	constructor(data: IPlayer, id: number) {
+		this.id = id; // From game?
 		this.color = data.color;
 		this.name = data.name;
 		this.description = data.description;
@@ -35,7 +35,7 @@ class Player implements IPlayer {
 			this.provinces.push(new Province(obj.x, obj.y, obj.name, obj.neighbours, provinceData, this.color));
 		}
 
-		// TODO: Generate classes
-		// this.orders = data.orders;
+		// TODO: Generate instances
+		// this.orders = data.orders; // History of orders, mb is unnecessary?
 	}
 }

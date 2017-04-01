@@ -5,6 +5,7 @@ type PlayerColor =
 	"YELLOW" |
 	"PURPLE" |
 	"ORANGE" |
+	"GRAY" |
 	"ERROR" // TODO: Should use this?
 
 function ColorToNumber(color: PlayerColor) : number {
@@ -15,6 +16,7 @@ function ColorToNumber(color: PlayerColor) : number {
 	case "YELLOW": return 0xFFFF00;
 	case "PURPLE": return 0x800080;
 	case "ORANGE": return 0xFFA500;
+	case "GRAY":   return 0x888888;
 	}
 	console.log("Faulty player color warning!");
 	return 0xFFFFFF; // TODO: Error color

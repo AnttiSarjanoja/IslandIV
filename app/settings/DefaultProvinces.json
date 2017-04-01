@@ -1,5 +1,5 @@
 { 
-  "map": "devmap.png",
+  "mapIMG": "devmap.png",
   "provinces":
   [
     { "x": 591, "y": 41, "name": "Provinssi Nolla", "neighbours": [1,3] },

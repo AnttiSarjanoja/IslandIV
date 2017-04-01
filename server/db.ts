@@ -2,24 +2,16 @@
 /// <reference path="../common/unit_type.ts" />
 /// <reference path="../common/player_color.ts" />
 
-import * as mongodb from "mongodb";
+import * as mongodb from 'mongodb';
+import * as fs from 'fs';
+
 let server : mongodb.Server = new mongodb.Server('localhost', 27017, {});
 let db : mongodb.Db = new mongodb.Db('mydb', server, { w: 1 });
 
-db.on('open', function() {
-	console.error("Opened connection to Mongo.");
-});
-db.on('close', function(err) {
-	console.error('Connection to Mongo lost: %s', err);
-});
-
-export function Open(cb) {
-	db.open(cb);
-}
-
-export function Close() {
-	db.close();
-}
+db.on('open', function() { console.error("Opened connection to Mongo."); });
+db.on('close', function(err) { console.error('Connection to Mongo lost: %s', err); });
+export function Open(cb) { db.open(cb); }
+export function Close() { db.close(); }
 
 // Gets all relevant gamedata from DB for initiating games to server
 export function GetStuff(cb: (gameArray: IGame[]) => void) {
@@ -57,80 +49,96 @@ export function SaveOrders(player: number, turn: number, orders: any[]) {
 	// TODO: Insert to correct game and player, should only append
 }
 
-// --- Initiating empty game ---
-
-// TODO: Contain only dummy game to test out stuff, proper game initialisation values pls.
-export function InitAll(cb: (games: IGame[]) => void) : void {
+export function InitAll(cb: (games: IGame[]) => void): void {
 	console.log("Creating empty game");
-	UpdateGame(createGame(), cb);
+	let newGame: IGame | null = CreateGame(
+		"Awesomegame6616",
+		"DefaultSettings.json",
+		"DefaultProvinces.json",
+		"DefaultInitData.json"
+	);
+	if (newGame) UpdateGame(newGame, cb);
+	else cb([]);
 }
 
-export function createGame() : IGame {
-	runningPlayer = 0; 
-	runningProvince = 0;
+// --- Creating empty game ---
+
+function gameCreationError(name: string, error: any) {
+	console.log("Error creating a new game: '" + name + "'");
+	console.log("  Reason: " + error);
+}
+
+// Megafunction
+// 1) Load given files
+// 2) Validate given files
+// 3) Create everything from given data
+
+export function CreateGame(name: string, settingsFile: string, provinceFile: string, initFile: string): IGame | null {
+	let provinceSettings: ProvinceSettings; // This is loaded only to check validity to initData
+	let gameSettings: GameSettings; // Unit prices, powers etc.
+	let initData: InitData; // Data for creating provinces and starting positions
+	
+	// File loading may throw errors
+	try {
+		provinceSettings = JSON.parse(fs.readFileSync(__dirname + '/public/settings/' + provinceFile, 'utf8'));
+		gameSettings = JSON.parse(fs.readFileSync(__dirname + '/public/settings/' + settingsFile, 'utf8'));
+		initData = JSON.parse(fs.readFileSync(__dirname + '/public/settings/' + initFile, 'utf8'));
+	}
+	catch (e) {
+		gameCreationError(name, e);
+		return null;
+	}
+	// Validation
+	// TODO: Validate ~everything
+	if (provinceSettings.provinces.length !== initData.provinces.length) {
+		gameCreationError(name, "ProvinceSettings and InitData does not contain same amount of data!");
+		return null;
+	}
+
+	let newProvinces: IProvince[] = [];
+	provinceSettings.provinces.forEach((province: ProvinceData, index: number) => {
+		let data: InitProvinceData = initData.provinces[index];
+		newProvinces.push({
+			id: index, // Province must have index saved since it can move between players
+			size: data.size,
+			population: data.population,
+			armies: [], // TODO: When initData contain neutral forces createArmy(3, 1)
+			resources: data.resources
+		});
+	});
+
+	let newPlayers: IPlayer[] = [];
+	initData.players.forEach((data: InitPlayerData, index: number) => {
+		// Mb. someday multiple provinces
+		let startProvince = newProvinces.splice(data.startingLocation, 1)[0];
+		startProvince.armies.push({
+			ownerID: index,
+			units: { infantry: 3, cavalry: 1 }
+		});
+
+		newPlayers.push({
+			color: data.color,
+			name: data.name, // Customizable?
+			description: data.description, // Customizable?
+			orders: [],
+
+			// Nation related
+			provinces: [startProvince],
+			gold: data.gold,
+			mp: data.mp,
+			faith: data.faith,
+			techs: data.techs
+		});
+	});
+
 	return {
-		name: "Awesomegame6616",
-		players: [createPlayer(6), createPlayer(6)],
+		name: name,
+		players: newPlayers,
+		neutralProvinces: newProvinces,
 		messages: [],
 		turn: 1,
-		settingsFile: "settings/DefaultSettings.json",
-		provinceFile: "settings/DefaultProvinces.json",
+		settingsFile: settingsFile,
+		provinceFile: provinceFile,
 		religions: []
-	}
-}
-
-let runningPlayer : number = 0;
-function createPlayer(provinceAmt : number) : IPlayer {
-	let color: PlayerColor = "ERROR";
-	switch (runningPlayer) {
-		case 0: color = "RED"; break;
-		case 1: color = "GREEN"; break;
-		case 2: color = "ORANGE"; break;
-		case 3: color = "PURPLE"; break;
-		case 4: color = "BLUE"; break;
-		case 5: color = "YELLOW"; break;
-	}
-	let provinces : IProvince[] = [];
-	for(var i = 0; i < provinceAmt; i++) {
-		provinces.push(createProvince());
-		runningProvince += 1;
-	}
-
-	runningPlayer += 1;
-	return {
-		id: runningPlayer,
-		color: color,
-		name: "METRIN SLERBA",
-		description: "The pillar that is purity",
-		orders: [],
-
-		// Nation related
-		provinces: provinces,
-		gold: 5,
-		mp: 3,
-		faith: [],
-		techs: []
-	}
-}
-
-
-let runningProvince: number = 0;
-function createProvince(): IProvince {
-	return {
-		id: runningProvince,
-		size: 3,
-		population: 1,
-		armies: [createArmy(3, 1)],
-		resources: []
-	}
-}
-
-function createArmy(infantryAmt: number, cavalryAmt: number): IArmy {
-	return {
-		units: {
-			infantry: infantryAmt,
-			cavalry: cavalryAmt,
-			ship: 0
-		}
 	}
 }

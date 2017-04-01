@@ -10,6 +10,7 @@ export default class Game implements IGame {
 	readonly settingsFile: string = "";
 	readonly provinceFile: string = "";
 	readonly religions: IReligion[] = [];
+	readonly neutralProvinces: IProvince[] = [];
 
 	readonly ProvinceSettings: ProvinceSettings;
 	readonly GameSettings: GameSettings;
@@ -28,6 +29,7 @@ export default class Game implements IGame {
 		this.players = data.players;
 		this.messages = data.messages;
 		this.religions = data.religions;
+		this.neutralProvinces = data.neutralProvinces;
 
 		/*
 		for (var playerData of data.players) {

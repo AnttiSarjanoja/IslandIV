@@ -33,7 +33,7 @@ abstract class Loader {
 
 	public static LoadImages() {
 		let loader: PIXI.loaders.Loader = new PIXI.loaders.Loader('./img/');
-		loader.add('tausta', Loader.ProvinceSettings.map);
+		loader.add('tausta', Loader.ProvinceSettings.mapIMG);
 		loader.add('unit', Loader.GameSettings.unitIMG); // Prolly temporary, if using spritesheets
 		loader.add('province', Loader.GameSettings.provinceIMG);
 
@@ -83,7 +83,7 @@ abstract class Loader {
 		function provinceResponseHandler() {
 			Loader.SaveProvinceSettings(this.response);
 			let settingsRequest = new XMLHttpRequest();
-			settingsRequest.open('GET', Loader.GameData.settingsFile, true); // TODO: Undefined -> Default file?
+			settingsRequest.open('GET', "./settings/" + Loader.GameData.settingsFile, true); // TODO: Undefined -> Default file?
 			settingsRequest.responseType = 'json';
 			settingsRequest.onload = gameSettingsResponseHandler;
 
@@ -93,7 +93,7 @@ abstract class Loader {
 			// let parsedJSON = this.response; //JSON.parse(this.response);
 			Loader.SaveGameData(this.response);
 			let provinceRequest = new XMLHttpRequest();
-			provinceRequest.open('GET', Loader.GameData.provinceFile, true); // TODO: Undefined -> Default file?
+			provinceRequest.open('GET', "./settings/" + Loader.GameData.provinceFile, true); // TODO: Undefined -> Default file?
 			provinceRequest.responseType = 'json';
 			provinceRequest.onload = provinceResponseHandler;
 

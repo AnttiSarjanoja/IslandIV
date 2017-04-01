@@ -14,6 +14,7 @@ class App {
 	//Run configuration methods on the Express instance.
 	constructor() {
 		this.express = express();
+
 		this.middleware();
 		this.routes();
 
@@ -24,7 +25,7 @@ class App {
 					console.log(games.map((game: IGame) => { return game.name + " turn: " + game.turn; }));
 					this.initGames(games);
 				}
-				else console.log("Got some random *dung*");
+				else console.log("Got nothing / random *dung*");
 			});
 		});
 	}
@@ -33,8 +34,8 @@ class App {
 		for(let game of games) {
 			try {
 				let newGame: Game = new Game(game,
-					JSON.parse(fs.readFileSync(__dirname + '/public/' + game.provinceFile, 'utf8')),
-					JSON.parse(fs.readFileSync(__dirname + '/public/' + game.settingsFile, 'utf8'))
+					JSON.parse(fs.readFileSync(__dirname + '/public/settings/' + game.provinceFile, 'utf8')),
+					JSON.parse(fs.readFileSync(__dirname + '/public/settings/' + game.settingsFile, 'utf8'))
 				);
 				this.Games.push(newGame);
 			}
@@ -60,7 +61,8 @@ class App {
 			turn: game.turn,
 			settingsFile: game.settingsFile,
 			provinceFile: game.provinceFile,
-			religions: game.religions
+			religions: game.religions,
+			neutralProvinces: game.neutralProvinces
 		}
 	}
 
@@ -75,7 +77,15 @@ class App {
 			}
 			else {
 				console.log("Sending dummy gamedata");
-				res.status(200).json(this.filterGameData(db.createGame())); // TODO: Status does not work here :(
+				let newGame: IGame | null = db.CreateGame(
+					"Awesomegame6616",
+					"DefaultSettings.json",
+					"DefaultProvinces.json",
+					"DefaultInitData.json"
+				);
+
+				if (newGame) res.status(200).json(this.filterGameData(newGame)); // TODO: Status does not work here :(
+				else console.log("Making the game failed :(");
 			} // Send dummydata when not using DB
 		});
 		this.express.post('/orders', (req, res) => {
