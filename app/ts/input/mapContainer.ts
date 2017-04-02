@@ -77,8 +77,9 @@ class MapContainer {
 
 	// General UI Input, affects everything
 	public Resize() {
-		this.renderer.resize((window.innerWidth) / this.canvasScale, (window.innerHeight) / this.canvasScale); /// 2 / 2
-		this.renderer.view.style.width = window.innerWidth + "px";
+		// TODO: Get column widths from somewhere vs. this hardcoding
+		this.renderer.resize((window.innerWidth - 240) / this.canvasScale, (window.innerHeight) / this.canvasScale); /// 2 / 2
+		this.renderer.view.style.width = window.innerWidth - 240 + "px";
 		this.renderer.view.style.height = window.innerHeight + "px";
 		this.renderer.view.style.display = "block";
 		this.renderer.view.style.margin = "0";

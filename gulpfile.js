@@ -5,7 +5,7 @@ var BUILD_DIR = 'build';
 var PUBLIC_DIR = 'build/public';
 
 gulp.task('app-typescript', function() {
-	return gulp.src('app/ts/**/*.ts')
+	return gulp.src(['app/ts/**/*.ts', 'common/**/*.ts'])
     .on('change', function(file) { console.log(file + " changed."); })
     .pipe(ts({
         outFile: "main.js",
@@ -16,10 +16,10 @@ gulp.task('app-typescript', function() {
 	.pipe(gulp.dest(PUBLIC_DIR));
 });
 gulp.task('watch-app-ts', function() {
-    gulp.watch('app/ts/**/*.ts', ['app-typescript']);
+    gulp.watch(['app/ts/**/*.ts', 'common/**/*.ts'], ['app-typescript']);
 });
 gulp.task('server-typescript', function() {
-    return gulp.src(['server/**/*.ts', 'app/ts/player_color.ts'])
+    return gulp.src(['server/**/*.ts', 'common/**/*.ts'])
     .on('change', function(file) { console.log(file + " changed."); })
     .pipe(ts({
         strictNullChecks: true
@@ -28,7 +28,7 @@ gulp.task('server-typescript', function() {
     .pipe(gulp.dest(BUILD_DIR));
 });
 gulp.task('watch-server-ts', function() {
-    gulp.watch('server/**/*.ts', ['server-typescript']);
+    gulp.watch(['server/**/*.ts', 'common/**/*.ts'], ['server-typescript']);
 });
 gulp.task('html', function() {
     return gulp.src('app/html/**')
@@ -41,9 +41,15 @@ gulp.task('json', function() {
 gulp.task('watch-json', function() {
     gulp.watch('app/settings/**/*.json', ['json']);
 });
+gulp.task('watch-json', function() {
+    gulp.watch('app/settings/**/*.json', ['json']);
+});
 gulp.task('css', function() {
     return gulp.src('app/css/**')
     .pipe(gulp.dest(PUBLIC_DIR));
+});
+gulp.task('watch-css', function() {
+    gulp.watch('app/css/**/*.css', ['css']);
 });
 gulp.task('watch-html', function() {
     gulp.watch('app/html/**', ['html']);
@@ -56,7 +62,7 @@ gulp.task('watch-img', function() {
     gulp.watch('app/img/**', ['img']);
 });
 gulp.task('lib', function() {
-    return gulp.src(['node_modules/pixi.js/dist/pixi.js', 'app/pixi-extra-filters/bin/pixi-extra-filters.js'])
+    return gulp.src(['node_modules/pixi.js/dist/pixi.js', 'node_modules/jquery/dist/jquery.min.js', 'app/pixi-extra-filters/bin/pixi-extra-filters.js'])
     .pipe(gulp.dest(PUBLIC_DIR + '/lib'));
 });
-gulp.task('default', ['app-typescript', 'server-typescript', 'html', 'json', 'css', 'img', 'lib', 'watch-app-ts', 'watch-server-ts', 'watch-html', 'watch-img', 'watch-json']);
+gulp.task('default', ['app-typescript', 'server-typescript', 'html', 'json', 'css', 'img', 'lib', 'watch-app-ts', 'watch-server-ts', 'watch-html', 'watch-img', 'watch-json', 'watch-css']);

@@ -43,6 +43,7 @@ export function UpdateGame(game: IGame, cb?: (games: IGame[]) => void): void {
 // NOTE: Orders are validated already at this point
 // TODO: Right parameters, atm. are dummy values
 export function SaveOrders(player: number, turn: number, orders: any[]) {
+	console.log('\n' + (new Date().toLocaleString()));
 	console.log("From player: " + player + ", turn: " + turn); // TODO: Just a dummy
 	console.log(JSON.stringify(orders)); // TODO: Just a dummy
 

@@ -1,9 +1,11 @@
 /// <reference path="game.ts" />
 /// <reference path="loader.ts" />
+/// <reference path="ui.ts" />
 /// <reference path="drawable/drawableBase.ts" />
 /// <reference path="input/input.ts" />
 /// <reference path="input/mapContainer.ts" />
 /// <reference path="../pixi-typescript/pixi.js.d.ts" />
+
 
 // Style:
 // Use tabs for indenting, no spaces
@@ -29,15 +31,20 @@ class IslandIV {
 	static set Game(game: Game) { this._currentGame = game; }
 	
 	public static Init() {
+		UI.Loading();
+
 		console.log(this.app.renderer instanceof PIXI.WebGLRenderer ? "Right renderer" : "Using some slower renderer");
 
 		// The below callback is called when all loading stuff has been done
-		// TODO: Load-window :3
 		Loader.Init(() => {
 			PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; // NOTE: If this doesn't work, make sure pixi.js.d.ts is updated
 			Input.Init(new MapContainer(this.app.stage, this.app.renderer)); // Mb save the container somewhere else?
 			DrawableBase.Init(this.app.stage, this.app.ticker);
-			document.body.appendChild(this.app.view);
+			
+			UI.Game(this.app.view);
+			setTimeout(() => { // Just to see stuff with a small delay
+				UI.LoadingOff();
+			}, 1000);
 		});
 	}
 }
