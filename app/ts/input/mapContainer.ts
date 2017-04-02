@@ -1,3 +1,4 @@
+/// <reference path="../drawable/drawableBase.ts" />
 /// <reference path="../../pixi-typescript/pixi.js.d.ts" />
 
 // This class handles basically everything concerning Map-element and the window containing it
@@ -55,11 +56,19 @@ class MapContainer {
 
 	// Prevents from going over edges
 	// The *duckery* in here is following: position cannot be over 0, and cannot be below -stage + renderer
-	private moveStage (x: number, y: number) {
-		let xMax: number = -this.stage.width + this.renderer.width; // Easier to understand this way
-		let yMax: number = -this.stage.height + this.renderer.height;
-		if (x !== undefined ) this.stage.position.x = Math.min(Math.max(this.stage.position.x + x, xMax), 0);
-		if (y !== undefined )	this.stage.position.y = Math.min(Math.max(this.stage.position.y + y, yMax), 0);
+	private get xMax(): number { return -this.stage.width + this.renderer.width; } // Easier to understand this way
+	private get yMax(): number { return -this.stage.height + this.renderer.height; }
+
+	private moveStage (x?: number, y?: number) {
+		if (x !== undefined ) this.stage.position.x = Math.min(Math.max(this.stage.position.x + (x > 0 ? Math.ceil(x) : Math.floor(x)), this.xMax), 0);
+		if (y !== undefined )	this.stage.position.y = Math.min(Math.max(this.stage.position.y + (y > 0 ? Math.ceil(y) : Math.floor(y)), this.yMax), 0);
+	}
+	// Centers the stage on given point
+	public FocusStage(point: PIXI.Point) {
+		let x: number = -point.x + (this.renderer.width / 2);
+		let y: number = -point.y + (this.renderer.height / 2);
+		this.stage.position.x = Math.min(Math.max(x, this.xMax), 0) | 0;
+		this.stage.position.y = Math.min(Math.max(y, this.yMax), 0) | 0;
 	}
 
 	public handleEvt (evt: KeyboardEvent): boolean {

@@ -6,20 +6,20 @@
 
 // Static class
 abstract class Input {
-	private static mapContainer: MapContainer;
+	public static MapContainer: MapContainer;
 	private static selected: Drawable[] = [];
 	private static provinces: Drawable[] = []; // Needed for getting province under dragged sprite
 
 	public static Init(map: MapContainer) {
-		this.mapContainer = map;
-		window.onresize = () => this.mapContainer.Resize();
+		this.MapContainer = map;
+		window.onresize = () => this.MapContainer.Resize();
 		document.addEventListener("keydown", (evt : KeyboardEvent) => this.handleKeyDown(evt));
 	}
 
 	// TODO: Should work, just feels a bit shady. Could use a sorted array of handlers of (evt) => boolean
 	private static handleKeyDown (evt: KeyboardEvent) {
 		// Add all keyboard handlers 
-		if (this.mapContainer.handleEvt(evt)) return;
+		if (this.MapContainer.handleEvt(evt)) return;
 		if (evt.keyCode === 83) Order.SendOrders(); // 's'
 		else console.log("No handler for key '" + evt.key + "'");
 	}

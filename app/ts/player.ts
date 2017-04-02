@@ -19,6 +19,21 @@ class Player implements IPlayer {
 	readonly techs: string[] = [];
 	
 	readonly id: number;
+
+	// Gets the center point of all owned provinces
+	public FocusCenter(): PIXI.Point {
+		let xSum: number = 0;
+		let ySum: number = 0;
+		this.provinces.forEach((province: Province) => {
+			xSum += province.Container.position.x;
+			ySum += province.Container.position.y;
+		});
+		return new PIXI.Point(
+			(xSum / this.provinces.length) | 0,
+			(ySum / this.provinces.length) | 0,
+		);
+	}
+
 	constructor(data: IPlayer, id: number) {
 		this.id = id; // From game?
 		this.color = data.color;

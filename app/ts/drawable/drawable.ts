@@ -45,8 +45,8 @@ abstract class Drawable {
 	public CenterContainer() {
 		this.Container.calculateBounds(); // Bounds won't update if nothing moves but e.g. something is removed
 		let bound: PIXI.Rectangle = this.Container.getLocalBounds();
-		this.Container.pivot.x = bound.x + (bound.width / 2);
-		this.Container.pivot.y = bound.y + (bound.height / 2);
+		this.Container.pivot.x = (bound.x + (bound.width / 2)) | 0;
+		this.Container.pivot.y = (bound.y + (bound.height / 2)) | 0;
 	}
 
 	/* Obsolete?
@@ -54,9 +54,16 @@ abstract class Drawable {
 		this.Container.addChild(drawable.Container);
 	} */
 
+	private setAnchor(obj: PIXI.Sprite | PIXI.Text) {
+		obj.anchor.set(
+			(obj.width / 2 | 0) / obj.width, // Needs bit of magic to work with SCALE_MODES.NEAREST
+			(obj.height / 2 | 0) / obj.height
+		);
+	}
+
 	public AddText(text: string, x: number, y: number) {
 		let newText: PIXI.Text = new PIXI.Text(text, font); // TODO: Fonts
-		newText.anchor.set(0.5, 0.5);
+		this.setAnchor(newText);
 		newText.x = x;
 		newText.y = y;
 		this.Container.addChild(newText);
@@ -88,7 +95,7 @@ abstract class Drawable {
 		this.sprites.push(sprite);
 		
 		// All sprites must be centered for dragging to look nice
-		sprite.anchor.set(0.5, 0.5);
+		this.setAnchor(sprite);
 		if (spritedata.x !== undefined) sprite.x = spritedata.x;
 		if (spritedata.y !== undefined) sprite.y = spritedata.y;
 		if (spritedata.scale !== undefined) sprite.scale.set(spritedata.scale, spritedata.scale);

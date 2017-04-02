@@ -1,5 +1,6 @@
-/// <reference path="../../pixi-typescript/pixi.js.d.ts" />
 /// <reference path="../token.ts" />
+/// <reference path="../ui.ts" />
+/// <reference path="../../pixi-typescript/pixi.js.d.ts" />
 
 class TokenInput {
 	private dragged: boolean = false;
@@ -24,6 +25,8 @@ class TokenInput {
 	private hoverOn() {
 		if (this.dragged) return; // Avoid *duckery* when cursor moves off the object when dragging
 		this.token.GlowOn(); //.Container.filters = [Effects.RED_OUTLINE];
+		if (this.token instanceof Province) UI.TextsToRight([this.token.Name, this.token.population.toString()]);
+		else if (this.token instanceof UnitToken) UI.TextsToRight([this.token.Army.Province.Name, this.token.Type]);
 	}
 
 	private hoverOff() {

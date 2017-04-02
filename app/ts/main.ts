@@ -31,18 +31,19 @@ class IslandIV {
 	static set Game(game: Game) { this._currentGame = game; }
 	
 	public static Init() {
-		UI.Loading();
-
 		console.log(this.app.renderer instanceof PIXI.WebGLRenderer ? "Right renderer" : "Using some slower renderer");
+		// MAJOR NOTE: Pls don't scale anything < 1 since we try to use pixel graphics without blending
+		PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; // NOTE: If this doesn't work, make sure pixi.js.d.ts is updated
 
+		UI.Loading();		
 		// The below callback is called when all loading stuff has been done
 		Loader.Init(() => {
-			PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; // NOTE: If this doesn't work, make sure pixi.js.d.ts is updated
-			Input.Init(new MapContainer(this.app.stage, this.app.renderer)); // Mb save the container somewhere else?
+			Input.Init(new MapContainer(this.app.stage, this.app.renderer)); // TODO: save the container somewhere else
 			DrawableBase.Init(this.app.stage, this.app.ticker);
 			
 			UI.Game(this.app.view);
 			setTimeout(() => { // Just to see stuff with a small delay
+				Input.MapContainer.FocusStage(Game.CurrentPlayer.FocusCenter());
 				UI.LoadingOff();
 			}, 1000);
 		});
