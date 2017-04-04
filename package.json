@@ -7,7 +7,9 @@
   "dependencies": {
     "body-parser": "^1.16.1",
     "express": "^4.14.1",
-    "jquery": "^3.2.1"
+    "jquery": "^3.2.1",
+    "mongodb": "^2.2.25",
+    "pixi.js": "^4.4.4"
   },
   "devDependencies": {
     "@types/body-parser": "0.0.34",
