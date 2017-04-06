@@ -1,5 +1,14 @@
-/// <reference path="../drawable/drawableBase.ts" />
-/// <reference path="../../pixi-typescript/pixi.js.d.ts" />
+/// <reference path="drawable/drawableBase.ts" />
+/// <reference path="../../common/settings.ts" />
+/// <reference path="../pixi-typescript/pixi.js.d.ts" />
+
+/*
+drawBorder()
+provinces.foreach
+ if neighbour in drawedprovinces, return
+ if neighbour owned -> ownborder, else thick
+ drawedProvinces.push
+*/
 
 // This class handles basically everything concerning Map-element and the window containing it
 // No sense to split into separate inputclass
@@ -14,9 +23,11 @@ class MapContainer {
 	constructor (
 		// NOTE: Cannot use stage as container since units etc. are added to stage, and children share interactions
 		private stage: PIXI.Container, // The non-interactive basecontainer, should be same size as container
-		private renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer) {
+		private renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer,
+		provinceSettings: ProvinceSettings) {
 
 		let tausta: PIXI.Sprite = new PIXI.Sprite(DrawableBase.Resource['tausta'].texture);
+		tausta.tint = 0x009900;
 		this.container.addChild(tausta);
 		this.container.interactive = true;
 
@@ -26,9 +37,11 @@ class MapContainer {
 			.on('pointerupoutside', (evt : PIXI.interaction.InteractionEvent) => this.onPointerEnd(evt))
 			.on('pointermove', (evt : PIXI.interaction.InteractionEvent) => this.onPointerMove(evt));
 
-		this.stage.addChild(this.container);
+		this.stage.addChildAt(this.container, 0);
 		this.Resize(); // Needs to be done once at first
 	}
+
+	// public CreateProvince // AASDF
 
 	private onPointerStart (evt : PIXI.interaction.InteractionEvent) {
 		// TODO: Get pointerdata.button for different button interactions

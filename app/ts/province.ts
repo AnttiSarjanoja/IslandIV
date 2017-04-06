@@ -2,8 +2,9 @@
 /// <reference path="token.ts" />
 /// <reference path="drawable/drawable.ts" />
 /// <reference path="input/input.ts" />
-/// <reference path="../../common/player_color.ts" />
 /// <reference path="../../common/interfaces.ts" />
+/// <reference path="../../common/player_color.ts" />
+/// <reference path="../../common/settings.ts" />
 
 class Province extends Token implements IProvince {
 	public static Picture: string = 'province'; // Default value
@@ -19,7 +20,7 @@ class Province extends Token implements IProvince {
 		private readonly x: number, // Must be saved for army placings 
 		private readonly y: number,
 		public Name: string,
-		public Neighbours: number[],
+		public Neighbours: ProvinceNeighbour[],
 		data: IProvince, 
 		color: PlayerColor) 
 	{

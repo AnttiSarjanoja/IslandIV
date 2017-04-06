@@ -9,11 +9,29 @@ interface ProvinceSettings {
 	provinces: ProvinceData[],
 }
 interface ProvinceData {
-	x: number,
+	x: number, // Place for all untis etc.
 	y: number,
 	name: string,
-	neighbours: number[], // Cannot be empty!
+	type: ProvinceType,
+	neighbours: ProvinceNeighbour[], // Cannot be empty!
 }
+type ProvinceType =
+	"Plains" |
+	"Sea" |
+	"Deep sea"
+interface ProvinceNeighbour {
+	neighbourIndex: number,
+	border: BorderPoint[],
+	borderType: BorderType
+}
+interface BorderPoint {
+	x: number,
+	y: number,
+	invis: boolean
+}
+type BorderType =
+	"Normal" |
+	"River"
 
 // InitProvinceData is only used when creating game to populate new entities
 interface InitProvinceData {

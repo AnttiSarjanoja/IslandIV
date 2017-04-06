@@ -117,6 +117,7 @@ abstract class Drawable {
 		// Go through whole PIXI object tree and change tints
 		function recursiveTint(child: PIXI.DisplayObject, tint: number) {
 			if (child instanceof PIXI.Sprite) {
+				// PIXI.CanvasTinter.tintWithMultiply();
 				child.tint = tint;
 			}
 			else if(child instanceof PIXI.Container) {

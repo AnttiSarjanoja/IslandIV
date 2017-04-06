@@ -1,5 +1,5 @@
 /// <reference path="../../pixi-typescript/pixi.js.d.ts" />
-/// <reference path="mapContainer.ts" />
+/// <reference path="../mapContainer.ts" />
 /// <reference path="../drawable/drawable.ts" />
 /// <reference path="tokenInput.ts" />
 /// <reference path="../order.ts" />

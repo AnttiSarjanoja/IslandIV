@@ -28,7 +28,7 @@ abstract class Order extends Drawable implements IOrder {
 		let strippedOrders: IOrder[] = this.newOrders.map((order: Order) => {
 			return { turn: order.turn, type: order.type, state: order.state, parameters: order.parameters };
 		});
-		let sentObj: Object = { player: Game.CurrentPlayer.id, turn: IslandIV.Game.turn, orders: strippedOrders };
+		let sentObj: Object = { player: Game.CurrentPlayer.id, turn: IslandIV.CurrentGame.turn, orders: strippedOrders };
 		console.log(JSON.stringify(sentObj));
 
 		let request = new XMLHttpRequest();
@@ -51,7 +51,9 @@ class MoveOrder extends Order {
 	// TODO: Tidy this, order is somewhat messy
 	public static Create(fromProvince: Province, toProvince: Province, unit: UnitToken) {
 		// 1. Validate
-		if (fromProvince !== toProvince && !fromProvince.Neighbours.some((value: number) => { return value === (toProvince.id); })) {
+		if (fromProvince !== toProvince && !fromProvince.Neighbours.some(
+			(neighbour: ProvinceNeighbour) => { return neighbour.neighbourIndex === (toProvince.id); }))
+		{
 			console.log("Not a neighbour!");
 			return;
 		}
@@ -105,7 +107,7 @@ class MoveOrder extends Order {
 	// Private for validation reasons
 	private constructor (parameters: string[], start: PIXI.Point, end: PIXI.Point, province: Province) { 
 		super({
-			turn: IslandIV.Game.turn,
+			turn: IslandIV.CurrentGame.turn,
 			type: "Move",
 			state: "New",
 			parameters: parameters

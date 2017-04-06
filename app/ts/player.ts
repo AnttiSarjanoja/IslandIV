@@ -1,4 +1,4 @@
-/// <reference path="loader.ts" />
+/// <reference path="main.ts" />
 /// <reference path="order.ts" />
 /// <reference path="province.ts" />
 /// <reference path="../../common/interfaces.ts" />
@@ -34,7 +34,7 @@ class Player implements IPlayer {
 		);
 	}
 
-	constructor(data: IPlayer, id: number) {
+	constructor(data: IPlayer, id: number, provinceSettings: ProvinceSettings) {
 		this.id = id; // From game?
 		this.color = data.color;
 		this.name = data.name;
@@ -46,7 +46,7 @@ class Player implements IPlayer {
 		this.techs = data.techs;
 
 		for (var provinceData of data.provinces) {
-			let obj = Loader.ProvinceSettings.provinces[provinceData.id];
+			let obj = provinceSettings.provinces[provinceData.id];
 			this.provinces.push(new Province(obj.x, obj.y, obj.name, obj.neighbours, provinceData, this.color));
 		}
 

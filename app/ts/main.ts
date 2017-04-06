@@ -3,9 +3,8 @@
 /// <reference path="ui.ts" />
 /// <reference path="drawable/drawableBase.ts" />
 /// <reference path="input/input.ts" />
-/// <reference path="input/mapContainer.ts" />
+/// <reference path="mapContainer.ts" />
 /// <reference path="../pixi-typescript/pixi.js.d.ts" />
-
 
 // Style:
 // Use tabs for indenting, no spaces
@@ -20,32 +19,29 @@
 
 document.body.onload = function () { IslandIV.Init(); };
 
-// TODO: Namespace? (like PIXI.stuff)
-// TODO: Rename base class
-class IslandIV {
-	private static version : string = "0.0";
-	private static app : PIXI.Application = new PIXI.Application();
-	private static _currentGame: Game;
+namespace IslandIV {
+	export const Version: string = "0.0";
+	export const PIXIApp: PIXI.Application = new PIXI.Application();
+	export let CurrentGame: Game; // The running game instance, mb someday switch between all games
 
-	static get Game(): Game { return this._currentGame; }
-	static set Game(game: Game) { this._currentGame = game; }
-	
-	public static Init() {
-		console.log(this.app.renderer instanceof PIXI.WebGLRenderer ? "Right renderer" : "Using some slower renderer");
-		// MAJOR NOTE: Pls don't scale anything < 1 since we try to use pixel graphics without blending
-		PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; // NOTE: If this doesn't work, make sure pixi.js.d.ts is updated
+	export function Init() {
+		console.log(PIXIApp.renderer instanceof PIXI.WebGLRenderer ? "Right renderer" : "Using some slower renderer");
+		PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; // MAJOR NOTE: Pls don't scale anything < 1 since we try to use pixel graphics without blending
+		DrawableBase.Init(PIXIApp.stage, PIXIApp.ticker);
+		UI.Loading();
 
-		UI.Loading();		
-		// The below callback is called when all loading stuff has been done
-		Loader.Init(() => {
-			Input.Init(new MapContainer(this.app.stage, this.app.renderer)); // TODO: save the container somewhere else
-			DrawableBase.Init(this.app.stage, this.app.ticker);
-			
-			UI.Game(this.app.view);
+		// TODO: Load gamedata from multiple games?
+		let gameLoader = new IslandIV.GameLoader(() => {
+			if (!gameLoader.Validate) throw new Error("Loader failed :(");
+			DrawableBase.Resource = gameLoader.PixiResources!;
+			IslandIV.CurrentGame = new Game(gameLoader.GameData!, gameLoader.ProvinceSettings!, gameLoader.GameSettings!);
+			UI.Game(PIXIApp.view);
 			setTimeout(() => { // Just to see stuff with a small delay
-				Input.MapContainer.FocusStage(Game.CurrentPlayer.FocusCenter());
+				IslandIV.CurrentGame.CreateMapContainer(PIXIApp.stage, PIXIApp.renderer, IslandIV.CurrentGame.ProvinceSettings);
+				IslandIV.CurrentGame.MapContainer.FocusStage(Game.CurrentPlayer.FocusCenter());
 				UI.LoadingOff();
 			}, 1000);
 		});
+		gameLoader.Load();
 	}
 }
