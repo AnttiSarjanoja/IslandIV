@@ -33,15 +33,19 @@ class Game implements IGame {
 			this.players.push(new Player(playerData, index, this.ProvinceSettings));
 		});
 		data.neutralProvinces.forEach((provinceData: IProvince, index: number) => {
-			let obj = this.ProvinceSettings.provinces[provinceData.id];
-			this.neutralProvinces.push(new Province(obj.x, obj.y, obj.name, obj.neighbours, provinceData, "GRAY"));
+			let settings = this.ProvinceSettings.provinces[provinceData.id];
+			this.neutralProvinces.push(new Province(settings, provinceData));
 		});
 
 		Game.CurrentPlayer = this.players[0];
 	}
-	public CreateMapContainer(stage: PIXI.Container, renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer, provinceSettings: ProvinceSettings) {
-		this._mapContainer = new MapContainer(stage, renderer, provinceSettings);
+	public CreateMapContainer(stage: PIXI.Container, renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer, game: Game) {
+		this._mapContainer = new MapContainer(stage, renderer, game);
 		Input.Init(this._mapContainer);
+	}
+	// Returns all provinces of the game sorted by ID
+	public AllProvinces(): Province[] {
+		return this.neutralProvinces.concat([].concat.apply([], this.players.map((player: Player) => { return player.provinces; }))).sort((a, b) => a.id - b.id);
 	}
 
 }

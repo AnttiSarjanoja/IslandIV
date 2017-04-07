@@ -46,8 +46,8 @@ class Player implements IPlayer {
 		this.techs = data.techs;
 
 		for (var provinceData of data.provinces) {
-			let obj = provinceSettings.provinces[provinceData.id];
-			this.provinces.push(new Province(obj.x, obj.y, obj.name, obj.neighbours, provinceData, this.color));
+			let settings = provinceSettings.provinces[provinceData.id];
+			this.provinces.push(new Province(settings, provinceData, this));
 		}
 
 		// TODO: Generate instances

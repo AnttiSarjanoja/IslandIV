@@ -6,28 +6,24 @@
 // with exception of neighbours and names, which are needed by server too
 interface ProvinceSettings {
 	mapIMG: string, // File, must be located at /img/
+	maskIMG: string,
 	provinces: ProvinceData[],
 }
 interface ProvinceData {
-	x: number, // Place for all untis etc.
+	x: number, // Center-place for all units etc. not used in clockwise calculation though
 	y: number,
 	name: string,
-	type: ProvinceType,
-	neighbours: ProvinceNeighbour[], // Cannot be empty!
+	terrain: Terrain,
+	neighbours: ProvinceNeighbour[],
 }
-type ProvinceType =
+type Terrain =
 	"Plains" |
 	"Sea" |
 	"Deep sea"
 interface ProvinceNeighbour {
-	neighbourIndex: number,
-	border: BorderPoint[],
-	borderType: BorderType
-}
-interface BorderPoint {
-	x: number,
-	y: number,
-	invis: boolean
+	index: number, // Index of neighbour in settings
+	borderPoints: [number, number, boolean][], // [x,y,invis][x,y,invis]
+	borderType?: BorderType
 }
 type BorderType =
 	"Normal" |

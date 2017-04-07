@@ -1,5 +1,5 @@
 /// <reference path="drawable/drawableBase.ts" />
-/// <reference path="../../common/settings.ts" />
+/// <reference path="game.ts" />
 /// <reference path="../pixi-typescript/pixi.js.d.ts" />
 
 /*
@@ -24,9 +24,9 @@ class MapContainer {
 		// NOTE: Cannot use stage as container since units etc. are added to stage, and children share interactions
 		private stage: PIXI.Container, // The non-interactive basecontainer, should be same size as container
 		private renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer,
-		provinceSettings: ProvinceSettings) {
+		game: Game) {
 
-		let tausta: PIXI.Sprite = new PIXI.Sprite(DrawableBase.Resource['tausta'].texture);
+		let tausta: PIXI.Sprite = new PIXI.Sprite(DrawableBase.Resource['map'].texture);
 		tausta.tint = 0x009900;
 		this.container.addChild(tausta);
 		this.container.interactive = true;
@@ -37,11 +37,44 @@ class MapContainer {
 			.on('pointerupoutside', (evt : PIXI.interaction.InteractionEvent) => this.onPointerEnd(evt))
 			.on('pointermove', (evt : PIXI.interaction.InteractionEvent) => this.onPointerMove(evt));
 
+		// Draw area for every province
+		game.AllProvinces().forEach(province => {
+			if (province.Neighbours.some(n => n.borderPoints === undefined)) return; // TODO: Get rid when static data is validated in loader
+			let points: [number, number, boolean][] = province.Points.filter( // Filter uniques
+				(p, pos, a) => { return a.findIndex(pp => (p[0] == pp[0] && p[1] == pp[1])) == pos; });
+			// TODO: Sort clockwise
+
+			let provincePoly = new PIXI.Graphics();
+			provincePoly.beginFill(0x00FFFF); // TODO: Get color from owner
+
+			// draw a shape
+			provincePoly.moveTo(points[points.length - 1][0], points[points.length - 1][1]);
+			points.forEach(point => provincePoly.lineTo(point[0], point[1]));
+			provincePoly.endFill();
+			this.container.addChild(provincePoly);
+		});
+		this.container.addChild(new PIXI.Sprite(DrawableBase.Resource['map-mask'].texture));
+
+		// Draw borders for every province
+		let createdIDs: number[] = [];
+		game.AllProvinces().forEach((province, i, a) => {
+			if (province.Neighbours.some(n => n.borderPoints === undefined)) return; // TODO: Get rid when static data is validated in loader
+			province.Neighbours.forEach(n => {
+				let borderLine = new PIXI.Graphics();
+				borderLine.lineStyle(4, 0xFF0000, 1); // TODO: Style by owner
+
+				// TODO: Path cannot contain same point twice, is this the most pretty version of doing this?
+				let firstpoint: [number, number, boolean] | undefined = n.borderPoints.shift();
+				if (firstpoint) {
+					borderLine.moveTo(firstpoint[0], firstpoint[1]);
+					n.borderPoints.forEach(p => borderLine.lineTo(p[0], p[1]));
+					this.container.addChild(borderLine);
+				}
+			});
+		});
 		this.stage.addChildAt(this.container, 0);
 		this.Resize(); // Needs to be done once at first
 	}
-
-	// public CreateProvince // AASDF
 
 	private onPointerStart (evt : PIXI.interaction.InteractionEvent) {
 		// TODO: Get pointerdata.button for different button interactions

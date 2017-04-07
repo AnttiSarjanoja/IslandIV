@@ -16,21 +16,22 @@ class Province extends Token implements IProvince {
 	readonly population: number;
 	readonly resources: string[];
 
+	get Name(): string { return this.settings.name; };
+	get Neighbours(): ProvinceNeighbour[] { return this.settings.neighbours; }; // TODO: Separate for getting neighbour provinces vs settingsdata
+	get Points(): [number, number, boolean][] { return [].concat.apply([], this.settings.neighbours.map(n => n.borderPoints)); };
+
 	public constructor(
-		private readonly x: number, // Must be saved for army placings 
-		private readonly y: number,
-		public Name: string,
-		public Neighbours: ProvinceNeighbour[],
+		private readonly settings: ProvinceData,
 		data: IProvince, 
-		color: PlayerColor) 
+		public readonly Owner?: Player) 
 	{
 		super({image: Province.Picture});
-		this.Container.x = this.x;
-		this.Container.y = this.y;
+		this.Container.x = this.settings.x;
+		this.Container.y = this.settings.y;
 		DrawableBase.Add(this.Container); // TODO: Move to loader
-		this.changeTint(ColorToNumber(color));
+		this.changeTint(ColorToNumber(Owner ? Owner.color : "GRAY"));
 		Input.SetProvinceInteractions(this);
-		this.AddText(Name, 0, 30);
+		this.AddText(settings.name, 0, 30);
 
 		// Go through data
 		this.id = data.id;
@@ -39,9 +40,9 @@ class Province extends Token implements IProvince {
 		this.resources = data.resources;
 
 		for (let army of data.armies) {
-			let newArmy: Army = new Army(army, color, this);
-			newArmy.Container.x = this.x; // TODO: Smarter way to do this, e.g. "addNewArmy()" in which y = y + 50 * i
-			newArmy.Container.y = this.y + 15;
+			let newArmy: Army = new Army(army, Owner ? Owner.color : "GRAY", this);
+			newArmy.Container.x = this.settings.x; // TODO: Smarter way to do this, e.g. "addNewArmy()" in which y = y + 50 * i
+			newArmy.Container.y = this.settings.y + 15;
 			this.armies.push(newArmy);
 			DrawableBase.Add(newArmy.Container);
 		}

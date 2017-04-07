@@ -37,7 +37,7 @@ namespace IslandIV {
 			IslandIV.CurrentGame = new Game(gameLoader.GameData!, gameLoader.ProvinceSettings!, gameLoader.GameSettings!);
 			UI.Game(PIXIApp.view);
 			setTimeout(() => { // Just to see stuff with a small delay
-				IslandIV.CurrentGame.CreateMapContainer(PIXIApp.stage, PIXIApp.renderer, IslandIV.CurrentGame.ProvinceSettings);
+				IslandIV.CurrentGame.CreateMapContainer(PIXIApp.stage, PIXIApp.renderer, IslandIV.CurrentGame);
 				IslandIV.CurrentGame.MapContainer.FocusStage(Game.CurrentPlayer.FocusCenter());
 				UI.LoadingOff();
 			}, 1000);

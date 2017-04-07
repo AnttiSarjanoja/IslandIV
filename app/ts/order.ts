@@ -52,7 +52,7 @@ class MoveOrder extends Order {
 	public static Create(fromProvince: Province, toProvince: Province, unit: UnitToken) {
 		// 1. Validate
 		if (fromProvince !== toProvince && !fromProvince.Neighbours.some(
-			(neighbour: ProvinceNeighbour) => { return neighbour.neighbourIndex === (toProvince.id); }))
+			(neighbour: ProvinceNeighbour) => { return neighbour.index === (toProvince.id); }))
 		{
 			console.log("Not a neighbour!");
 			return;

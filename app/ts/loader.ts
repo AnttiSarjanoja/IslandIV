@@ -5,7 +5,6 @@
 /// <reference path="../../common/settings.ts" />
 
 // This class contacts the server / loads dev files
-
 namespace IslandIV {
 	export class GameLoader {
 		// These are the stuff to load
@@ -74,7 +73,8 @@ namespace IslandIV {
 
 			// Not very sophisticated atm, just loads all hardcoded images
 			let pixiLoader: PIXI.loaders.Loader = new PIXI.loaders.Loader('./img/');
-			pixiLoader.add('tausta', this.ProvinceSettings.mapIMG);
+			pixiLoader.add('map', this.ProvinceSettings.mapIMG);
+			pixiLoader.add('map-mask', this.ProvinceSettings.maskIMG);
 			pixiLoader.add('unit', this.GameSettings.unitIMG); // Prolly temporary, if using spritesheets
 			pixiLoader.add('province', this.GameSettings.provinceIMG);
 
@@ -94,6 +94,7 @@ namespace IslandIV {
 				if (province.x === undefined) throw new Error("Provincedata error: (" + index + ") No x-coord!");
 				if (province.y === undefined) throw new Error("Provincedata error: (" + index + ") No y-coord!");
 				
+				/* TODO: Move these to "after creating everything" -validation			
 				if (province.neighbours === undefined) throw new Error("Provincedata error: (" + index + ") No neighbours!");
 				if (province.neighbours.length === 0) throw new Error("Provincedata error: (" + index + ") Empty neighbours!");
 				if (province.neighbours.some((neighbour: ProvinceNeighbour) => { return neighbour.neighbourIndex === index; }))
@@ -105,7 +106,7 @@ namespace IslandIV {
 					{
 						throw new Error("Provincedata error: (" + index + ") No pair neighbour with (" + neighbour + ")!");
 					}
-				});
+				});*/
 			});
 		}
 	}
