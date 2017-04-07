@@ -29,13 +29,10 @@ class Game implements IGame {
 		this.ProvinceSettings = provinceSettings;
 		this.GameSettings = gameSettings;
 
-		data.players.forEach((playerData: IPlayer, index: number) => {
-			this.players.push(new Player(playerData, index, this.ProvinceSettings));
-		});
-		data.neutralProvinces.forEach((provinceData: IProvince, index: number) => {
-			let settings = this.ProvinceSettings.provinces[provinceData.id];
-			this.neutralProvinces.push(new Province(settings, provinceData));
-		});
+		data.players.forEach((playerData, index) => this.players.push(new Player(playerData, index, this.ProvinceSettings)));
+		data.neutralProvinces.forEach((provinceData, index) =>
+			this.neutralProvinces.push(new Province(this.ProvinceSettings.provinces[provinceData.id], provinceData))
+		);
 
 		Game.CurrentPlayer = this.players[0];
 	}
@@ -45,7 +42,7 @@ class Game implements IGame {
 	}
 	// Returns all provinces of the game sorted by ID
 	public AllProvinces(): Province[] {
-		return this.neutralProvinces.concat([].concat.apply([], this.players.map((player: Player) => { return player.provinces; }))).sort((a, b) => a.id - b.id);
+		return this.neutralProvinces.concat([].concat.apply([], this.players.map(player => player.provinces))).sort((a, b) => a.id - b.id);
 	}
 
 }

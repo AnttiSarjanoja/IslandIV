@@ -34,8 +34,6 @@ namespace UI {
 	}
 	export function TextsToRight(texts: string[]): void {
 		$("#right-column").empty();
-		texts.forEach((text: string) => {
-			$("#right-column").append('<div>' + text + '</div>');
-		});	
+		texts.forEach(text => $("#right-column").append('<div>' + text + '</div>'));	
 	}
 }

@@ -24,7 +24,7 @@ class Player implements IPlayer {
 	public FocusCenter(): PIXI.Point {
 		let xSum: number = 0;
 		let ySum: number = 0;
-		this.provinces.forEach((province: Province) => {
+		this.provinces.forEach(province => {
 			xSum += province.Container.position.x;
 			ySum += province.Container.position.y;
 		});
@@ -45,10 +45,9 @@ class Player implements IPlayer {
 		this.faith = data.faith;
 		this.techs = data.techs;
 
-		for (var provinceData of data.provinces) {
-			let settings = provinceSettings.provinces[provinceData.id];
-			this.provinces.push(new Province(settings, provinceData, this));
-		}
+		data.provinces.forEach(provinceData =>
+			this.provinces.push(new Province(provinceSettings.provinces[provinceData.id], provinceData, this))
+		);
 
 		// TODO: Generate instances
 		// this.orders = data.orders; // History of orders, mb is unnecessary?

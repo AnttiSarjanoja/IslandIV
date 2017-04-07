@@ -72,12 +72,12 @@ class Army extends Drawable implements IArmy {
 	// This sorts the tokens by type, shows them over a baseline with a small x between tokens
 	private rearrangeTokens () {
 		// TODO: Proper sorting!
-		this.tokens.sort((a: UnitToken, b: UnitToken) => {
+		this.tokens.sort((a, b) => {
 			if (a.Type === "cavalry" && b.Type !== "cavalry") return -1;
 			else return 1;
 		});
 		let childArray: PIXI.DisplayObject[] = []; // So ugly
-		this.tokens.forEach((token: Token, i: number) => {
+		this.tokens.forEach((token, i) => {
 			childArray.push(token.Container);
 			token.Container.x = i * 6;
 			token.Container.y = 10 - (token.Container.height / 2);

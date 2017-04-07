@@ -10,9 +10,7 @@ abstract class DrawableBase {
 		if (container === undefined || ticker === undefined) throw new Error("Drawable initiation error!");
 		this.baseContainer = container;
 		this.ticker = ticker;
-		this.Ticker((delta: number) => {
-			this._TickerTime += delta;
-		});
+		this.Ticker(delta => this._TickerTime += delta);
 	}
 
 	public static Add(drawable : PIXI.Sprite | PIXI.Container) : void {

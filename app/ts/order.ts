@@ -25,7 +25,7 @@ abstract class Order extends Drawable implements IOrder {
 	// NOTE: Orders are smart and contain complex structures with sprites etc.
 	//	In this function the obsolete stuff are stripped and only IOrder specific data is sent
 	public static SendOrders() {
-		let strippedOrders: IOrder[] = this.newOrders.map((order: Order) => {
+		let strippedOrders: IOrder[] = this.newOrders.map(order => {
 			return { turn: order.turn, type: order.type, state: order.state, parameters: order.parameters };
 		});
 		let sentObj: Object = { player: Game.CurrentPlayer.id, turn: IslandIV.CurrentGame.turn, orders: strippedOrders };
@@ -51,9 +51,7 @@ class MoveOrder extends Order {
 	// TODO: Tidy this, order is somewhat messy
 	public static Create(fromProvince: Province, toProvince: Province, unit: UnitToken) {
 		// 1. Validate
-		if (fromProvince !== toProvince && !fromProvince.Neighbours.some(
-			(neighbour: ProvinceNeighbour) => { return neighbour.index === (toProvince.id); }))
-		{
+		if (fromProvince !== toProvince && !fromProvince.Neighbours.some(n => n.index === (toProvince.id))) {
 			console.log("Not a neighbour!");
 			return;
 		}
