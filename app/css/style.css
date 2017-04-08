@@ -1,7 +1,13 @@
 /* May be unnecessary but just that we can pixel-calcluate everything */
 * { margin:0; padding:0; }
 
-body { overflow: hidden; font-family: 'Courier New', Courier, monospace; font-size: 16px; background-color: black; color: white; text-align: center; }
+/*
+@font-face {
+  font-family: 'GreekFont';
+  src: url('./font/Xtra.ttf') format('opentype');
+} */
+
+body { overflow: hidden; font-family: 'GreekFont', 'Courier New', Courier, monospace; font-size: 16px; background-color: black; color: white; text-align: center; }
 
 .centered { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 

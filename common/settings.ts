@@ -39,7 +39,7 @@ interface InitProvinceData {
 	// Terraintype ???
 }
 interface InitPlayerData {
-	startingLocation: number,
+	startingLocations: number[],
 	color: PlayerColor,
 	name: string,
 	description: string,

@@ -16,7 +16,7 @@ interface DrawableSprite {
 
 let font: PIXI.TextStyle = new PIXI.TextStyle({
 	align: 'center',
-	fontFamily: ['Courier New', 'Courier', 'monospace'], // 'Courier New', Courier, monospace;
+	fontFamily: ['GreekFont', 'Courier New', 'Courier', 'monospace'], // 'Courier New', Courier, monospace;
 	fontSize: 12,
 	fontWeight: 'bold',
 	fill: '#000000',

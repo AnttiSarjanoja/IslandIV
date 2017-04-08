@@ -27,7 +27,6 @@ class MapContainer {
 		game: Game) {
 
 		let tausta: PIXI.Sprite = new PIXI.Sprite(DrawableBase.Resource['map'].texture);
-		tausta.tint = 0x009900;
 		this.container.addChild(tausta);
 		this.container.interactive = true;
 
@@ -42,10 +41,37 @@ class MapContainer {
 			if (province.Neighbours.some(n => n.borderPoints === undefined)) return; // TODO: Get rid when static data is validated in loader
 			let points: [number, number, boolean][] = province.Points.filter( // Filter uniques
 				(p, pos, a) => { return a.findIndex(pp => (p[0] == pp[0] && p[1] == pp[1])) == pos; });
-			// TODO: Sort clockwise
 
+			// Sort clockwise, thanks to @ciamej from stackoverflow
+			let center: [number, number, boolean] =	points.reduce((p, c) => [p[0] + c[0], p[1] + c[1], false] ); // Sum
+			center[0] = center[0] / points.length | 0;
+			center[1] = center[1] / points.length | 0;
+
+			// Magic
+			points.sort((a, b) =>
+			{
+			    if (a[0] - center[0] >= 0 && b[0] - center[0] < 0) return -1;
+			    if (a[0] - center[0] < 0 && b[0] - center[0] >= 0) return 1;
+			    if (a[0] - center[0] == 0 && b[0] - center[0] == 0) {
+			        if (a[1] - center[1] >= 0 || b[1] - center[1] >= 0) return a[1] > b[1] ? -1 : 1;
+			        return b[1] > a[1] ? -1 : 1;
+			    }
+
+			    // compute the cross product of vectors (center -> a) x (center -> b)
+			    let det: number = (a[0] - center[0]) * (b[1] - center[1]) - (b[0] - center[0]) * (a[1] - center[1]);
+			    if (det < 0) return -1;
+			    if (det > 0) return 1;
+
+			    // points a and b are on the same line from the center
+			    // check which point is closer to the center
+			    let d1 = (a[0] - center[0]) * (a[0] - center[0]) + (a[1] - center[1]) * (a[1] - center[1]);
+			    let d2 = (b[0] - center[0]) * (b[0] - center[0]) + (b[1] - center[1]) * (b[1] - center[1]);
+			    return d1 > d2 ? -1 : 1;
+			});
+
+			// Draw the polygon
 			let provincePoly = new PIXI.Graphics();
-			provincePoly.beginFill(0x00FFFF); // TODO: Get color from owner
+			provincePoly.beginFill(ColorToNumber(province.Color), 0.5);
 
 			// draw a shape
 			provincePoly.moveTo(points[points.length - 1][0], points[points.length - 1][1]);
@@ -61,13 +87,15 @@ class MapContainer {
 			if (province.Neighbours.some(n => n.borderPoints === undefined)) return; // TODO: Get rid when static data is validated in loader
 			province.Neighbours.forEach(n => {
 				let borderLine = new PIXI.Graphics();
-				borderLine.lineStyle(4, 0xFF0000, 1); // TODO: Style by owner
+				borderLine.lineStyle(
+					(province.Owner && province.Owner.provinces.map(p => p.id).some(id => id === n.index)) ? 1 : 4, // If same owner, thin line
+					0xFF0000, 1); // TODO: Style by owner
 
 				// TODO: Path cannot contain same point twice, is this the most pretty version of doing this?
 				let firstpoint: [number, number, boolean] | undefined = n.borderPoints.shift();
 				if (firstpoint) {
 					borderLine.moveTo(firstpoint[0], firstpoint[1]);
-					n.borderPoints.forEach(p => borderLine.lineTo(p[0], p[1]));
+					n.borderPoints.forEach(p => p[2] ? borderLine.moveTo(p[0], p[1]) : borderLine.lineTo(p[0], p[1]));
 					this.container.addChild(borderLine);
 				}
 			});

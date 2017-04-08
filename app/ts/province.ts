@@ -19,6 +19,7 @@ class Province extends Token implements IProvince {
 	get Name(): string { return this.settings.name; };
 	get Neighbours(): ProvinceNeighbour[] { return this.settings.neighbours; }; // TODO: Separate for getting neighbour provinces vs settingsdata
 	get Points(): [number, number, boolean][] { return [].concat.apply([], this.settings.neighbours.map(n => n.borderPoints)); };
+	get Color(): PlayerColor { return this.Owner ? this.Owner.color : "GRAY"; };
 
 	public constructor(
 		private readonly settings: ProvinceData,
@@ -29,7 +30,7 @@ class Province extends Token implements IProvince {
 		this.Container.x = this.settings.x;
 		this.Container.y = this.settings.y;
 		DrawableBase.Add(this.Container); // TODO: Move to loader
-		this.changeTint(ColorToNumber(Owner ? Owner.color : "GRAY"));
+		this.changeTint(ColorToNumber(this.Color));
 		Input.SetProvinceInteractions(this);
 		this.AddText(settings.name, 0, 30);
 
@@ -40,7 +41,7 @@ class Province extends Token implements IProvince {
 		this.resources = data.resources;
 
 		for (let army of data.armies) {
-			let newArmy: Army = new Army(army, Owner ? Owner.color : "GRAY", this);
+			let newArmy: Army = new Army(army, this.Color, this);
 			newArmy.Container.x = this.settings.x; // TODO: Smarter way to do this, e.g. "addNewArmy()" in which y = y + 50 * i
 			newArmy.Container.y = this.settings.y + 15;
 			this.armies.push(newArmy);

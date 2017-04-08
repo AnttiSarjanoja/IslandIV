@@ -4,19 +4,23 @@
   "provinces":
   [
     { "x": 591, "y": 41, "name": "Provinssi Nolla", "neighbours": [
-    	{ "index": 1 }, { "index": 3 }
+    	{ "index": 1, "borderPoints": [[658, 0], [657, 90]] },
+    	{ "index": 3, "borderPoints": [[514, 85], [657, 90]] },
+    	{ "index": null, "borderPoints": [[514, 85, true], [457, 30, true], [457, 0, true], [658, 0, true]] }
     ]},
-    { "x": 780, "y": 66, "name": "Provinssi Yksi", "neighbours": [
-    	{ "index": 0 }, { "index": 3 }
+    { "x": 760, "y": 57, "name": "Provinssi Yksi", "neighbours": [
+    	{ "index": 0, "borderPoints": [[658, 0], [657, 90]] },
+    	{ "index": 3, "borderPoints": [[657, 90], [815, 147]] },
+    	{ "index": null, "borderPoints": [[815, 147], [830, 147], [830, 0, true], [658, 0, true]] }
     ]},
     { "x": 428, "y": 139, "name": "Provinssi Kaksi", "neighbours": [
     	{ "index": 4 }, { "index": 5 }
     ]},
     { "x": 675, "y": 157, "name": "Provinssi Kolme", "neighbours": [
-    	{ "index": 0, "borderPoints": [[544, 97], [657, 90]] },
-    	{ "index": 1, "borderPoints": [[657, 90], [815, 147]] },
     	{ "index": 4, "borderPoints": [[815, 147], [812, 211], [590, 200]] },
-    	{ "index": 6, "borderPoints": [[590, 200], [543, 146], [544, 97]] }
+    	{ "index": 0, "borderPoints": [[514, 85], [657, 90]] },
+    	{ "index": 1, "borderPoints": [[657, 90], [815, 147]] },
+    	{ "index": 6, "borderPoints": [[590, 200], [498, 128], [485, 100, true], [514, 85, true]] }
     ]},
     { "x": 524, "y": 241, "name": "Provinssi Neljä", "neighbours": [
     	{ "index": 2 }, { "index": 3 }, { "index": 5 }, { "index": 6 }, { "index": 10 }

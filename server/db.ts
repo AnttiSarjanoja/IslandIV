@@ -1,6 +1,7 @@
 /// <reference path="../common/interfaces.ts" />
-/// <reference path="../common/unit_type.ts" />
+/// <reference path="../common/settings.ts" />
 /// <reference path="../common/player_color.ts" />
+/// <reference path="../common/unit_type.ts" />
 
 import * as mongodb from 'mongodb';
 import * as fs from 'fs';
@@ -97,7 +98,7 @@ export function CreateGame(name: string, settingsFile: string, provinceFile: str
 	}
 
 	let newProvinces: IProvince[] = [];
-	provinceSettings.provinces.forEach((province: ProvinceData, index: number) => {
+	provinceSettings.provinces.forEach((province, index) => {
 		let data: InitProvinceData = initData.provinces[index];
 		newProvinces.push({
 			id: index, // Province must have index saved since it can move between players
@@ -109,13 +110,13 @@ export function CreateGame(name: string, settingsFile: string, provinceFile: str
 	});
 
 	let newPlayers: IPlayer[] = [];
-	initData.players.forEach((data: InitPlayerData, index: number) => {
+	initData.players.forEach((data, index) => {
 		// Mb. someday multiple provinces
-		let startProvince = newProvinces.splice(data.startingLocation, 1)[0];
-		startProvince.armies.push({
+		let startProvinces: IProvince[] = newProvinces.filter(p => data.startingLocations.some(v => p.id == v));
+		startProvinces.forEach(p => p.armies.push({
 			ownerID: index,
 			units: { infantry: 3, cavalry: 1 }
-		});
+		}));
 
 		newPlayers.push({
 			color: data.color,
@@ -124,7 +125,7 @@ export function CreateGame(name: string, settingsFile: string, provinceFile: str
 			orders: [],
 
 			// Nation related
-			provinces: [startProvince],
+			provinces: startProvinces,
 			gold: data.gold,
 			mp: data.mp,
 			faith: data.faith,
@@ -135,7 +136,7 @@ export function CreateGame(name: string, settingsFile: string, provinceFile: str
 	return {
 		name: name,
 		players: newPlayers,
-		neutralProvinces: newProvinces,
+		neutralProvinces: newProvinces.filter(p => !newPlayers.some(pl => pl.provinces.some(pp => p.id == pp.id))),
 		messages: [],
 		turn: 1,
 		settingsFile: settingsFile,
