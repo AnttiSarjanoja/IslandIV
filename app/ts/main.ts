@@ -34,11 +34,11 @@ namespace IslandIV {
 		let gameLoader = new IslandIV.GameLoader(() => {
 			if (!gameLoader.Validate) throw new Error("Loader failed :(");
 			DrawableBase.Resource = gameLoader.PixiResources!;
-			IslandIV.CurrentGame = new Game(gameLoader.GameData!, gameLoader.ProvinceSettings!, gameLoader.GameSettings!);
+			CurrentGame = new Game(gameLoader.GameData!, gameLoader.ProvinceSettings!, gameLoader.GameSettings!);
 			UI.Game(PIXIApp.view);
 			setTimeout(() => { // Just to see stuff with a small delay
-				IslandIV.CurrentGame.CreateMapContainer(PIXIApp.stage, PIXIApp.renderer, IslandIV.CurrentGame);
-				IslandIV.CurrentGame.MapContainer.FocusStage(Game.CurrentPlayer.FocusCenter());
+				CurrentGame.CreateMapContainer(PIXIApp.stage, PIXIApp.renderer, CurrentGame);
+				CurrentGame.MapContainer.FocusStage(Game.CurrentPlayer.FocusCenter());
 				UI.LoadingOff();
 			}, 1000);
 		});
