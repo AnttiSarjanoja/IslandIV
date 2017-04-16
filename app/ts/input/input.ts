@@ -1,5 +1,5 @@
 /// <reference path="../../pixi-typescript/pixi.js.d.ts" />
-/// <reference path="../mapContainer.ts" />
+/// <reference path="../map/mapContainer.ts" />
 /// <reference path="../drawable/drawable.ts" />
 /// <reference path="tokenInput.ts" />
 /// <reference path="../order.ts" />
@@ -34,10 +34,10 @@ namespace IslandIV {
 			if (evt.keyCode === 77) UI.QueryWindow("Map-editor", () => { CurrentGame.InitMapEditor(); }, "Really open map-editor?");
 			else console.log("No handler for key '" + evt.key + "'");
 		}
-		public static SetTokenInteractions (token: Token, drag: boolean = false) {
+		public static SetTokenInteractions (token: Drawable, drag: boolean = false) {
 			new TokenInput(token, drag);
 		}
-		public static SetProvinceInteractions (token: Token) {
+		public static SetProvinceInteractions (token: Drawable) {
 			new TokenInput(token);
 			this.provinces.push(token);
 		}

@@ -1,5 +1,5 @@
-/// <reference path="../token.ts" />
 /// <reference path="../ui.ts" />
+/// <reference path="../drawable/drawable.ts" />
 /// <reference path="../../pixi-typescript/pixi.js.d.ts" />
 
 namespace IslandIV {
@@ -8,7 +8,7 @@ namespace IslandIV {
 		private dragData: PIXI.interaction.InteractionData | null = null;
 		private origPos: PIXI.Point | null = null;
 
-		constructor (private token: Token, drag: boolean = false) {
+		constructor (private token: Drawable, drag: boolean = false) {
 			this.token.Container.interactive = true;
 			this.token.Container.buttonMode = true;
 			this.token.Container

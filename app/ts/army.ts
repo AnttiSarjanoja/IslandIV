@@ -13,17 +13,11 @@ namespace IslandIV {
 		public Order: Order | null = null; // Any better solution?
 		private tokens: UnitToken[] = [];
 
-		get Empty(): boolean {
-			return this.tokens.length <= 0; // As we really want only to know if tokens are extinct
-			/*
-			for (var key in this.units) {
-				if (this.units[key] > 0) return false;
-			}
-			return true; */
-		}
+		get Empty(): boolean { return this.tokens.length <= 0; }
 
 		constructor(data: IArmy | null, color: PlayerColor, province: Province, id: number | null = null) {
 			super(); // Does not have a basic picture
+			this.Container.name = "4_army";
 			this.ownerID = id; // TODO:
 			this.Province = province;
 

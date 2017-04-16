@@ -21,7 +21,7 @@ namespace IslandIV {
 		readonly id: number;
 
 		// Gets the center point of all owned provinces
-		public FocusCenter(): PIXI.Point {
+		public GetFocusCenter(): PIXI.Point {
 			let xSum: number = 0;
 			let ySum: number = 0;
 			this.provinces.forEach(province => {

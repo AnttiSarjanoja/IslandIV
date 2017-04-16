@@ -2,7 +2,6 @@
 /// <reference path="main.ts" />
 /// <reference path="player.ts" />
 /// <reference path="drawable/drawable.ts" />
-/// <reference path="drawable/drawableBase.ts" />
 /// <reference path="../../common/interfaces.ts" />
 
 namespace IslandIV {
@@ -29,7 +28,7 @@ namespace IslandIV {
 			let strippedOrders: IOrder[] = this.newOrders.map(order => {
 				return { turn: order.turn, type: order.type, state: order.state, parameters: order.parameters };
 			});
-			let sentObj: Object = { player: Game.CurrentPlayer.id, turn: IslandIV.CurrentGame.turn, orders: strippedOrders };
+			let sentObj: Object = { player: CurrentGame.CurrentPlayer.id, turn: CurrentGame.turn, orders: strippedOrders };
 			console.log(JSON.stringify(sentObj));
 
 			let request = new XMLHttpRequest();
@@ -106,7 +105,7 @@ namespace IslandIV {
 		// Private for validation reasons
 		private constructor (parameters: string[], start: PIXI.Point, end: PIXI.Point, province: Province) { 
 			super({
-				turn: IslandIV.CurrentGame.turn,
+				turn: CurrentGame.turn,
 				type: "Move",
 				state: "New",
 				parameters: parameters
@@ -123,14 +122,14 @@ namespace IslandIV {
 			this.Container.y = mapPos.y;
 			this.AddGraphics("Arrow", calcStart, calcEnd); // This does not even need CenterContainer()
 
-			this.army = new Army(null, Game.CurrentPlayer.color, province); // Dummyarmy for order
+			this.army = new Army(null, CurrentGame.CurrentPlayer.color, province); // Dummyarmy for order
 			this.army.Order = this;
 			this.army.Container.x = calcEnd.x;
 			this.army.Container.y = calcEnd.y - 10;
 			this.Container.addChild(this.army.Container);
 
-			DrawableBase.Ticker(this.TickFn);
-			DrawableBase.Add(this.Container);
+			Ticker.add(this.TickFn);
+			Stage.addChild(this.Container);
 		}
 
 		// These exist only to update parameters
@@ -150,11 +149,11 @@ namespace IslandIV {
 		public Destroy() {
 			this.Container.destroy();
 			MoveOrder.remove(this);
-			DrawableBase.RemoveTicker(this.TickFn);
+			Ticker.remove(this.TickFn);
 		}
 
 		private TickFn = (delta: number) => {
-			this.army.Container.y -= Math.sin(DrawableBase.TickerTime / 2);
+			this.army.Container.y -= Math.sin(TickerTime / 2);
 		}
 	}
 

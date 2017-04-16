@@ -1,10 +1,9 @@
+/// <reference path="main.ts" />
 /// <reference path="input/input.ts" />
 /// <reference path="../../node_modules/@types/jquery/index.d.ts" />
 
 namespace IslandIV {
 	export namespace UI {
-		
-		
 		export function Loading(): void {
 			if ($("#loading").length) return;
 			Overlay();
@@ -25,12 +24,12 @@ namespace IslandIV {
 			$("#overlay").remove();
 		}
 
-		export function Game(pixiview: Element): void {
+		export function Game(): void {
 			$('<div id="game" />').appendTo('body');
 
 			// Map holder
 			$('<div id="map-column" />').appendTo($("#game"));
-			$("#map-column").append(pixiview);
+			$("#map-column").append(View);
 
 			// Right column
 			$('<div id="right-column" />').appendTo($("#game"));

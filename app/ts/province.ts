@@ -1,13 +1,14 @@
 /// <reference path="army.ts" />
-/// <reference path="token.ts" />
-/// <reference path="drawable/drawable.ts" />
+/// <reference path="main.ts" />
 /// <reference path="input/input.ts" />
+/// <reference path="drawable/drawable.ts" />
+/// <reference path="map/mapDrawables.ts" />
 /// <reference path="../../common/interfaces.ts" />
 /// <reference path="../../common/player_color.ts" />
 /// <reference path="../../common/settings.ts" />
 
 namespace IslandIV {
-	export class Province extends Token implements IProvince {
+	export class Province extends Drawable implements IProvince {
 		public static Picture: string = 'province'; // Default value
 
 		// IProvince
@@ -19,7 +20,7 @@ namespace IslandIV {
 
 		get Name(): string { return this.settings.name; };
 		get Neighbours(): ProvinceNeighbour[] { return this.settings.neighbours; }; // TODO: Separate for getting neighbour provinces vs settingsdata
-		get Points(): [number, number, boolean][] { return [].concat.apply([], this.settings.neighbours.map(n => n.borderPoints)); };
+		// get Points(): [number, number, boolean][] { return [].concat.apply([], this.settings.neighbours.map(n => n.borderPoints)); };
 		get Color(): PlayerColor { return this.Owner ? this.Owner.color : "GRAY"; };
 
 		public constructor(
@@ -28,9 +29,11 @@ namespace IslandIV {
 			public readonly Owner?: Player) 
 		{
 			super({image: Province.Picture});
+
+			new MapProvince(settings, this, CurrentGame.AllProvinces(), ColorToNumber(this.Color));
 			this.Container.x = this.settings.x;
 			this.Container.y = this.settings.y;
-			DrawableBase.Add(this.Container); // TODO: Move to loader
+			Stage.addChild(this.Container);
 			this.changeTint(ColorToNumber(this.Color));
 			Input.SetProvinceInteractions(this);
 			this.AddText(settings.name, 0, 30);
@@ -46,7 +49,7 @@ namespace IslandIV {
 				newArmy.Container.x = this.settings.x; // TODO: Smarter way to do this, e.g. "addNewArmy()" in which y = y + 50 * i
 				newArmy.Container.y = this.settings.y + 15;
 				this.armies.push(newArmy);
-				DrawableBase.Add(newArmy.Container);
+				Stage.addChild(newArmy.Container);
 			}
 		}
 

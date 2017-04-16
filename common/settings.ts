@@ -22,12 +22,13 @@ type Terrain =
 	"Deep sea"
 interface ProvinceNeighbour {
 	index: number, // Index of neighbour in settings
-	borderPoints: [number, number, boolean][], // [x,y,invis][x,y,invis]
+	borderPoints: BorderPoint[],
 	borderType?: BorderType
 }
+type BorderPoint = [number, number, boolean]; // [x,y,invis]
 type BorderType =
 	"Normal" |
-	"River"
+	"River";
 
 // InitProvinceData is only used when creating game to populate new entities
 interface InitProvinceData {

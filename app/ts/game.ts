@@ -6,7 +6,7 @@
 namespace IslandIV {
 	// Holds general information about the player. Any need for more complicated implementation?
 	export class Game implements IGame {
-		public static CurrentPlayer: Player;
+		public CurrentPlayer: Player;
 
 		readonly name: string;
 		readonly players: Player[] = [];
@@ -20,11 +20,13 @@ namespace IslandIV {
 		readonly ProvinceSettings: ProvinceSettings;
 		readonly GameSettings: GameSettings;
 
+		private _editorMode: boolean = false;
+		public get EditorMode(): boolean { return this._editorMode; }
 		private _mapContainer: MapContainer;
-		private editorProvinces: Province[] = [];
 		public get MapContainer(): MapContainer { return this._mapContainer; };
 
 		constructor(data: IGame, provinceSettings: ProvinceSettings, gameSettings: GameSettings) {
+			CurrentGame = this;
 			this.name = data.name;
 			this.turn = data.turn;
 
@@ -36,24 +38,23 @@ namespace IslandIV {
 				this.neutralProvinces.push(new Province(this.ProvinceSettings.provinces[provinceData.id], provinceData))
 			);
 
-			Game.CurrentPlayer = this.players[0];
+			SortStage();
+			this.CurrentPlayer = this.players[0];
 		}
-		public CreateMapContainer(stage: PIXI.Container, renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer, game: Game) {
-			this._mapContainer = new MapContainer(stage, renderer, game);
+		public CreateMapContainer() {
+			this._mapContainer = new MapContainer(this);
 			Input.Init(this._mapContainer);
 		}
 		// Returns all provinces of the game sorted by ID
 		public AllProvinces(): Province[] {
 			return this.neutralProvinces.concat([].concat.apply([], this.players.map(player => player.provinces))).sort((a, b) => a.id - b.id);
 		}
+
 		public InitMapEditor() {
-			// TODO: Hide everything (orders)
-			this.AllProvinces().forEach(province => {
-				province.Container.visible = false;
-				province.armies.forEach(army => army.Container.visible = false);
-			});
-			this.editorProvinces = this.ProvinceSettings.provinces.map((data, i) => Province.Dummy(data, i));
-			this.MapContainer.InitMapEditor(this.editorProvinces);
+			this._editorMode = true;
+			MapBorder.AllBorders.forEach(p => p.Draw());
+			MapBorder.AllPoints.forEach(p => p.Draw(true));
+			SortStage();
 		}
 	}
 }
