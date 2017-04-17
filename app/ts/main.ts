@@ -24,7 +24,7 @@ namespace IslandIV {
 	export const View: HTMLCanvasElement = PIXIApp.view;
 
 	// Settings
-	PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; // MAJOR NOTE: Pls don't scale anything < 1 since we try to use pixel graphics without blending
+	// PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; // MAJOR NOTE: Pls don't scale anything < 1 since we try to use pixel graphics without blending
 
 	export let TickerTime: number = 0;
 	export let PixiResources: PIXI.loaders.Resource;

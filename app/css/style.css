@@ -12,7 +12,7 @@ body { overflow: hidden; font-family: 'GreekFont', 'Courier New', Courier, monos
 .menu, .pop-up { padding: 10px; border: 2px solid #FF0000; background-color: black; z-index: 20; }
 .selected { background-color: rgb(50,50,50); }
 
-input[type="text"] { text-align: center; background-color: rgb(50,50,50); border: 0 none; outline: none; }
+input[type="text"] { text-align: center; background-color: rgb(50,50,50); color: white; border: 0 none; outline: none; }
 button { background-color: black; color: white; border: none; text-align: center; border: 2px solid gray; padding: 4px 8px; transition-duration: 0.2s; }
 .button-row button:not(:last-child) { border-right: none; }
 button:hover { background-color: red; color: black; } /* Just some random trying */

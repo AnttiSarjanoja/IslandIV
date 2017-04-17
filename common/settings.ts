@@ -10,8 +10,12 @@ interface ProvinceSettings {
 	provinces: ProvinceData[],
 }
 interface ProvinceData {
-	x: number, // Center-place for all units etc. not used in clockwise calculation though
+	x: number, // Text place
 	y: number,
+	r: number, // Rotation
+	s: number, // Scale
+	unit_x: number;
+	unit_y: number;
 	name: string,
 	terrain: Terrain,
 	neighbours: ProvinceNeighbour[],
@@ -25,7 +29,12 @@ interface ProvinceNeighbour {
 	borderPoints: BorderPoint[],
 	borderType?: BorderType
 }
-type BorderPoint = [number, number, boolean]; // [x,y,invis]
+type BorderPoint = [number, number, DrawType]; // [x,y,invis]
+enum DrawType {
+	None = 1,
+	Partial,
+	Invis
+}
 type BorderType =
 	"Normal" |
 	"River";

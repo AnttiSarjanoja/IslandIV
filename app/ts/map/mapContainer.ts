@@ -17,7 +17,7 @@ namespace IslandIV {
 
 		constructor (game?: Game) {
 			let tausta: PIXI.Sprite = new PIXI.Sprite(PixiResources['map'].texture); // TODO: Mb as parameter
-			this.container.name = "0_tausta"; // Always at back
+			this.container.name = "0_map"; // Always at back
 			this.container.addChild(tausta);
 			this.container.interactive = true;
 

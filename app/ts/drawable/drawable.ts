@@ -15,14 +15,15 @@ namespace IslandIV {
 
 	let font: PIXI.TextStyle = new PIXI.TextStyle({
 		align: 'center',
+		// dropShadow: true,
 		fontFamily: ['GreekFont', 'Courier New', 'Courier', 'monospace'], // 'Courier New', Courier, monospace;
-		fontSize: 12,
+		fontSize: 26,
+		letterSpacing: 5,
 		fontWeight: 'bold',
-		fill: '#000000',
-		/*stroke: '#ffffff',
-		strokeThickness: ,*/
-		wordWrap: true,
-		wordWrapWidth: 120
+		stroke: '#DDDDDD',
+		strokeThickness: 2
+		/*wordWrap: true,
+		wordWrapWidth: 120 */
 	});
 
 	export abstract class Drawable {
@@ -52,11 +53,12 @@ namespace IslandIV {
 			);
 		}
 
-		public AddText(text: string, x: number, y: number) {
+		public AddText(text: string, x: number, y: number, r: number) {
 			let newText: PIXI.Text = new PIXI.Text(text, font); // TODO: Fonts
 			this.setAnchor(newText);
 			newText.x = x;
 			newText.y = y;
+			newText.rotation = r; // In radians
 			this.Container.addChild(newText);
 		}
 
@@ -92,14 +94,6 @@ namespace IslandIV {
 			if (spritedata.scale !== undefined) sprite.scale.set(spritedata.scale, spritedata.scale);
 
 			this.Container.addChild(sprite);
-		}
-
-		public GlowOn(): void {
-			this.Container.filters = [Effects.RED_OUTLINE];
-		}
-
-		public GlowOff(): void {
-			this.Container.filters = [];
 		}
 
 		// Prolly obsolete after proper images

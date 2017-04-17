@@ -51,7 +51,7 @@ namespace IslandIV {
 
 		export function QueryWindow(title: string, cb: () => void, text?: string) {
 			if ($("#query-window").length) return;
-			PopupWindow("query-window", title, text);
+			PopupWindow("query-window", title, text, "No");
 			$('.button-row').prepend('<button id="okButton">Yes</button>');
 			$('#okButton').click(() => {
 				PopupWindowOff("query-window");
@@ -60,16 +60,31 @@ namespace IslandIV {
 			$('#okButton').focus();
 		}
 
-		export function PopupWindow(id: string, title: string, text?: string): void {
+		export function InputWindow(title: string, cb: (s: string) => void, text?: string) {
+			if ($("#input-window").length) return;
+			let buttoncb: () => void = () => {
+				let given_name: string = $("#text_input").val();
+				if (given_name && given_name.length > 0) cb(given_name);
+			};
+
+			PopupWindow("input-window", title, text, undefined, buttoncb);
+			// TODO: Remove maxlength if needed
+			$(".text-row").append('<div id="input_holder"><input id="text_input" type="text" placeholder="Enter text" maxlength="20"></div>');
+			$("#text_input").focus();
+			$("#text_input").on('keypress', e => { if(e.which === 13) { buttoncb(); PopupWindowOff("input-window"); } });
+		}
+
+		export function PopupWindow(id: string, title: string, text?: string, buttontext?: string, buttoncb?: () => void): void {
 			Overlay();
 			Input.WindowKeys();
 			$('<div id="' + id + '"/>').appendTo('body');
 			$('#' + id).addClass("centered").addClass("pop-up");
 			$('#' + id).text(title);
-			if (text !== undefined) $('#' + id).append('<div style="color: grey">' + text + '</div>');
+			$('#' + id).append('<div class="text-row" />');
+			if (text !== undefined) $('.text-row').append('<div style="color: grey">' + text + '</div>');
 			$("#" + id).keyup(keyevent => { if(keyevent.keyCode == 27) PopupWindowOff(id); });
-			$('#' + id).append('<div class="button-row"><button id="closeButton">Close</button></div>');
-			$('#closeButton').click(() =>	PopupWindowOff(id));
+			$('#' + id).append('<div class="button-row"><button id="closeButton">' + (buttontext !== undefined ? buttontext : "Close") + '</button></div>');
+			$('#closeButton').click(() => { if (buttoncb) buttoncb(); PopupWindowOff(id); });
 			$('#closeButton').focus();	
 		}
 		export function PopupWindowOff(id: string): void {

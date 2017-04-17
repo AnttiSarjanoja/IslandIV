@@ -1,6 +1,6 @@
 /// <reference path="army.ts" />
 /// <reference path="main.ts" />
-/// <reference path="input/input.ts" />
+/// <reference path="input/selectable.ts" />
 /// <reference path="drawable/drawable.ts" />
 /// <reference path="map/mapDrawables.ts" />
 /// <reference path="../../common/interfaces.ts" />
@@ -22,22 +22,26 @@ namespace IslandIV {
 		get Neighbours(): ProvinceNeighbour[] { return this.settings.neighbours; }; // TODO: Separate for getting neighbour provinces vs settingsdata
 		// get Points(): [number, number, boolean][] { return [].concat.apply([], this.settings.neighbours.map(n => n.borderPoints)); };
 		get Color(): PlayerColor { return this.Owner ? this.Owner.color : "GRAY"; };
+		get Text(): PIXI.Text | undefined {
+			let text: PIXI.DisplayObject = this.Container.getChildAt(0);
+			return text instanceof PIXI.Text ? text : undefined;
+		}
 
 		public constructor(
 			private readonly settings: ProvinceData,
 			data: IProvince, 
 			public readonly Owner?: Player) 
 		{
-			super({image: Province.Picture});
-
-			new MapProvince(settings, this, CurrentGame.AllProvinces(), ColorToNumber(this.Color));
+			super(); // {image: Province.Picture}
 			this.Container.x = this.settings.x;
 			this.Container.y = this.settings.y;
-			Stage.addChild(this.Container);
-			this.changeTint(ColorToNumber(this.Color));
-			Input.SetProvinceInteractions(this);
-			this.AddText(settings.name, 0, 30);
+			this.AddText(settings.name, 0, 0, this.settings.r ? this.settings.r : 0);
 
+			new MapProvince(settings, this, CurrentGame.AllProvinces(), ColorToNumber(this.Color));
+
+			MakeSelectable(this.Container, this, (over: boolean) => UI.TextsToRight([this.Name, this.population.toString()]));
+			Stage.addChild(this.Container);
+			
 			// Go through data
 			this.id = data.id;
 			this.size = data.size;
@@ -46,8 +50,8 @@ namespace IslandIV {
 
 			for (let army of data.armies) {
 				let newArmy: Army = new Army(army, this.Color, this);
-				newArmy.Container.x = this.settings.x; // TODO: Smarter way to do this, e.g. "addNewArmy()" in which y = y + 50 * i
-				newArmy.Container.y = this.settings.y + 15;
+				newArmy.Container.x = this.settings.unit_x ? this.settings.unit_x : this.settings.x;
+				newArmy.Container.y = this.settings.unit_y ? this.settings.unit_y : this.settings.y + 15;
 				this.armies.push(newArmy);
 				Stage.addChild(newArmy.Container);
 			}

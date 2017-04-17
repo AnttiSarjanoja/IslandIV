@@ -49,9 +49,12 @@ namespace IslandIV {
 		public AllProvinces(): Province[] {
 			return this.neutralProvinces.concat([].concat.apply([], this.players.map(player => player.provinces))).sort((a, b) => a.id - b.id);
 		}
+		public GetProvinceUnder(point: PIXI.Point): Province | undefined {
+			return this.AllProvinces().find(p => p.Text !== undefined && p.Text.containsPoint(point) );
+		}
 
 		public InitMapEditor() {
-			this._editorMode = true;
+			this._editorMode = !this._editorMode;
 			MapBorder.AllBorders.forEach(p => p.Draw());
 			MapBorder.AllPoints.forEach(p => p.Draw(true));
 			SortStage();

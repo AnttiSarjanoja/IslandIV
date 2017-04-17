@@ -73,6 +73,7 @@ namespace IslandIV {
 			this.points.forEach(point => this.graphic.lineTo(point.x, point.y));
 			this.graphic.endFill();
 			this.graphic.blendMode = 2; // Multiply
+
 			Stage.addChild(this.graphic);
 		}
 	}
@@ -101,7 +102,7 @@ namespace IslandIV {
 				let pointToUse: MapBorderPoint | undefined = MapBorder.AllPoints.find(ap => ap.x == bp[0] && ap.y == bp[1]);
 				if (pointToUse !== undefined) pointToUse.borders.push(this);
 				else {
-					pointToUse = new MapBorderPoint(bp, CurrentGame.EditorMode, this);
+					pointToUse = new MapBorderPoint(bp, this);
 					MapBorder.AllPoints.push(pointToUse);
 				}
 				return pointToUse;
@@ -120,71 +121,64 @@ namespace IslandIV {
 				1);
 			for (let i = 0; i < (this.sameOwner || CurrentGame.EditorMode ? 1 : 2); i++) { // Thick line needs two rounds
 				if (i == 1) this.graphic.lineStyle(3, 0xFF0000, 1);
-				this.Points.forEach((p, i) => i == 0 || p.invis ? this.graphic.moveTo(p.x, p.y) : this.graphic.lineTo(p.x, p.y));
+				this.Points.forEach((p, i) => i == 0 || p.type == DrawType.Invis ? this.graphic.moveTo(p.x, p.y) : this.graphic.lineTo(p.x, p.y));
 			}
 			Stage.addChild(this.graphic);
 		}
 	}
 
 	// This kinda extends BorderPoint
-	// MapBorderPoint must always exist on a border, so no oprhan points anywhere
-	export class MapBorderPoint {
+	// MapBorderPoint must always exist on a border, so no orphan points anywhere
+	export class MapBorderPoint extends Drawable {
 		public x: number;
 		public y: number;
-		public invis: boolean;
+		public type: DrawType;
 		public borders: MapBorder[] = [];
-		public graphic: PIXI.Graphics;
+		public graphic: PIXI.Graphics | undefined;
 
 		// If in editormode, sprite must be interactive
 		private dragged: boolean = false;
 		private dragData: any;
 
-		constructor (data: BorderPoint, editormode: boolean, border: MapBorder) {
+		constructor (data: BorderPoint, border: MapBorder) {
+			super();
 			this.x = data[0];
 			this.y = data[1];
-			this.invis = data[2];
+			this.type = data[2];
 			this.borders.push(border);
-			if (editormode) this.Draw(true);
-		}
-		public Draw(others: boolean = false) {
-			if (this.graphic) this.graphic.destroy(); // Remove old if necessary
-			this.graphic = new PIXI.Graphics();
-			this.graphic.name = "3_BorderPoint";
-			this.graphic.lineStyle(0);
-			this.graphic.beginFill(0xFF0000, 0.85);
-			this.graphic.drawCircle(this.x, this.y, 4);
-			this.graphic.endFill();
-			Stage.addChild(this.graphic);
 
-			this.graphic.interactive = true;
-			this.graphic
-				.on('pointerdown', (evt : PIXI.interaction.InteractionEvent) => this.onDragStart(evt))
-        .on('pointerup', (evt : PIXI.interaction.InteractionEvent) => this.onDragEnd(evt))
-        .on('pointerupoutside', (evt : PIXI.interaction.InteractionEvent) => this.onDragEnd(evt))
-        .on('pointermove', (evt : PIXI.interaction.InteractionEvent) => this.onDragMove(evt));
-
-      if (others) this.borders.forEach(b => { b.Draw(); b.MapProvince.Draw(); });
-		}
-		
-		private onDragStart(evt : PIXI.interaction.InteractionEvent) {
-			this.dragged = true;
-			this.dragData = evt.data;
-		}
-		private onDragEnd(evt : PIXI.interaction.InteractionEvent) {
-			if (this.dragged) {
+			this.Container.position.x = this.x;
+			this.Container.position.y = this.y;
+			this.Container.name = "3_BorderPoint";
+			MakeSelectable(this.Container, this);
+			MakeDraggable(this.Container, this, (p: PIXI.Point, pp: PIXI.Point) => {
+				this.Container.position.copy(p);
+				this.x = p.x;
+				this.y = p.y;
 				this.Draw(true);
 				SortStage();
-			}
-			this.dragged = false;
-			this.dragData = null;
+			});
+
+			this.Draw(true);
 		}
-		private onDragMove(evt : PIXI.interaction.InteractionEvent) {
-			if (this.dragged && this.dragData !== null) {
-				let newPosition = this.dragData.getLocalPosition(this.graphic.parent);
-				this.x = newPosition.x | 0;
-				this.y = newPosition.y | 0;
-				this.Draw(); // Not very efficient
+		public Draw(others: boolean = false) {
+			if (this.graphic) { // Remove old if necessary
+				this.Container.removeChild(this.graphic);
+				this.graphic.destroy();
+				this.graphic = undefined;
 			}
+			if (!CurrentGame.EditorMode) return;
+
+			this.graphic = new PIXI.Graphics();
+			this.graphic.lineStyle(0);
+			this.graphic.beginFill(0xFF0000, 0.85);
+			this.graphic.drawCircle(0, 0, 4);
+			this.graphic.endFill();
+
+			this.Container.addChild(this.graphic);
+			Stage.addChild(this.Container);
+
+      if (others) this.borders.forEach(b => { b.Draw(); b.MapProvince.Draw(); });
 		}
 	}
 }

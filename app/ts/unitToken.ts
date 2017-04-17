@@ -1,5 +1,7 @@
-/// <reference path="input/input.ts" />
+/// <reference path="input/draggable.ts" />
+/// <reference path="input/selectable.ts" />
 /// <reference path="order.ts" />
+/// <reference path="province.ts" />
 /// <reference path="../../common/unit_type.ts" />
 
 namespace IslandIV {
@@ -19,7 +21,12 @@ namespace IslandIV {
 				image: UnitToken.Picture, // TODO: Get image through ownerplayer if not using tint
 				scale: Type === "infantry" ? 0.4 : 0.6 // Just temp stuff to try out different units
 			}); 
-			Input.SetTokenInteractions(this, true);
+			MakeSelectable(this.Container, this);
+			MakeDraggable(this.Container, this, (p: PIXI.Point, pp: PIXI.Point) => {
+				let province: Province | undefined = CurrentGame.GetProvinceUnder(pp);
+				if (province !== undefined && this.Province !== null) MoveOrder.Create(this.Province, province, this);
+			});
+
 			this.Army = this.OriginalArmy;
 		}	
 	}
