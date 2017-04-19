@@ -33,6 +33,9 @@ namespace IslandIV {
 			this.ProvinceSettings = provinceSettings;
 			this.GameSettings = gameSettings;
 
+			MapBorderPoint.InitPoints(this.ProvinceSettings.points);
+			MapBorder.InitBorders(this.ProvinceSettings.borders);
+
 			data.players.forEach((playerData, index) => this.players.push(new Player(playerData, index, this.ProvinceSettings)));
 			data.neutralProvinces.forEach(provinceData =>
 				this.neutralProvinces.push(new Province(this.ProvinceSettings.provinces[provinceData.id], provinceData))
@@ -49,14 +52,19 @@ namespace IslandIV {
 		public AllProvinces(): Province[] {
 			return this.neutralProvinces.concat([].concat.apply([], this.players.map(player => player.provinces))).sort((a, b) => a.id - b.id);
 		}
+		public GetProvince(n: number): Province {
+			return this.AllProvinces().find(p => p.id == n)!; // Return possible undefined
+		}
 		public GetProvinceUnder(point: PIXI.Point): Province | undefined {
 			return this.AllProvinces().find(p => p.Text !== undefined && p.Text.containsPoint(point) );
 		}
 
 		public InitMapEditor() {
 			this._editorMode = !this._editorMode;
+			this.AllProvinces().forEach(province => MakeDraggable(province.Container, province, (p, pp) => province.ChangePos(p)));
+			MapProvince.AllProvinces.forEach(p => p.Draw());
 			MapBorder.AllBorders.forEach(p => p.Draw());
-			MapBorder.AllPoints.forEach(p => p.Draw(true));
+			MapBorderPoint.AllPoints.forEach(p => p.Draw(true));
 			SortStage();
 		}
 	}

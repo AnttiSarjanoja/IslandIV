@@ -51,7 +51,7 @@ namespace IslandIV {
 		// TODO: Tidy this, order is somewhat messy
 		public static Create(fromProvince: Province, toProvince: Province, unit: UnitToken) {
 			// 1. Validate
-			if (fromProvince !== toProvince && !fromProvince.Neighbours.some(n => n.index === (toProvince.id))) {
+			if (fromProvince !== toProvince && !fromProvince.Neighbours.some(n => n === toProvince)) {
 				console.log("Not a neighbour!");
 				return;
 			}

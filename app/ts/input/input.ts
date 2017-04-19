@@ -25,10 +25,26 @@ namespace IslandIV {
 		// TODO: Should work, just feels a bit shady. Could use a sorted array of handlers of (evt) => boolean
 		private static handleKeyUp (evt: KeyboardEvent) {
 			if (this.keylock) return;
+			if (CurrentGame.EditorMode) {
+				if (evt.keyCode === 82 && this.province) this.province[0].RotateClockwise(); // 'r'
+				if (evt.keyCode === 84 && this.province) this.province[0].RotateCounterClockwise(); // 't'
+				if (evt.keyCode === 70 && this.province) { this.province[0].ScaleUp(); } // 'f'
+				if (evt.keyCode === 71 && this.province) { this.province[0].ScaleDown(); } // 'g'
+				if (evt.keyCode === 81) UI.Download(CurrentGame.ProvinceSettings, "DefaultProvinces"); //CurrentGame.GetCurrentSettings(); // 'q'
+				if (evt.keyCode === 78 && this.province) { // 'n'
+					UI.InputWindow("Text input", (s: string) => {
+						this.province![0].Text!.text = s;
+						this.province![0].Name = s;
+					});
+				}
+			}
+			else {
+
+			}
 			// Add all keyboard handlers 
 			if (this.MapContainer.handleEvt(evt)) return;
 			if (evt.keyCode === 83) Order.SendOrders(); // 's'
-			if (evt.keyCode === 78) UI.InputWindow("Text input", (s: string) => console.log(s), "Give text input.");
+			
 			if (evt.keyCode === 77) UI.QueryWindow("Map-editor", () => { CurrentGame.InitMapEditor(); }, "Really open map-editor?");
 			// else console.log("No handler for key '" + evt.key + "'");
 		}

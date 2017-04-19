@@ -75,11 +75,11 @@ namespace IslandIV {
 			this.tokens.forEach((token, i) => {
 				childArray.push(token.Container);
 				token.Container.x = i * 6;
-				token.Container.y = 10 - (token.Container.height / 2);
+				token.Container.y = 20 - (token.Container.height / 2);
 			});
 			this.Container.children = childArray;
 
-			this.CenterContainer();
+			this.CenterContainer(true);
 		}
 	}
 }

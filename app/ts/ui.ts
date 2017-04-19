@@ -92,6 +92,12 @@ namespace IslandIV {
 			Input.WindowKeysOff();
 			$("#" + id).remove();
 		}
+		export function Download(data: any, filename: string): void {
+			let json: string = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+			$('<a id="download" href="data:' + json + '" download="' + filename + '.json" /a>').appendTo('body');
+			$('#download')[0].click(); //
+			$("#download").remove();
+		}
 
 		/*
 		$("#namegiving").append('<div style="text-align: center; color: grey">Give name to your character:</div>');

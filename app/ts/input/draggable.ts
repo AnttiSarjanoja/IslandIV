@@ -43,10 +43,11 @@ namespace IslandIV {
 				// Original position must be restored in all cases (?)
 				if (this.origPos) this.pixiobj.position = this.origPos;
 				this.pixiobj.alpha = 1;
-				if (this.cb && this.moved) this.cb(this.dragData.getLocalPosition(this.pixiobj.parent), evt.data.global);
+				if (this.cb && this.moved) this.cb(this.dragData.getLocalPosition(this.pixiobj.parent), this.dragData.getLocalPosition(Stage));
 			}
 			this.dragged = false;
 			this.dragData = null;
+			this.moved = false;
 		}
 
 		private onDragMove(evt : PIXI.interaction.InteractionEvent) {

@@ -18,7 +18,7 @@ namespace IslandIV {
 		// dropShadow: true,
 		fontFamily: ['GreekFont', 'Courier New', 'Courier', 'monospace'], // 'Courier New', Courier, monospace;
 		fontSize: 26,
-		letterSpacing: 5,
+		letterSpacing: 7,
 		fontWeight: 'bold',
 		stroke: '#DDDDDD',
 		strokeThickness: 2
@@ -39,11 +39,11 @@ namespace IslandIV {
 		}
 
 		// This truly centers the container even when sprite bounds go -x or -y
-		public CenterContainer() {
+		public CenterContainer(holdY: boolean = false) {
 			this.Container.calculateBounds(); // Bounds won't update if nothing moves but e.g. something is removed
 			let bound: PIXI.Rectangle = this.Container.getLocalBounds();
 			this.Container.pivot.x = (bound.x + (bound.width / 2)) | 0;
-			this.Container.pivot.y = (bound.y + (bound.height / 2)) | 0;
+			if (!holdY) this.Container.pivot.y = (bound.y + (bound.height / 2)) | 0;
 		}
 
 		private setAnchor(obj: PIXI.Sprite | PIXI.Text) {
