@@ -44,18 +44,27 @@ namespace IslandIV {
 	export function Init() {
 		UI.Loading();
 
-		// TODO: Load gamedata from multiple games?
-		let gameLoader = new IslandIV.GameLoader(() => {
-			if (!gameLoader.Validate) throw new Error("Loader failed :(");
-			PixiResources = gameLoader.PixiResources!;
-			new Game(gameLoader.GameData!, gameLoader.ProvinceSettings!, gameLoader.GameSettings!);
-			UI.Game();
-			setTimeout(() => { // Just to see stuff with a small delay
-				CurrentGame.CreateMapContainer();
-				CurrentGame.MapContainer.FocusStage(CurrentGame.CurrentPlayer.GetFocusCenter());
-				UI.LoadingOff();
-			}, 1000);
+		// Load stuff that are needed in every game
+		// TODO: refactor if needed, is atm. kindof dummy hardcoded
+		new PIXI.loaders.Loader('./shaders/')
+			.add('shader', 'shader.frag')
+			.load((loader: PIXI.loaders.Loader, resources: PIXI.loaders.Resource) =>
+		{
+			Effects.SHADER = new PIXI.Filter(undefined, resources['shader'].data, { 'iChannel0': { 'type': 'samplerXX', 'value': 10 }});
+
+			// TODO: Load gamedata from multiple games?
+			let gameLoader = new IslandIV.GameLoader(() => {
+				if (!gameLoader.Validate) throw new Error("Loader failed :(");
+				PixiResources = gameLoader.PixiResources!;
+				new Game(gameLoader.GameData!, gameLoader.ProvinceSettings!, gameLoader.GameSettings!);
+				UI.Game();
+				setTimeout(() => { // Just to see stuff with a small delay, remove in the future
+					CurrentGame.CreateMapContainer();
+					CurrentGame.MapContainer.FocusStage(CurrentGame.CurrentPlayer.GetFocusCenter());
+					UI.LoadingOff();
+				}, 100);
+			});
+			gameLoader.Load();
 		});
-		gameLoader.Load();
 	}
 }

@@ -33,15 +33,28 @@ namespace IslandIV {
 
 			// Right column
 			$('<div id="right-column" />').appendTo($("#game"));
-			$("#right-column").append('<div>:3</div>');
+			$("#right-column").append('<div id="perma-text">:3</div>');
+			$("#right-column").append('<hr>');
+			$("#right-column").append('<div id="mode-text">:3</div>');
+			$("#right-column").append('<hr>');
+			$("#right-column").append('<div id="selected-text">:3</div>');
 		}
 		export function GameOff(): void {
 			$("#game").remove();
 		}
 
+		export function PermaToRight(texts: string[]): void {
+			$("#perma-text").empty();
+			texts.forEach(text => $("#perma-text").append('<div>' + text + '</div>'));	
+		}
+		export function ModeToRight(texts: string[]): void {
+			$("#mode-text").empty();
+			texts.forEach(text => $("#mode-text").append('<div>' + text + '</div>'));	
+		}
+
 		export function TextsToRight(texts: string[]): void {
-			$("#right-column").empty();
-			texts.forEach(text => $("#right-column").append('<div>' + text + '</div>'));	
+			$("#selected-text").empty();
+			texts.forEach(text => $("#selected-text").append('<div>' + text + '</div>'));	
 		}
 
 		export function MessageWindow(title: string, text?: string): void {

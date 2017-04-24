@@ -5,12 +5,12 @@ namespace IslandIV {
 	export function MakeDraggable(
 		pixiobj: PIXI.Container | PIXI.Sprite | PIXI.Graphics,
 		owner: any,
-		cb?: (p: PIXI.Point, pp: PIXI.Point) => void)
+		cb?: (p: PIXI.Point, pp: PIXI.Point) => void): Draggable
 	{
-		new Draggable(pixiobj, owner, cb);
+		return new Draggable(pixiobj, owner, cb);
 	}
 
-	class Draggable {
+	export class Draggable {
 		private dragged: boolean = false;
 		private moved: boolean = false;
 		private dragData: PIXI.interaction.InteractionData | null = null;
@@ -43,7 +43,10 @@ namespace IslandIV {
 				// Original position must be restored in all cases (?)
 				if (this.origPos) this.pixiobj.position = this.origPos;
 				this.pixiobj.alpha = 1;
-				if (this.cb && this.moved) this.cb(this.dragData.getLocalPosition(this.pixiobj.parent), this.dragData.getLocalPosition(Stage));
+				if (this.cb && this.moved) {
+					this.cb(this.dragData.getLocalPosition(this.pixiobj.parent), this.dragData.getLocalPosition(Stage));
+					evt.stopPropagation();
+				}
 			}
 			this.dragged = false;
 			this.dragData = null;

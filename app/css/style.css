@@ -7,6 +7,7 @@
 }
 
 body { overflow: hidden; font-family: 'GreekFont', 'Courier New', Courier, monospace; font-size: 16px; background-color: black; color: white; text-align: center; }
+hr { margin: 10px; color: red; border-style: solid; }
 
 .centered { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 .menu, .pop-up { padding: 10px; border: 2px solid #FF0000; background-color: black; z-index: 20; }
@@ -23,7 +24,7 @@ button:hover { background-color: red; color: black; } /* Just some random trying
 
 #map-column { overflow: hidden; }
 #map-column, #right-column { display: inline-block; vertical-align: top; }
-#right-column { text-align: left; width: 240px; }
+#right-column { text-align: left; width: 240px; font-family: monospace; }
 #right-column > div {	position:relative; margin-left: 3px; }
 
 /* Temp elements */

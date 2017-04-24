@@ -5,19 +5,26 @@ namespace IslandIV {
 	export function MakeSelectable (
 		pixiobj: PIXI.Container | PIXI.Sprite | PIXI.Graphics,
 		owner: any,
-		cb?: (over: boolean) => void)
+		cb?: (over: boolean) => void): Selectable
 	{
-		new Selectable(pixiobj, owner, cb);
+		return new Selectable(pixiobj, owner, cb);
 	}
 
 	export class Selectable {
 		private selected: boolean = false;
+
+		// Kinda ugly but no other way to get hold of selectable without user interaction
+		public static Latest: Selectable;
+
+		public Children: Selectable[] = [];
+		private isChildSelected: boolean = false;
 
 		constructor (
 			private pixiobj: PIXI.Container | PIXI.Sprite | PIXI.Graphics,
 			private owner: any,
 			private cb?: (over: boolean) => void)
 		{
+			Selectable.Latest = this;
 			this.pixiobj.interactive = true;
 			this.pixiobj.buttonMode = true;
 			this.pixiobj
@@ -26,19 +33,29 @@ namespace IslandIV {
 				.on('pointerup', (evt : PIXI.interaction.InteractionEvent) => this.select());
 		}
 		public Unselect() {
-			this.pixiobj.filters = [];
+			this.pixiobj.filters = this.isChildSelected ? [Effects.SELECTED_CHILD_OUTLINE] : [];
 			this.selected = false;
+			this.Children.forEach(c => c && c.UnChildSelect()); // Ugly to use && as control
+			Input.UnSelect(this.owner, this);
 			if (this.cb) this.cb(false);
+		}
+
+		public ChildSelect() {
+			this.isChildSelected = true; // if (this.pixiobj.filters && this.pixiobj.filters.length == 0) 
+			this.pixiobj.filters = [Effects.SELECTED_CHILD_OUTLINE];
+		}
+		public UnChildSelect() {
+			this.isChildSelected = false;
+			this.pixiobj.filters = [];
 		}
 
 		private select() {
 			if (this.selected) {
 				this.Unselect();
-				Input.UnSelect(this.owner, this);
 			}
 			else {
-				console.log("Imma selected!");
 				this.selected = true;
+				this.Children.forEach(c => c && c.ChildSelect()); // Ugly to use && as control
 				this.pixiobj.filters = [Effects.SELECTED_OUTLINE];
 				if (this.cb) this.cb(true);
 				Input.Select(this.owner, this);
@@ -46,13 +63,12 @@ namespace IslandIV {
 		}
 
 		private hoverOn() {
-			console.log("Hoveron");
-			if (this.selected) return;
+			if (this.selected || this.isChildSelected) return;
 			this.pixiobj.filters = [Effects.HOVER_OUTLINE];
 		}
 
 		private hoverOff() {
-			if (this.selected) return;
+			if (this.selected || this.isChildSelected) return;
 			this.pixiobj.filters = [];
 		}
 	}

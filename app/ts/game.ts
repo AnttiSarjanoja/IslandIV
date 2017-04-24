@@ -40,6 +40,7 @@ namespace IslandIV {
 			data.neutralProvinces.forEach(provinceData =>
 				this.neutralProvinces.push(new Province(this.ProvinceSettings.provinces[provinceData.id], provinceData))
 			);
+			MapBorder.AllBorders.forEach(b => b.Draw());
 
 			SortStage();
 			this.CurrentPlayer = this.players[0];
@@ -59,9 +60,23 @@ namespace IslandIV {
 			return this.AllProvinces().find(p => p.Text !== undefined && p.Text.containsPoint(point) );
 		}
 
+		public EditorProvinces: Province[] = [];
+
 		public InitMapEditor() {
 			this._editorMode = !this._editorMode;
+			this._editorMode ? UI.PermaToRight([
+				"All elements are draggable",
+				"'x' to delete stuff",
+				"'p' + mouseclick = new borderpoint",
+				"'o' + mouseclick = new province",
+				"'b' = define new / modify old border",
+				"'r,t' and 'f,g' rotate + scale text",
+				"'n' to enter new text",
+				"'i' to toggle selected point invis",
+				"'q' to load current layout"
+				]) : UI.PermaToRight([":3"]);
 			this.AllProvinces().forEach(province => MakeDraggable(province.Container, province, (p, pp) => province.ChangePos(p)));
+			this.EditorProvinces.forEach(p => p.Container.visible = this._editorMode); // ??
 			MapProvince.AllProvinces.forEach(p => p.Draw());
 			MapBorder.AllBorders.forEach(p => p.Draw());
 			MapBorderPoint.AllPoints.forEach(p => p.Draw(true));

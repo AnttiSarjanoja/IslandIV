@@ -18,6 +18,7 @@ namespace IslandIV {
 		readonly population: number;
 		readonly resources: string[];
 
+		public MapProvince: MapProvince;
 		public Neighbours: Province[] = [];
 
 		get Name(): string { return this.settings.name; };
@@ -39,13 +40,15 @@ namespace IslandIV {
 			this.Container.x = this.settings.x;
 			this.Container.y = this.settings.y;
 			this.AddText(settings.name, 0, 0, this.settings.r ? this.settings.r : 0);
+			this.Container.name = "2_province";
 
-			let mapProvince: MapProvince = new MapProvince(settings, this.Owner);
+			this.MapProvince = new MapProvince(settings, this.Owner);
+			// MapBorder.AllBorders.forEach(b => b.Draw());
 			if (settings.neighbours) this.Neighbours = CurrentGame.AllProvinces().filter(p => settings.neighbours.find(n => n === p.id));
 			// CurrentGame.AllProvinces().filter(p =>  p.id);
 			// settings.borders.forEach(b => CurrentGame.ProvinceSettings.provinces.filter((p, i) => CurrentGame.ProvinceSettings.borders[b])
 
-			MakeSelectable(this.Container, this, (over: boolean) => UI.TextsToRight([this.Name, this.population.toString()]));
+			MakeSelectable(this.Container, this, (over: boolean) => over ? UI.TextsToRight([this.Name, this.population.toString()]) : null);
 			Stage.addChild(this.Container);
 			
 			// Go through data
@@ -60,8 +63,10 @@ namespace IslandIV {
 				newArmy.Container.y = this.settings.unit_y;
 				this.armies.push(newArmy);
 				Stage.addChild(newArmy.Container);
-				mapProvince.ArmyContainers.push(newArmy.Container);
+				this.MapProvince.ArmyContainers.push(newArmy.Container);
 			}
+
+			Province.currentID++;
 		}
 
 		// IMPORTANT NOTE: RemoveUnit is never needed since there should not be any situation where unit actually leaves its Province in GUI
@@ -71,45 +76,65 @@ namespace IslandIV {
 
 
 		// --- Editor stuff ---
-		public static Dummy(settings: ProvinceData, id: number) {
-			return new Province(settings, { id: id, size: 0, population: 0, resources: [], armies: [] });
+		private static currentID = 0;
+		public static Dummy(p: PIXI.Point) {
+			let dummydata: ProvinceData = {x: p.x, y: p.y, r: 0, s: 0, unit_x: p.x, unit_y: p.y, name: "NO_NAME", terrain: "Plains", borders: [], neighbours: []};
+			let province: Province = new Province(
+				dummydata,
+				{ id: Province.currentID, size: 0, population: 0, resources: [], armies: [] }
+			);
+			MakeDraggable(province.Container, province, (p, pp) => province.ChangePos(p));
+			CurrentGame.EditorProvinces.push(province);
+			CurrentGame.ProvinceSettings.provinces.push(dummydata);
+		}
+		public Destroy() {
+			if (CurrentGame.EditorMode) {
+				this.Container.destroy();
+				// TODO: this.MapProvince.destroy
+				// Works?
+				CurrentGame.ProvinceSettings.provinces.splice(CurrentGame.ProvinceSettings.provinces.indexOf(this.settings), 1);
+			}
 		}
 
 		public ChangePos(point: PIXI.Point) {
 			if (CurrentGame.EditorMode) {
-				this.Container.position.copy(point);
-				this.settings.x = point.x | 0;
-				this.settings.y = point.y | 0;
+				this.settings.x = Math.max(Math.min(point.x, CurrentGame.MapContainer.MaxX), 0) | 0; //point.x | 0;
+				this.settings.y = Math.max(Math.min(point.y, CurrentGame.MapContainer.MaxY), 0) | 0; //point.x | 0;
+				this.Container.position.x = this.settings.x;
+				this.Container.position.y = this.settings.y;
 			}
 		}
+
+		private static SCALE_AMT = 0.05;
+		private static ROTATE_AMT = 0.05; 
 		public ScaleUp() {
 			if (CurrentGame.EditorMode) {
-				this.Text!.scale.x += 0.1;
-				this.Text!.scale.y += 0.1;
+				this.Text!.scale.x += Province.SCALE_AMT;
+				this.Text!.scale.y += Province.SCALE_AMT;
 				if (this.settings.s === undefined) this.settings.s = 1;
-				this.settings.s = this.settings.s + 0.1 | 0;
+				this.settings.s = +(this.settings.s + Province.SCALE_AMT).toFixed(2);
 			}
 		}
 		public ScaleDown() {
 			if (CurrentGame.EditorMode) {
-				this.Text!.scale.x -= 0.1;
-				this.Text!.scale.y -= 0.1;
+				this.Text!.scale.x -= Province.SCALE_AMT;
+				this.Text!.scale.y -= Province.SCALE_AMT;
 				if (this.settings.s === undefined) this.settings.s = 1;
-				this.settings.s = this.settings.s - 0.1 | 0;
+				this.settings.s = +(this.settings.s - Province.SCALE_AMT).toFixed(2);
 			}
 		}
 		public RotateClockwise() {
 			if (CurrentGame.EditorMode) {
-				this.Text!.rotation += 0.1;
+				this.Text!.rotation += Province.ROTATE_AMT;
 				if (this.settings.r === undefined) this.settings.r = 0;
-				this.settings.r = this.settings.r + 0.1 | 0;
+				this.settings.r = +(this.settings.r + Province.ROTATE_AMT).toFixed(2);
 			}
 		}
 		public RotateCounterClockwise() {
 			if (CurrentGame.EditorMode) {
-				this.Text!.rotation -= 0.1;
+				this.Text!.rotation -= Province.ROTATE_AMT;
 				if (this.settings.r === undefined) this.settings.r = 0;
-				this.settings.r = this.settings.r - 0.1 | 0;
+				this.settings.r = +(this.settings.r - Province.ROTATE_AMT).toFixed(2);
 			}
 		}
 	}
