@@ -20,8 +20,8 @@ interface ProvinceData {
 	unit_y: number;
 	name: string,
 	terrain: Terrain,
-	borders: number[], // Index of border in settings
-	neighbours: number[] // Could figure this out with borders, is just painful to do
+	borders: number[] // Index of border in settings
+	// neighbours: number[] // Could figure this out with borders, is just painful to do
 }
 type Terrain =
 	"Plains" |

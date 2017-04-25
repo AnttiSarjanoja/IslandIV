@@ -61,7 +61,6 @@ namespace IslandIV {
 		}
 
 		public UpdateBorders(): void {
-			// this.Borders.forEach(b => b.SameOwner = b.MapProvinces.some(mp => mp !== this && mp.Owner === this.Owner));
 			this.Borders.forEach(b => {
 				let mp: MapProvince | undefined = MapProvince.AllProvinces.find(mp => mp !== this && mp.Borders.some(bb => b === bb));
 				if (mp) b.SameOwner = this.Owner === mp.Owner;

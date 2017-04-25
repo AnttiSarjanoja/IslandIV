@@ -22,8 +22,8 @@ namespace IslandIV {
 				scale: Type === "infantry" ? 0.4 : 0.6 // Just temp stuff to try out different units
 			}); 
 			MakeSelectable(this.Container, this);
-			MakeDraggable(this.Container, this, (p: PIXI.Point, pp: PIXI.Point) => {
-				let province: Province | undefined = CurrentGame.GetProvinceUnder(pp);
+			MakeDraggable(this.Container, this, (local: PIXI.Point, stage: PIXI.Point, view: PIXI.Point) => {
+				let province: Province | undefined = CurrentGame.GetProvinceUnder(view);
 				if (province !== undefined && this.Province !== null) MoveOrder.Create(this.Province, province, this);
 			});
 

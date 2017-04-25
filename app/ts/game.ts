@@ -80,6 +80,7 @@ namespace IslandIV {
 			MapBorderPoint.AllPoints.forEach(p => p.ReDraw());
 			MapProvince.AllProvinces.forEach(p => p.ReDraw());
 			MapBorder.AllBorders.forEach(p => p.ReDraw());
+			Order.NewOrders.forEach(o => o.Container.visible = !this._editorMode);
 		}
 	}
 }

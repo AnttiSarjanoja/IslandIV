@@ -19,12 +19,14 @@ namespace IslandIV {
 		readonly resources: string[];
 
 		public MapProvince: MapProvince;
-		public Neighbours: Province[] = [];
+		// public Neighbours: Province[] = [];
 
 		get Name(): string { return this.settings.name; };
 		set Name(s: string) { if (CurrentGame.EditorMode) this.settings.name = s; };
-		// get Neighbours(): Province[] { return this.settings.borders.map(b => MapBorder.AllBorders[b]).map(mb => mb.MapProvinces.find(mp => mp && mp.Province !== this).Province); }; // TODO: Separate for getting neighbour provinces vs settingsdata
-		// get Points(): [number, number, boolean][] { return [].concat.apply([], this.settings.neighbours.map(n => n.borderPoints)); };
+		get Neighbours(): Province[] {
+			let mapProvinces: MapProvince[] = MapProvince.AllProvinces.filter(mp => mp !== this.MapProvince && mp.Borders.some(b => this.MapProvince.Borders.some(bb => b === bb)));
+			return CurrentGame.AllProvinces().filter(p => mapProvinces.some(mp => mp === p.MapProvince));
+		};
 		get Color(): PlayerColor { return this.Owner ? this.Owner.color : "GRAY"; };
 		get Text(): PIXI.Text | undefined {
 			let text: PIXI.DisplayObject = this.Container.getChildAt(0);
@@ -43,11 +45,6 @@ namespace IslandIV {
 			this.Container.name = "2_province";
 
 			this.MapProvince = new MapProvince(settings, this.Owner);
-			// MapBorder.AllBorders.forEach(b => b.Draw());
-			if (settings.neighbours) this.Neighbours = CurrentGame.AllProvinces().filter(p => settings.neighbours.find(n => n === p.id));
-			// CurrentGame.AllProvinces().filter(p =>  p.id);
-			// settings.borders.forEach(b => CurrentGame.ProvinceSettings.provinces.filter((p, i) => CurrentGame.ProvinceSettings.borders[b])
-
 			MakeSelectable(this.Container, this, (over: boolean) => over ? UI.TextsToRight([this.Name, this.population.toString()]) : null);
 			Stage.addChild(this.Container);
 			
@@ -78,7 +75,7 @@ namespace IslandIV {
 		// --- Editor stuff ---
 		private static currentID = 0;
 		public static Dummy(p: PIXI.Point) {
-			let dummydata: ProvinceData = {x: p.x, y: p.y, r: 0, s: 0, unit_x: p.x, unit_y: p.y, name: "NO_NAME", terrain: "Plains", borders: [], neighbours: []};
+			let dummydata: ProvinceData = {x: p.x, y: p.y, r: 0, s: 0, unit_x: p.x, unit_y: p.y, name: "NO_NAME", terrain: "Plains", borders: []};
 			let province: Province = new Province(
 				dummydata,
 				{ id: Province.currentID, size: 0, population: 0, resources: [], armies: [] }

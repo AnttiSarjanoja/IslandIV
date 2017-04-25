@@ -20,12 +20,12 @@ namespace IslandIV {
 			this.parameters = data.parameters;
 		}
 
-		protected static newOrders: Order[] = [];
+		public static NewOrders: Order[] = [];
 
 		// NOTE: Orders are smart and contain complex structures with sprites etc.
 		//	In this function the obsolete stuff are stripped and only IOrder specific data is sent
 		public static SendOrders() {
-			let strippedOrders: IOrder[] = this.newOrders.map(order => {
+			let strippedOrders: IOrder[] = this.NewOrders.map(order => {
 				return { turn: order.turn, type: order.type, state: order.state, parameters: order.parameters };
 			});
 			let sentObj: Object = { player: CurrentGame.CurrentPlayer.id, turn: CurrentGame.turn, orders: strippedOrders };
@@ -67,7 +67,7 @@ namespace IslandIV {
 			else unit.Army.RemoveToken(unit);
 
 			// Check if identical order already exists
-			let found: Order[] = Order.newOrders.filter(function (order: Order) {
+			let found: Order[] = Order.NewOrders.filter(function (order: Order) {
 				return (
 					order instanceof MoveOrder &&
 					order.parameters[0] === fromProvince.id.toString() &&
@@ -90,13 +90,13 @@ namespace IslandIV {
 				fromProvince);
 			newOrder.AddToken(unit);
 
-			Order.newOrders.push(newOrder);
+			Order.NewOrders.push(newOrder);
 		}
 
 		private static remove(order: MoveOrder) {
-			let index: number = Order.newOrders.indexOf(order);
+			let index: number = Order.NewOrders.indexOf(order);
 			if (index > -1) {
-				Order.newOrders.splice(index, 1);
+				Order.NewOrders.splice(index, 1);
 			}
 		}
 
