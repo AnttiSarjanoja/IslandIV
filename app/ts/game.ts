@@ -40,7 +40,7 @@ namespace IslandIV {
 			data.neutralProvinces.forEach(provinceData =>
 				this.neutralProvinces.push(new Province(this.ProvinceSettings.provinces[provinceData.id], provinceData))
 			);
-			MapBorder.AllBorders.forEach(b => b.Draw());
+			MapBorder.AllBorders.forEach(b => b.ReDraw());
 
 			SortStage();
 			this.CurrentPlayer = this.players[0];
@@ -75,12 +75,11 @@ namespace IslandIV {
 				"'i' to toggle selected point invis",
 				"'q' to load current layout"
 				]) : UI.PermaToRight([":3"]);
-			this.AllProvinces().forEach(province => MakeDraggable(province.Container, province, (p, pp) => province.ChangePos(p)));
+			this.AllProvinces().forEach(province => this._editorMode ? MakeDraggable(province.Container, province, (p, pp) => province.ChangePos(p)) : UnmakeDraggable(province.Container));
 			this.EditorProvinces.forEach(p => p.Container.visible = this._editorMode); // ??
-			MapProvince.AllProvinces.forEach(p => p.Draw());
-			MapBorder.AllBorders.forEach(p => p.Draw());
-			MapBorderPoint.AllPoints.forEach(p => p.Draw(true));
-			SortStage();
+			MapBorderPoint.AllPoints.forEach(p => p.ReDraw());
+			MapProvince.AllProvinces.forEach(p => p.ReDraw());
+			MapBorder.AllBorders.forEach(p => p.ReDraw());
 		}
 	}
 }

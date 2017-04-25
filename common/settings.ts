@@ -8,7 +8,7 @@ interface ProvinceSettings {
 	mapIMG: string, // File, must be located at /img/
 	maskIMG: string,
 	provinces: ProvinceData[],
-	borders: ProvinceNeighbour[],
+	borders: Border[],
 	points: BorderPoint[]
 }
 interface ProvinceData {
@@ -27,18 +27,11 @@ type Terrain =
 	"Plains" |
 	"Sea" |
 	"Deep sea"
-interface ProvinceNeighbour {
-	// index: number, // Index of neighbour in settings
+interface Border {
 	borderPoints: number[], // Index of point in settings
 	borderType?: BorderType
 }
 type BorderPoint = [number, number, boolean]; // [x,y,invis]
-/*
-enum DrawType {
-	None = 1,
-	// Partial,
-	Invis
-} */
 type BorderType =
 	"Normal" |
 	"River";

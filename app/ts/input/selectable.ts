@@ -18,6 +18,7 @@ namespace IslandIV {
 
 		public Children: Selectable[] = [];
 		private isChildSelected: boolean = false;
+		private startData: PIXI.Point;
 
 		constructor (
 			private pixiobj: PIXI.Container | PIXI.Sprite | PIXI.Graphics,
@@ -28,9 +29,10 @@ namespace IslandIV {
 			this.pixiobj.interactive = true;
 			this.pixiobj.buttonMode = true;
 			this.pixiobj
+				.on('pointerdown', (evt : PIXI.interaction.InteractionEvent) => this.startData = evt.data.getLocalPosition(this.pixiobj.parent))
 				.on('pointerover', () => this.hoverOn())
 				.on('pointerout', () => this.hoverOff())
-				.on('pointerup', (evt : PIXI.interaction.InteractionEvent) => this.select());
+				.on('pointerup', (evt : PIXI.interaction.InteractionEvent) => this.select(evt));
 		}
 		public Unselect() {
 			this.pixiobj.filters = this.isChildSelected ? [Effects.SELECTED_CHILD_OUTLINE] : [];
@@ -49,7 +51,8 @@ namespace IslandIV {
 			this.pixiobj.filters = [];
 		}
 
-		private select() {
+		private select(evt : PIXI.interaction.InteractionEvent) {
+			if (!this.startData.equals(evt.data.getLocalPosition(this.pixiobj.parent))) return;
 			if (this.selected) {
 				this.Unselect();
 			}

@@ -12,45 +12,60 @@ namespace IslandIV {
 
 		public Terrain: Terrain;
 		public Borders: MapBorder[];
-
-		private polygon: PIXI.Graphics; // Area
-		private unitloc: PIXI.Graphics | undefined; // Unit position
-
-		private color: number = 0xFFB6C1;
 		public Points: MapBorderPoint[]; // To help drawing
 		public ArmyContainers: PIXI.Container[] = [];
 
-		constructor (private data: ProvinceData, public Owner: Player | undefined) {
+		private polygon: PIXI.Graphics; // Area
+		private unitloc: PIXI.Graphics | undefined; // Unit position
+		private color: number;
+
+		constructor (public data: ProvinceData, public Owner: Player | undefined) {
 			if (data.unit_x === undefined) data.unit_x = data.x;
 			if (data.unit_y === undefined) data.unit_y = data.y;
 
 			this.color = ColorToNumber(this.Owner ? this.Owner.color : "GRAY");
-			this.Borders = data.borders.map(n => MapBorder.AllBorders[n]);
-			this.Borders.forEach(b => b.AddMapProvince(this));
+			this.Borders = data.borders.map(n => {
+				let border: MapBorder | undefined = MapBorder.AllBorders[n];
+				if (border) return border;
+				else throw new Error("Broken provincedata: no Border in index " + n);
+			});
 			this.UpdateBorders();
 			MapProvince.AllProvinces.push(this);
 		}
 
-		// Toggle
-		public AddBorder(border: MapBorder): void {
-			if (this.Borders.some(b => b === border)) this.RemoveBorder(border);
+		public Destroy(): void {
+			if (CurrentGame.EditorMode) {
+				MapProvince.AllProvinces.splice(MapProvince.AllProvinces.indexOf(this), 1);
+				CurrentGame.ProvinceSettings.provinces.splice(CurrentGame.ProvinceSettings.provinces.indexOf(this.data), 1);
+				this.polygon.destroy();
+				if (this.unitloc) this.unitloc.destroy();
+			}
+		}
+
+		public ToggleBorder(border: MapBorder): void {
+			if (this.Borders.some(b => b === border)) this.removeBorder(border);
+			else this.addBorder(border);
+		}
+		private addBorder(border: MapBorder): void {
 			console.log("Added border");
-			border.AddMapProvince(this);
 			this.Borders.push(border);
 			this.data.borders.push(MapBorder.AllBorders.indexOf(border));
 			this.UpdateBorders();
+			SortStage();
 		}
-		public RemoveBorder(border: MapBorder): void {
-			if (!this.Borders.some(b => b === border)) return;
-			console.log("Removed border");
-			border.RemoveMapProvince(this);
+		public removeBorder(border: MapBorder): void {
 			this.Borders.splice(this.Borders.indexOf(border), 1);
 			this.data.borders.splice(this.data.borders.indexOf(MapBorder.AllBorders.indexOf(border)), 1);
 			this.UpdateBorders();
+			SortStage();
 		}
 
 		public UpdateBorders(): void {
-			this.Borders.forEach(b => b.SameOwner = b.MapProvinces.some(mp => mp !== this && mp.Owner === this.Owner));
+			// this.Borders.forEach(b => b.SameOwner = b.MapProvinces.some(mp => mp !== this && mp.Owner === this.Owner));
+			this.Borders.forEach(b => {
+				let mp: MapProvince | undefined = MapProvince.AllProvinces.find(mp => mp !== this && mp.Borders.some(bb => b === bb));
+				if (mp) b.SameOwner = this.Owner === mp.Owner;
+			});
 			this.UpdatePoints();
 		}
 
@@ -86,10 +101,15 @@ namespace IslandIV {
 				return d1 > d2 ? -1 : 1;
 			});
 
-			this.Draw();
+			this.draw();
 		}
 
-		public Draw(): void {
+		public ReDraw(): void {
+			this.draw();
+			SortStage();
+		}
+
+		private draw(): void {
 			if (this.polygon) this.polygon.destroy();
 			if (this.Points.length > 0) {
 				this.polygon = new PIXI.Graphics();
@@ -104,7 +124,6 @@ namespace IslandIV {
 			}
 			
 			if (this.unitloc) {
-				// Stage.removeChild(this.unitloc);
 				this.unitloc.destroy();
 				this.unitloc = undefined;
 			}
@@ -134,86 +153,85 @@ namespace IslandIV {
 		}
 	}
 
-	// Kinda extends ProvinceNeighbour
+	// Kinda extends Border
 	export class MapBorder {
 		public static AllBorders: MapBorder[] = [];
+		public static InitBorders(data: Border[]) { data.forEach(pn => new MapBorder(pn)); }
 
-		private type: BorderType;
+		public Type: BorderType;
 		public Points: MapBorderPoint[] = [];
-		public MapProvinces: MapProvince[] = [];
 		public SameOwner: boolean = false;
 		public Color: number = 0xFFB6C1;
+		public Selectable: Selectable;
 
 		private graphic: PIXI.Graphics;
 
-		public static InitBorders(data: ProvinceNeighbour[]) {
-			data.forEach(pn => new MapBorder(pn));
-		}
-
 		public static New(): MapBorder {
-			let data: ProvinceNeighbour = { borderPoints: [] };
+			let data: Border = { borderPoints: [] };
 			CurrentGame.ProvinceSettings.borders.push(data);
 			return new MapBorder(data);
 		}
 
-		constructor (public data: ProvinceNeighbour) {
+		constructor (public data: Border) {
 			this.Points = data.borderPoints.map(bp => {
 				let point: MapBorderPoint | undefined = MapBorderPoint.AllPoints[bp];
-				if (point) point.borders.push(this);
+				if (point) return point;
 				else throw new Error("Broken provincedata: no Borderpoint in index " + bp);
-				return point;
 			});
-			this.Draw();
+			this.draw();
 			MapBorder.AllBorders.push(this);
+		}
+		public Destroy(): void {
+			if (CurrentGame.EditorMode) {
+				let dataindex: number = CurrentGame.ProvinceSettings.borders.indexOf(this.data);
+				CurrentGame.ProvinceSettings.borders.splice(dataindex, 1);
+				MapBorder.AllBorders.splice(MapBorder.AllBorders.indexOf(this), 1);
+				MapProvince.AllProvinces.forEach(mp => {
+					mp.data.borders = mp.data.borders.filter(b => b != dataindex).map(b => b > dataindex ? (b - 1) : b);
+					mp.Borders = mp.Borders.filter(b => b !== this);
+					mp.UpdateBorders();
+				});
+				this.graphic.destroy(); // Should always exist if calling this
+			}
 		}
 
 		public Clear(): void {
-			this.Points.forEach(p => p.borders.splice(p.borders.indexOf(this), 1));
 			this.Points = [];
 			this.data.borderPoints = [];
-			this.Draw();
-			this.MapProvinces.forEach(mp => mp.UpdatePoints());
+			this.ReDraw(true);
+			MapProvince.AllProvinces.filter(mp => mp.Borders.some(b => b === this)).forEach(mp => mp.UpdatePoints());
 		}
-		// Toggle
-		public AddPoint(point: MapBorderPoint): void {
-			if (this.Points.some(p => p === point)) {
-				this.removePoint(point);
-				return;
-			}
-			point.borders.push(this);
+
+		public TogglePoint(point: MapBorderPoint): void {
+			if (this.Points.some(p => p === point)) this.removePoint(point);
+			else this.addPoint(point);
+		}
+		private addPoint(point: MapBorderPoint): void {
 			this.Points.push(point);
 			this.data.borderPoints.push(MapBorderPoint.AllPoints.indexOf(point));
-			this.Draw();
-			this.MapProvinces.forEach(mp => mp.UpdatePoints());
-			SortStage();
+			MapProvince.AllProvinces.filter(mp => mp.Borders.some(b => b === this)).forEach(mp => mp.UpdatePoints());
+			this.ReDraw();
 		}
 		private removePoint(point: MapBorderPoint): void {
-			if (!this.Points.some(p => p === point)) return;
-			point.borders.splice(point.borders.indexOf(this), 1);
 			this.Points.splice(this.Points.indexOf(point), 1);
 			this.data.borderPoints.splice(this.data.borderPoints.indexOf(MapBorderPoint.AllPoints.indexOf(point)), 1);	
-			this.Draw();
-			this.MapProvinces.forEach(mp => mp.UpdatePoints());
+			MapProvince.AllProvinces.filter(mp => mp.Borders.some(b => b === this)).forEach(mp => mp.UpdatePoints());
+			this.ReDraw();
+		}
+
+		public ReDraw(others: boolean = false): void {
+			this.draw(others);
 			SortStage();
 		}
-		// Non-Toggle
-		public AddMapProvince(mapprovince: MapProvince): void {
-			if (this.MapProvinces.some(mp => mp === mapprovince)) return; // this.RemoveMapProvince(mapprovince);
-			this.MapProvinces.push(mapprovince);
-		}
-		public RemoveMapProvince(mapprovince: MapProvince): void {
-			if (!this.MapProvinces.some(mp => mp === mapprovince)) return;
-			this.MapProvinces.splice(this.MapProvinces.indexOf(mapprovince), 1);	
-		}
-		public Selectable: Selectable;
-		public Draw(): void {
+
+		private draw(others: boolean = false): void {
 			if (this.graphic) this.graphic.destroy();
 			this.graphic = new PIXI.Graphics();
-			this.graphic.name = "3_Border";
+			this.graphic.name = this.SameOwner ? "2_Subborder" : "3_Border";
 			// this.graphic.filters = [Effects.SHADER];
 
 			let widthToUse: number = (this.SameOwner || CurrentGame.EditorMode) ? 2 : 5;
-			let colorToUse: number = CurrentGame.EditorMode ? 0x990000 : this.SameOwner ? this.Color : 0x000000;
+			let colorToUse: number = CurrentGame.EditorMode ? 0x990000 : 0x000000; // this.SameOwner ? this.Color : 0x000000;
 			let sum: [number, number] = [0, 0];
 
 			// Thick line needs two rounds
@@ -223,11 +241,11 @@ namespace IslandIV {
 					widthToUse = 3;
 				} 
 				this.Points.forEach((p, i, a) => {
-					this.graphic.lineStyle(
+					this.graphic!.lineStyle(
 						(p.invis || (i > 0 && a[i - 1].invis)) && !CurrentGame.EditorMode ? 0 : widthToUse,
 						(p.invis || (i > 0 && a[i - 1].invis)) && CurrentGame.EditorMode ? 0x00AAAA : colorToUse,
-						1);
-					i == 0 ? this.graphic.moveTo(p.x, p.y) : this.graphic.lineTo(p.x, p.y);
+						!CurrentGame.EditorMode && this.SameOwner ? 0.2 : 1);
+					i == 0 ? this.graphic!.moveTo(p.x, p.y) : this.graphic!.lineTo(p.x, p.y);
 					sum[0] += p.x;
 					sum[1] += p.y;
 				});
@@ -240,6 +258,8 @@ namespace IslandIV {
 				this.Selectable = MakeSelectable(this.graphic, this);
 			}
 			Stage.addChild(this.graphic);
+
+			if (others) MapProvince.AllProvinces.filter(mp => mp.Borders.some(b => b === this)).forEach(mp => mp.UpdatePoints());
 		}
 	}
 
@@ -247,9 +267,9 @@ namespace IslandIV {
 	// MapBorderPoint must always exist on a border, so no orphan points anywhere
 	export class MapBorderPoint {
 		public static AllPoints: MapBorderPoint[] = [];
+		public static InitPoints(data: BorderPoint[]) { data.forEach(bp => new MapBorderPoint(bp)); }
 
-		public borders: MapBorder[] = [];
-		public graphic: PIXI.Graphics | undefined;
+		private graphic: PIXI.Graphics | undefined;
 
 		get x(): number { return this.data[0]; }
 		get y(): number { return this.data[1]; }
@@ -257,12 +277,8 @@ namespace IslandIV {
 		get invis(): boolean { return this.data[2]; }
 		set invis(t: boolean) { // Used only by editor
 			this.data[2] = t;
-			this.Draw(true);
+			this.ReDraw(true);
 			SortStage();
-		}
-
-		public static InitPoints(data: BorderPoint[]) {
-			data.forEach(bp => new MapBorderPoint(bp));
 		}
 
 		public static New(evt: PIXI.interaction.InteractionEvent): MapBorderPoint {
@@ -273,17 +289,22 @@ namespace IslandIV {
 		}
 
 		constructor (private data: BorderPoint) {
-			this.Draw(true);
+			this.draw();
 			MapBorderPoint.AllPoints.push(this);
 		}
 
+		// Destroy must handle removal in settings data too
 		public Destroy() {
 			if (CurrentGame.EditorMode) {
 				let dataindex: number = CurrentGame.ProvinceSettings.points.indexOf(this.data);
 				CurrentGame.ProvinceSettings.points.splice(dataindex, 1);
 				MapBorderPoint.AllPoints.splice(MapBorderPoint.AllPoints.indexOf(this), 1);
-				MapBorder.AllBorders.forEach(mb => mb.data.borderPoints = mb.data.borderPoints.filter(bp => bp != dataindex).map(bp => bp > dataindex ? (bp - 1) : bp));
-				this.borders.forEach(b => b.AddPoint(this));
+				MapProvince.AllProvinces.forEach(mp => mp.Points = mp.Points.filter(p => p !== this));
+				MapBorder.AllBorders.forEach(mb => {
+					mb.data.borderPoints = mb.data.borderPoints.filter(bp => bp != dataindex).map(bp => bp > dataindex ? (bp - 1) : bp);
+					mb.Points = mb.Points.filter(p => p !== this);
+					mb.ReDraw(true);
+				});
 				this.graphic!.destroy(); // Should always exist if calling this
 			}
 		}
@@ -291,13 +312,17 @@ namespace IslandIV {
 		public SetPosition(x: number, y: number) { // Used only by editor
 			this.data[0] = Math.max(Math.min(x, CurrentGame.MapContainer.MaxX), 0) | 0;
 			this.data[1] = Math.max(Math.min(y, CurrentGame.MapContainer.MaxY), 0) | 0;
-			this.Draw(true);
+			this.ReDraw(true);
 			SortStage();
 		}
 
-		public Draw(others: boolean = false) {
+		public ReDraw(others: boolean = false) {
+			this.draw(others);
+			SortStage();
+		}
+
+		private draw(others: boolean = false) {
 			if (this.graphic) { // Remove old if necessary
-				Stage.removeChild(this.graphic);
 				this.graphic.destroy();
 				this.graphic = undefined;
 			}
@@ -311,15 +336,15 @@ namespace IslandIV {
 			this.graphic.beginFill(this.invis ? 0x00FFFF : 0xFF0000, 0.85);
 			this.graphic.drawCircle(0, 0, 4);
 			this.graphic.endFill();
+			Stage.addChild(this.graphic);
+
 			MakeSelectable(this.graphic, this);
-			MakeDraggable(this.graphic, this, (p: PIXI.Point, pp: PIXI.Point) => {
+			MakeDraggable(this.graphic, this, (p: PIXI.Point) => {
 				this.graphic!.position.copy(p);
 				this.SetPosition(p.x | 0, p.y | 0);
 			});
-			
-			Stage.addChild(this.graphic);
 
-      if (others) this.borders.forEach(b => { b.Draw(); b.MapProvinces.forEach(mp => mp.Draw()); });
+      if (others) MapBorder.AllBorders.filter(b => b.Points.some(p => p === this)).forEach(b => b.ReDraw(true));
 		}
 	}
 }

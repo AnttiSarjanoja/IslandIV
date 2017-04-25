@@ -48,8 +48,8 @@ namespace IslandIV {
 				if (evt.keyCode === 84 && this.province) this.province[0].RotateCounterClockwise(); // 't'
 				if (evt.keyCode === 70 && this.province) this.province[0].ScaleUp(); // 'f'
 				if (evt.keyCode === 71 && this.province) this.province[0].ScaleDown(); // 'g'
-				if (evt.keyCode === 65 && this.province && this.border) {
-					this.province[0].MapProvince.AddBorder(this.border[0]);
+				if (evt.keyCode === 65 && this.province && this.border) { // 'a'
+					this.province[0].MapProvince.ToggleBorder(this.border[0]);
 					SortStage();
 				}
 
@@ -69,9 +69,24 @@ namespace IslandIV {
 					});
 				}
 				if (evt.keyCode === 73 && this.borderpoint) this.borderpoint[0].invis = !this.borderpoint[0].invis;
-				if (evt.keyCode === 88 && this.borderpoint) { // 'x'
-					this.borderpoint[0].Destroy();
-					this.borderpoint = undefined;
+				if (evt.keyCode === 88) { // 'x'
+					let destroyed: boolean = false;
+					if (this.province) {
+						destroyed = true;
+						this.province[0].Destroy();
+						this.province[1].Unselect();
+					}
+					if (this.border) {
+						if (!destroyed) {
+							destroyed = true;
+							this.border[0].Destroy();
+						}
+						this.border[1].Unselect();
+					}
+					if (this.borderpoint) {
+						if (!destroyed) this.borderpoint[0].Destroy();
+						this.borderpoint[1].Unselect();
+					}
 				}
 
 				// Border modifications
@@ -133,7 +148,7 @@ namespace IslandIV {
 			else if (token instanceof MapBorderPoint) {
 				if (this.borderpoint) this.borderpoint[1].Unselect();
 				this.borderpoint = [token, selectable];	
-				if (this.mode === "EditorAddBorder") this.border![0].AddPoint(token);
+				if (this.mode === "EditorAddBorder") this.border![0].TogglePoint(token);
 			}
 			else if (token instanceof MapBorder) {
 				if (this.border) this.border[1].Unselect();
@@ -146,7 +161,11 @@ namespace IslandIV {
 				this.province = undefined;
 			}
 			else if (token instanceof MapBorder) {
+				if (token.Points.length == 0) token.Destroy();
 				this.border = undefined;
+			}
+			else if (token instanceof MapBorderPoint) {
+				// if (this.mode === "EditorAddBorder") this.border![0].TogglePoint(token);
 			}
 		}
 

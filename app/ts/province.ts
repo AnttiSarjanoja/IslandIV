@@ -90,9 +90,8 @@ namespace IslandIV {
 		public Destroy() {
 			if (CurrentGame.EditorMode) {
 				this.Container.destroy();
-				// TODO: this.MapProvince.destroy
+				this.MapProvince.Destroy();
 				// Works?
-				CurrentGame.ProvinceSettings.provinces.splice(CurrentGame.ProvinceSettings.provinces.indexOf(this.settings), 1);
 			}
 		}
 

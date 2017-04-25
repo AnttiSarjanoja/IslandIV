@@ -74,7 +74,6 @@ namespace IslandIV {
 			// Not very sophisticated atm, just loads all hardcoded images
 			let pixiLoader: PIXI.loaders.Loader = new PIXI.loaders.Loader('./img/');
 			pixiLoader.add('map', this.ProvinceSettings.mapIMG);
-			pixiLoader.add('map-mask', this.ProvinceSettings.maskIMG);
 			pixiLoader.add('unit', this.GameSettings.unitIMG); // Prolly temporary, if using spritesheets
 			pixiLoader.add('province', this.GameSettings.provinceIMG);
 

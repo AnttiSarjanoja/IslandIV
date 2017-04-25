@@ -9,6 +9,14 @@ namespace IslandIV {
 	{
 		return new Draggable(pixiobj, owner, cb);
 	}
+	// TODO: Does not work :(
+	export function UnmakeDraggable (pixiobj: PIXI.Container | PIXI.Sprite | PIXI.Graphics) {
+		pixiobj
+			.off('pointerdown', (evt : PIXI.interaction.InteractionEvent) => this.onDragStart(evt))
+			.off('pointerup', (evt : PIXI.interaction.InteractionEvent) => this.onDragEnd(evt))
+			.off('pointerupoutside', (evt : PIXI.interaction.InteractionEvent) => this.onDragEnd(evt))
+			.off('pointermove', (evt : PIXI.interaction.InteractionEvent) => this.onDragMove(evt));
+	}
 
 	export class Draggable {
 		private dragged: boolean = false;
@@ -25,9 +33,10 @@ namespace IslandIV {
 			this.pixiobj.buttonMode = true;
 			this.pixiobj
 				.on('pointerdown', (evt : PIXI.interaction.InteractionEvent) => this.onDragStart(evt))
-        .on('pointerup', (evt : PIXI.interaction.InteractionEvent) => this.onDragEnd(evt))
-        .on('pointerupoutside', (evt : PIXI.interaction.InteractionEvent) => this.onDragEnd(evt))
-        .on('pointermove', (evt : PIXI.interaction.InteractionEvent) => this.onDragMove(evt));
+				.on('pointerup', (evt : PIXI.interaction.InteractionEvent) => this.onDragEnd(evt))
+				.on('pointerupoutside', (evt : PIXI.interaction.InteractionEvent) => this.onDragEnd(evt))
+				.on('pointermove', (evt : PIXI.interaction.InteractionEvent) => this.onDragMove(evt));
+			this.pixiobj.listeners("pointerup").sort((a, b) => b === this.onDragEnd ? -1 : 1);
 		}
 
 		private onDragStart(evt : PIXI.interaction.InteractionEvent) {
