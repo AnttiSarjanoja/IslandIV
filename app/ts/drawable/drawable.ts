@@ -53,11 +53,12 @@ namespace IslandIV {
 			);
 		}
 
-		public AddText(text: string, x: number, y: number, r: number) {
+		public AddText(text: string, x: number, y: number, r: number = 0, s: number = 1) {
 			let newText: PIXI.Text = new PIXI.Text(text, font); // TODO: Fonts
 			this.setAnchor(newText);
 			newText.x = x;
 			newText.y = y;
+			newText.scale.set(s, s);
 			newText.rotation = r; // In radians
 			this.Container.addChild(newText);
 		}

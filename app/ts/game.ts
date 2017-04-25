@@ -65,6 +65,8 @@ namespace IslandIV {
 		public InitMapEditor() {
 			this._editorMode = !this._editorMode;
 			this._editorMode ? UI.PermaToRight([
+				"Do understand that editor is purposefully not very polished",
+				" - - - ",
 				"All elements are draggable",
 				"'x' to delete stuff",
 				"'p' + mouseclick = new borderpoint",
@@ -73,7 +75,8 @@ namespace IslandIV {
 				"'r,t' and 'f,g' rotate + scale text",
 				"'n' to enter new text",
 				"'i' to toggle selected point invis",
-				"'q' to load current layout"
+				"'q' to load current layout",
+				"'a' to add border to selected province"
 				]) : UI.PermaToRight([":3"]);
 			this.AllProvinces().forEach(province => this._editorMode ? MakeDraggable(province.Container, province, (p, pp) => province.ChangePos(p)) : UnmakeDraggable(province.Container));
 			this.EditorProvinces.forEach(p => p.Container.visible = this._editorMode); // ??

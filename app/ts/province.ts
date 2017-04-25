@@ -41,7 +41,7 @@ namespace IslandIV {
 			super(); // {image: Province.Picture}
 			this.Container.x = this.settings.x;
 			this.Container.y = this.settings.y;
-			this.AddText(settings.name, 0, 0, this.settings.r ? this.settings.r : 0);
+			this.AddText(settings.name, 0, 0, this.settings.r ? this.settings.r : 0, this.settings.s ? this.settings.s : 1);
 			this.Container.name = "2_province";
 
 			this.MapProvince = new MapProvince(settings, this.Owner);
