@@ -3,7 +3,7 @@
 
 @font-face {
   font-family: 'GreekFont';
-  src: url('./font/Art Greco.ttf') format('opentype');
+  src: url('./font/RomanSD.ttf') format('opentype');
 }
 
 body { overflow: hidden; font-family: 'GreekFont', 'Courier New', Courier, monospace; font-size: 16px; background-color: black; color: white; text-align: center; }

@@ -8,6 +8,7 @@ namespace IslandIV {
 	export interface DrawableSprite {
 		image: string,
 		// centered?: boolean, // TODO: If needed
+		name?: string,
 		x?: number, // Positions are used only for multisprite drawables
 		y?: number,
 		scale?: number
@@ -19,14 +20,14 @@ namespace IslandIV {
 		fontFamily: ['GreekFont', 'Courier New', 'Courier', 'monospace'], // 'Courier New', Courier, monospace;
 		fontSize: 26,
 		letterSpacing: 7,
-		fontWeight: 'bold',
+		// fontWeight: 'bold',
 		stroke: '#DDDDDD',
 		strokeThickness: 2
 		/*wordWrap: true,
 		wordWrapWidth: 120 */
 	});
 
-	export abstract class Drawable {
+	export class Drawable {
 		// Let's assume that there can be multiple sprites contained by one Drawable
 		private sprites: PIXI.Sprite[] = [];
 		private _container: PIXI.Container = new PIXI.Container();
@@ -39,16 +40,16 @@ namespace IslandIV {
 		}
 
 		// This truly centers the container even when sprite bounds go -x or -y
-		public CenterContainer(holdY: boolean = false) {
+		public CenterContainer(holdY: boolean = false, holdX: boolean = false) {
 			this.Container.calculateBounds(); // Bounds won't update if nothing moves but e.g. something is removed
 			let bound: PIXI.Rectangle = this.Container.getLocalBounds();
-			this.Container.pivot.x = (bound.x + (bound.width / 2)) | 0;
+			if (!holdX) this.Container.pivot.x = (bound.x + (bound.width / 2)) | 0;
 			if (!holdY) this.Container.pivot.y = (bound.y + (bound.height / 2)) | 0;
 		}
 
 		private setAnchor(obj: PIXI.Sprite | PIXI.Text) {
 			obj.anchor.set(
-				(obj.width / 2 | 0) / obj.width, // Needs bit of magic to work with SCALE_MODES.NEAREST
+				(obj.width / 2 | 0) / obj.width, // Looks better with images with small pixel amount than 0.5, 0.5
 				(obj.height / 2 | 0) / obj.height
 			);
 		}
@@ -56,6 +57,7 @@ namespace IslandIV {
 		public AddText(text: string, x: number, y: number, r: number = 0, s: number = 1) {
 			let newText: PIXI.Text = new PIXI.Text(text, font); // TODO: Fonts
 			this.setAnchor(newText);
+			newText.name = "3_text";
 			newText.x = x;
 			newText.y = y;
 			newText.scale.set(s, s);
@@ -85,11 +87,14 @@ namespace IslandIV {
 
 		// TODO: Mb one day use combined sprites to RenderTexture, which is used as images
 		public AddSprite(spritedata: DrawableSprite) {
-			let sprite: PIXI.Sprite = new PIXI.Sprite(PixiResources[spritedata.image].texture);
+			let sprite: PIXI.Sprite = new PIXI.Sprite(PixiResources[spritedata.image].texture); // PixiResources[spritedata.image].texture;
+			//	new PIXI.Sprite(PixiResources[spritedata.image].texture) :
+			//	new PIXI.Sprite(PixiResources['bunny'].texture);
 			this.sprites.push(sprite);
 			
 			// All sprites must be centered for dragging to look nice
 			this.setAnchor(sprite);
+			if (spritedata.name) sprite.name = spritedata.name;
 			if (spritedata.x !== undefined) sprite.x = spritedata.x;
 			if (spritedata.y !== undefined) sprite.y = spritedata.y;
 			if (spritedata.scale !== undefined) sprite.scale.set(spritedata.scale, spritedata.scale);

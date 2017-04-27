@@ -44,6 +44,13 @@ gulp.task('json', function() {
 gulp.task('watch-json', function() {
     gulp.watch('app/settings/**/*.json', ['json']);
 });
+gulp.task('fonts', function() {
+		return gulp.src('app/fonts/**')
+		.pipe(gulp.dest(PUBLIC_DIR + '/fonts'));
+});
+gulp.task('watch-fonts', function() {
+    gulp.watch('app/fonts/**', ['fonts']);
+});
 gulp.task('shaders', function() {
 		return gulp.src('app/shaders/**')
 		.pipe(gulp.dest(PUBLIC_DIR + '/shaders'));
@@ -69,4 +76,4 @@ gulp.task('lib', function() {
     return gulp.src(['node_modules/pixi.js/dist/pixi.js', 'node_modules/jquery/dist/jquery.min.js', 'app/pixi-extra-filters/bin/pixi-extra-filters.js'])
     .pipe(gulp.dest(PUBLIC_DIR + '/lib'));
 });
-gulp.task('default', ['app-typescript', 'server-typescript', 'html', 'json', 'css', 'img', 'lib', 'shaders', 'watch-app-ts', 'watch-server-ts', 'watch-html', 'watch-img', 'watch-json', 'watch-css', 'watch-shaders']);
+gulp.task('default', ['app-typescript', 'server-typescript', 'html', 'json', 'css', 'img', 'lib', 'shaders', 'fonts', 'watch-app-ts', 'watch-server-ts', 'watch-html', 'watch-img', 'watch-json', 'watch-css', 'watch-shaders', 'watch-fonts']);

@@ -74,8 +74,8 @@ namespace IslandIV {
 			let childArray: PIXI.DisplayObject[] = []; // So ugly
 			this.tokens.forEach((token, i) => {
 				childArray.push(token.Container);
-				token.Container.x = i * 6;
-				token.Container.y = 20 - (token.Container.height / 2);
+				token.Container.x = i * 12;
+				// token.Container.y = -(token.Container.height / 2);
 			});
 			this.Container.children = childArray;
 

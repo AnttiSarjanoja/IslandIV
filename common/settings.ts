@@ -21,7 +21,6 @@ interface ProvinceData {
 	name: string,
 	terrain: Terrain,
 	borders: number[] // Index of border in settings
-	// neighbours: number[] // Could figure this out with borders, is just painful to do
 }
 type Terrain =
 	"Plains" |
@@ -64,6 +63,8 @@ interface InitData {
 // GameSettings contain unit rules (power, cost etc.), and images for customization
 interface GameSettings {
 	// Imagefiles for stuff, must be located at /img/
-	provinceIMG: string,
-	unitIMG: string,
+	defaultIMGs: string[], // matches SettingsIMGnames
+	playerIMGs: string[][] // matches SettingsIMGnames
 }
+
+let SettingsIMGnames = ["province", "infantry", "cavalry", "population"];

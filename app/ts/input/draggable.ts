@@ -5,7 +5,7 @@ namespace IslandIV {
 	export function MakeDraggable(
 		pixiobj: PIXI.Container | PIXI.Sprite | PIXI.Graphics,
 		owner: any,
-		cb?: (local: PIXI.Point, stage: PIXI.Point, view: PIXI.Point) => void): Draggable
+		cb?: (delta: [number, number], global: PIXI.Point, view: PIXI.Point) => void): Draggable
 	{
 		return new Draggable(pixiobj, owner, cb);
 	}
@@ -27,7 +27,7 @@ namespace IslandIV {
 		constructor (
 			private pixiobj: PIXI.Container | PIXI.Sprite | PIXI.Graphics,
 			private owner: any,
-			private cb?: (local: PIXI.Point, stage: PIXI.Point, view: PIXI.Point) => void)
+			private cb?: (delta: [number, number], global: PIXI.Point, view: PIXI.Point) => void)
 		{
 			this.pixiobj.interactive = true;
 			this.pixiobj.buttonMode = true;
@@ -48,12 +48,13 @@ namespace IslandIV {
 		}
 
 		private onDragEnd(evt : PIXI.interaction.InteractionEvent) {
-			if (this.dragged && this.dragData !== null) {
+			if (this.dragged && this.dragData !== null && this.origPos !== null) {
 				// Original position must be restored in all cases (?)
-				if (this.origPos) this.pixiobj.position = this.origPos;
+				this.pixiobj.position = this.origPos;
 				this.pixiobj.alpha = 1;
 				if (this.cb && this.moved) {
-					this.cb(this.dragData.getLocalPosition(this.pixiobj.parent), this.dragData.getLocalPosition(Stage), this.dragData.global);
+					let localPos: PIXI.Point = this.dragData.getLocalPosition(this.pixiobj.parent);
+					this.cb([(localPos.x - this.origPos.x) | 0, (localPos.y - this.origPos.y) | 0], this.dragData.getLocalPosition(Stage), this.dragData.global);
 					evt.stopPropagation();
 				}
 			}

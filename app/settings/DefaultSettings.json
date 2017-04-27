@@ -1,4 +1,4 @@
 { 
-  "provinceIMG": "bunny.png",
-  "unitIMG": "bunny.png"
+  "defaultIMGs": ["empty.png", "soldier.png", "horseman.png", "tent.png"],
+  "playerIMGs": [["octopus.png"], ["legs2.png"]]
 }

@@ -7,23 +7,24 @@
 namespace IslandIV {
 	// Single unit token e.g. 'one infantry'
 	export class UnitToken extends Drawable {
-		public static Picture: string = 'unit'; // Default value
+		// public static Picture: string = 'infantry'; // Default value
 		public Army: Army;
 
 		get Province(): Province { return this.Army.Province; }
 		get Order(): Order | null { return this.Army.Order; }
+		get Owner(): Player | undefined { return this.Province.Owner; }
 
 		constructor (
 			public readonly OriginalArmy: Army,
 			public readonly Type: UnitType)
 		{
 			super({
-				image: UnitToken.Picture, // TODO: Get image through ownerplayer if not using tint
-				scale: Type === "infantry" ? 0.4 : 0.6 // Just temp stuff to try out different units
+				image: OriginalArmy.Province.Owner && PixiResources[OriginalArmy.Province.Owner.id + Type] ? OriginalArmy.Province.Owner.id + Type : Type,
+				scale: 0.2 // Just temp stuff to try out different units
 			}); 
 			MakeSelectable(this.Container, this);
-			MakeDraggable(this.Container, this, (local: PIXI.Point, stage: PIXI.Point, view: PIXI.Point) => {
-				let province: Province | undefined = CurrentGame.GetProvinceUnder(view);
+			MakeDraggable(this.Container, this, (d: [number, number], g: PIXI.Point, v: PIXI.Point) => {
+				let province: Province | undefined = CurrentGame.GetProvinceUnder(v);
 				if (province !== undefined && this.Province !== null) MoveOrder.Create(this.Province, province, this);
 			});
 

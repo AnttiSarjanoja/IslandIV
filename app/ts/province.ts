@@ -9,7 +9,7 @@
 
 namespace IslandIV {
 	export class Province extends Drawable implements IProvince {
-		// public static Picture: string = 'province'; // Default value
+		public static readonly IMG: string = SettingsIMGnames[0]; // Default value
 
 		// IProvince
 		readonly id: number;
@@ -29,8 +29,15 @@ namespace IslandIV {
 		};
 		get Color(): PlayerColor { return this.Owner ? this.Owner.color : "GRAY"; };
 		get Text(): PIXI.Text | undefined {
-			let text: PIXI.DisplayObject = this.Container.getChildAt(0);
+			let text: PIXI.DisplayObject = this.Container.getChildByName("3_text");;
 			return text instanceof PIXI.Text ? text : undefined;
+		}
+		get Img(): PIXI.Sprite | undefined {
+			let img: PIXI.DisplayObject = this.Container.getChildByName("3_provincepic");
+			return img instanceof PIXI.Sprite ? img : undefined;
+		}
+		get Armypos(): PIXI.Point {
+			return new PIXI.Point(this.settings.unit_x, this.settings.unit_y);
 		}
 
 		public constructor(
@@ -38,13 +45,20 @@ namespace IslandIV {
 			data: IProvince, 
 			public readonly Owner?: Player) 
 		{
-			super(); // {image: Province.Picture}
+			super({
+				image: Owner && PixiResources[Owner.id + Province.IMG] ? Owner.id + Province.IMG : Province.IMG,
+				x: settings.unit_x - settings.x,
+				y: settings.unit_y - settings.y,
+				name: "3_provincepic",
+				scale: 0.7
+			});
 			this.Container.x = this.settings.x;
 			this.Container.y = this.settings.y;
 			this.AddText(settings.name, 0, 0, this.settings.r ? this.settings.r : 0, this.settings.s ? this.settings.s : 1);
 			this.Container.name = "2_province";
 
 			this.MapProvince = new MapProvince(settings, this.Owner);
+			if (this.Img) this.MapProvince.ArmyContainers.push(this.Img); // For editor
 			MakeSelectable(this.Container, this, (over: boolean) => over ? UI.TextsToRight([this.Name, this.population.toString()]) : null);
 			Stage.addChild(this.Container);
 			
@@ -54,15 +68,20 @@ namespace IslandIV {
 			this.population = data.population;
 			this.resources = data.resources;
 
+			for (let i = 0; i < this.population; i++) {
+				this.AddSprite({ image: 'population', x: settings.unit_x - settings.x - 40 + (i % 3) * -15, y: settings.unit_y - settings.y, scale: 0.2 });
+			}
+
 			for (let army of data.armies) {
 				let newArmy: Army = new Army(army, this.Color, this);
 				newArmy.Container.x = this.settings.unit_x;
-				newArmy.Container.y = this.settings.unit_y;
+				newArmy.Container.y = this.settings.unit_y + 30;
 				this.armies.push(newArmy);
 				Stage.addChild(newArmy.Container);
 				this.MapProvince.ArmyContainers.push(newArmy.Container);
 			}
 
+			this.changeTint(ColorToNumber(this.Color));
 			Province.currentID++;
 		}
 
@@ -80,7 +99,7 @@ namespace IslandIV {
 				dummydata,
 				{ id: Province.currentID, size: 0, population: 0, resources: [], armies: [] }
 			);
-			MakeDraggable(province.Container, province, (p, pp) => province.ChangePos(p));
+			MakeDraggable(province.Container, province, (p, pp) => province.ChangeTextPos(p, pp));
 			CurrentGame.EditorProvinces.push(province);
 			CurrentGame.ProvinceSettings.provinces.push(dummydata);
 		}
@@ -92,12 +111,14 @@ namespace IslandIV {
 			}
 		}
 
-		public ChangePos(point: PIXI.Point) {
+		public ChangeTextPos(d: [number, number], g: PIXI.Point) {
 			if (CurrentGame.EditorMode) {
-				this.settings.x = Math.max(Math.min(point.x, CurrentGame.MapContainer.MaxX), 0) | 0; //point.x | 0;
-				this.settings.y = Math.max(Math.min(point.y, CurrentGame.MapContainer.MaxY), 0) | 0; //point.x | 0;
-				this.Container.position.x = this.settings.x;
-				this.Container.position.y = this.settings.y;
+				this.settings.x = Math.max(Math.min(g.x, CurrentGame.MapContainer.MaxX), 0) | 0; //point.x | 0;
+				this.settings.y = Math.max(Math.min(g.y, CurrentGame.MapContainer.MaxY), 0) | 0; //point.x | 0;
+				if (this.Text) {
+					this.Text.position.x += d[0];
+					this.Text.position.y += d[1];
+				}
 			}
 		}
 

@@ -74,8 +74,12 @@ namespace IslandIV {
 			// Not very sophisticated atm, just loads all hardcoded images
 			let pixiLoader: PIXI.loaders.Loader = new PIXI.loaders.Loader('./img/');
 			pixiLoader.add('map', this.ProvinceSettings.mapIMG);
-			pixiLoader.add('unit', this.GameSettings.unitIMG); // Prolly temporary, if using spritesheets
-			pixiLoader.add('province', this.GameSettings.provinceIMG);
+			// pixiLoader.add('unit', this.GameSettings.unitIMG); // Prolly temporary, if using spritesheets
+			// pixiLoader.add('province', this.GameSettings.provinceIMG);
+			pixiLoader.add('bunny', 'bunny.png');
+			this.GameSettings.defaultIMGs.forEach((img, i) => { if (img !== "") pixiLoader.add(SettingsIMGnames[i], img) });
+			this.GameSettings.playerIMGs.forEach((pImgs, pInd) => pImgs.forEach((img, i) => { if (img !== "") pixiLoader.add(pInd + SettingsIMGnames[i], img) }));
+			// this.GameSettings.playerIMGs[0], this.GameSettings.playerIMGs[0]); // Prolly temporary, if using spritesheets
 
 			// TODO: Do we want spritesheets? TexturePacker produces simple spritesheets with JSON, is free
 			// loader.add(sprite_sheets_arr);

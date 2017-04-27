@@ -34,7 +34,7 @@ namespace IslandIV {
 			let request = new XMLHttpRequest();
 			request.open("POST", "/orders");
 			request.setRequestHeader("Content-Type", "application/json");
-			request.send(JSON.stringify(sentObj)); // TODO: Is stringify here ok?
+			request.send(JSON.stringify(sentObj));
 		}
 	}
 
@@ -55,6 +55,8 @@ namespace IslandIV {
 				console.log("Not a neighbour!");
 				return;
 			}
+
+			if (unit.Order === null && fromProvince === toProvince) return;
 
 			// Remove from old Order and check if returning to Province
 			if (unit.Order !== null && unit.Order instanceof MoveOrder) {
@@ -85,8 +87,8 @@ namespace IslandIV {
 			// Otherwise create new and store it
 			let newOrder: MoveOrder = new MoveOrder(
 				[fromProvince.id.toString(), toProvince.id.toString()],
-				fromProvince.Container.position,
-				toProvince.Container.position,
+				fromProvince.Armypos,
+				toProvince.Armypos,
 				fromProvince);
 			newOrder.AddToken(unit);
 

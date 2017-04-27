@@ -57,7 +57,7 @@ namespace IslandIV {
 			return this.AllProvinces().find(p => p.id == n)!; // Return possible undefined
 		}
 		public GetProvinceUnder(point: PIXI.Point): Province | undefined {
-			return this.AllProvinces().find(p => p.Text !== undefined && p.Text.containsPoint(point) );
+			return this.AllProvinces().find(p => p.MapProvince.Polygon.containsPoint(point));
 		}
 
 		public EditorProvinces: Province[] = [];
@@ -78,7 +78,10 @@ namespace IslandIV {
 				"'q' to load current layout",
 				"'a' to add border to selected province"
 				]) : UI.PermaToRight([":3"]);
-			this.AllProvinces().forEach(province => this._editorMode ? MakeDraggable(province.Container, province, (p, pp) => province.ChangePos(p)) : UnmakeDraggable(province.Container));
+			this.AllProvinces().forEach(province => {
+				this._editorMode ? MakeDraggable(province.Text!, province, (d, g) => province.ChangeTextPos(d, g)) : UnmakeDraggable(province.Container);
+				if (province.Img) province.Img.visible = !this._editorMode;
+			});
 			this.EditorProvinces.forEach(p => p.Container.visible = this._editorMode); // ??
 			MapBorderPoint.AllPoints.forEach(p => p.ReDraw());
 			MapProvince.AllProvinces.forEach(p => p.ReDraw());

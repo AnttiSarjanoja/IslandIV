@@ -13,9 +13,9 @@ namespace IslandIV {
 		public Terrain: Terrain;
 		public Borders: MapBorder[];
 		public Points: MapBorderPoint[]; // To help drawing
-		public ArmyContainers: PIXI.Container[] = [];
+		public ArmyContainers: (PIXI.Sprite | PIXI.Container)[] = [];
 
-		private polygon: PIXI.Graphics; // Area
+		public Polygon: PIXI.Graphics; // Area
 		private unitloc: PIXI.Graphics | undefined; // Unit position
 		private color: number;
 
@@ -37,7 +37,7 @@ namespace IslandIV {
 			if (CurrentGame.EditorMode) {
 				MapProvince.AllProvinces.splice(MapProvince.AllProvinces.indexOf(this), 1);
 				CurrentGame.ProvinceSettings.provinces.splice(CurrentGame.ProvinceSettings.provinces.indexOf(this.data), 1);
-				this.polygon.destroy();
+				this.Polygon.destroy();
 				if (this.unitloc) this.unitloc.destroy();
 			}
 		}
@@ -109,17 +109,17 @@ namespace IslandIV {
 		}
 
 		private draw(): void {
-			if (this.polygon) this.polygon.destroy();
+			if (this.Polygon) this.Polygon.destroy();
 			if (this.Points.length > 0) {
-				this.polygon = new PIXI.Graphics();
-				this.polygon.name = "1_ProvincePoly";
-				this.polygon.beginFill(CurrentGame.EditorMode ? 0x111111 : this.color, 0.6);
-				this.polygon.moveTo(this.Points[this.Points.length - 1].x, this.Points[this.Points.length - 1].y);
-				this.Points.forEach(point => this.polygon.lineTo(point.x, point.y));
-				this.polygon.endFill();
-				this.polygon.blendMode = 2; // Multiply
+				this.Polygon = new PIXI.Graphics();
+				this.Polygon.name = "1_ProvincePoly";
+				this.Polygon.beginFill(CurrentGame.EditorMode ? 0x111111 : this.color, 0.6);
+				this.Polygon.moveTo(this.Points[this.Points.length - 1].x, this.Points[this.Points.length - 1].y);
+				this.Points.forEach(point => this.Polygon.lineTo(point.x, point.y));
+				this.Polygon.endFill();
+				this.Polygon.blendMode = 2; // Multiply
 
-				Stage.addChild(this.polygon);
+				Stage.addChild(this.Polygon);
 			}
 			
 			if (this.unitloc) {
@@ -137,15 +137,21 @@ namespace IslandIV {
 			this.unitloc.endFill();
 
 			MakeSelectable(this.unitloc, this);
-			MakeDraggable(this.unitloc, this, (p: PIXI.Point, pp: PIXI.Point) => {
-				this.data.unit_x = Math.max(Math.min(pp.x, CurrentGame.MapContainer.MaxX), 0) | 0;
-				this.data.unit_y = Math.max(Math.min(pp.y, CurrentGame.MapContainer.MaxY), 0) | 0;
+			MakeDraggable(this.unitloc, this, (d: [number, number], g: PIXI.Point) => {
+				this.data.unit_x = Math.max(Math.min(g.x, CurrentGame.MapContainer.MaxX), 0) | 0;
+				this.data.unit_y = Math.max(Math.min(g.y, CurrentGame.MapContainer.MaxY), 0) | 0;
 				this.unitloc!.position.x = this.data.unit_x;
 				this.unitloc!.position.y = this.data.unit_y;
 
 				this.ArmyContainers.forEach(c => {
-					c.position.x = this.data.unit_x;
-					c.position.y = this.data.unit_y;
+					if (c instanceof PIXI.Sprite) {
+						c.position.x += d[0];
+						c.position.y += d[1];
+					}
+					else {
+						c.position.x = this.data.unit_x;
+						c.position.y = this.data.unit_y;
+					}
 				}); // TODO: Different with many armies?
 			});
 			Stage.addChild(this.unitloc);
@@ -338,9 +344,9 @@ namespace IslandIV {
 			Stage.addChild(this.graphic);
 
 			MakeSelectable(this.graphic, this);
-			MakeDraggable(this.graphic, this, (p: PIXI.Point) => {
-				this.graphic!.position.copy(p);
-				this.SetPosition(p.x | 0, p.y | 0);
+			MakeDraggable(this.graphic, this, (d: [number, number], g: PIXI.Point) => {
+				this.graphic!.position.copy(g);
+				this.SetPosition(g.x | 0, g.y | 0);
 			});
 
       if (others) MapBorder.AllBorders.filter(b => b.Points.some(p => p === this)).forEach(b => b.ReDraw(true));
