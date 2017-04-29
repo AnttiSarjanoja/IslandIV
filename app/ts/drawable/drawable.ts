@@ -1,5 +1,4 @@
 /// <reference path="../../pixi-typescript/pixi.js.d.ts" />
-/// <reference path="effects.ts" />
 
 // Base class for all drawable objects, such as units, effects, move-orders (?)
 // Basically this class exists to wrap all PIXI stuff, child classes will not understand PIXI stuff
@@ -7,28 +6,13 @@
 namespace IslandIV {
 	export interface DrawableSprite {
 		image: string,
-		// centered?: boolean, // TODO: If needed
 		name?: string,
 		x?: number, // Positions are used only for multisprite drawables
 		y?: number,
 		scale?: number
 	};
 
-	let font: PIXI.TextStyle = new PIXI.TextStyle({
-		align: 'center',
-		// dropShadow: true,
-		fontFamily: ['GreekFont', 'Courier New', 'Courier', 'monospace'], // 'Courier New', Courier, monospace;
-		fontSize: 26,
-		letterSpacing: 7,
-		// fontWeight: 'bold',
-		stroke: '#DDDDDD',
-		strokeThickness: 2
-		/*wordWrap: true,
-		wordWrapWidth: 120 */
-	});
-
 	export class Drawable {
-		// Let's assume that there can be multiple sprites contained by one Drawable
 		private sprites: PIXI.Sprite[] = [];
 		private _container: PIXI.Container = new PIXI.Container();
 
@@ -54,8 +38,8 @@ namespace IslandIV {
 			);
 		}
 
-		public AddText(text: string, x: number, y: number, r: number = 0, s: number = 1) {
-			let newText: PIXI.Text = new PIXI.Text(text, font); // TODO: Fonts
+		public AddText(text: string, font: PIXI.TextStyle, x: number, y: number, r: number = 0, s: number = 1) {
+			let newText: PIXI.Text = new PIXI.Text(text, font);
 			this.setAnchor(newText);
 			newText.name = "3_text";
 			newText.x = x;
@@ -69,7 +53,7 @@ namespace IslandIV {
 		public AddGraphics(type: string, point: PIXI.Point, point2?: PIXI.Point) {
 			if (point2 === undefined) return;
 			let shadow: PIXI.Graphics = new PIXI.Graphics();
-			shadow.lineStyle(3, 0x000000);
+			shadow.lineStyle(3, 0x000000, 0.7);
 			shadow.moveTo(point.x, point.y);
 			shadow.lineTo(point2.x, point2.y);
 			this.Container.addChild(shadow);
@@ -87,7 +71,7 @@ namespace IslandIV {
 
 		// TODO: Mb one day use combined sprites to RenderTexture, which is used as images
 		public AddSprite(spritedata: DrawableSprite) {
-			let sprite: PIXI.Sprite = new PIXI.Sprite(PixiResources[spritedata.image].texture); // PixiResources[spritedata.image].texture;
+			let sprite: PIXI.Sprite = new PIXI.Sprite(PixiResources[spritedata.image].texture);
 			//	new PIXI.Sprite(PixiResources[spritedata.image].texture) :
 			//	new PIXI.Sprite(PixiResources['bunny'].texture);
 			this.sprites.push(sprite);
@@ -102,20 +86,13 @@ namespace IslandIV {
 			this.Container.addChild(sprite);
 		}
 
-		// Prolly obsolete after proper images
+		// TODO: Prolly obsolete after proper images
+		// Goes through whole PIXI object tree and changes tints
 		// Pls use 0xFFFFFF like numbers
-		protected changeTint(tint : number) : void {
-			// Go through whole PIXI object tree and change tints
+		public ChangeTint(tint : number) : void {
 			function recursiveTint(child: PIXI.DisplayObject, tint: number) {
-				if (child instanceof PIXI.Sprite) {
-					// PIXI.CanvasTinter.tintWithMultiply();
-					child.tint = tint;
-				}
-				else if(child instanceof PIXI.Container) {
-					for (var subchild of child.children) {
-						recursiveTint(subchild, tint);
-					}	
-				}
+				if (child instanceof PIXI.Sprite) { child.tint = tint; }
+				else if(child instanceof PIXI.Container) { child.children.forEach(c => recursiveTint(c, tint));	}
 			}
 			recursiveTint(this.Container, tint);
 		}

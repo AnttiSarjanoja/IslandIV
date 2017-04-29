@@ -1,15 +1,15 @@
 /// <reference path="mapDrawables.ts" />
 /// <reference path="../game.ts" />
 /// <reference path="../main.ts" />
+/// <reference path="../drawable/draw_settings.ts" />
 /// <reference path="../../pixi-typescript/pixi.js.d.ts" />
 
-namespace IslandIV {
-	// This class handles basically everything concerning Map-element and the window containing it
-	// No sense to split into separate inputclass
+// This class handles basically everything concerning Map-element and the window containing it
+// No sense to split into separate inputclass
+namespace IslandIV {	
 	export class MapContainer {
 		private container: PIXI.Container = new PIXI.Container();
-		private canvasScale = 2; // Acts as zoom level default
-		private asMapEditor: boolean = false;
+		private canvasScale = MAP_ZOOM_LEVEL;
 
 		// Interaction temps
 		private panning: boolean = false;
@@ -42,9 +42,9 @@ namespace IslandIV {
 		private onPointerStart (evt : PIXI.interaction.InteractionEvent) {
 			// TODO: Get pointerdata.button for different button interactions
 			this.panning = true;
-			this.previousPoint = evt.data.global.clone(); // Clones to not use same object, 
+			this.previousPoint = evt.data.global.clone();
 
-			console.log(evt.data.getLocalPosition(Stage));
+			console.log(evt.data.getLocalPosition(Stage)); // Is useful for debugging
 		}
 
 		private onPointerEnd (evt : PIXI.interaction.InteractionEvent) {

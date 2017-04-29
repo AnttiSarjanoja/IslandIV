@@ -8,7 +8,7 @@
 namespace IslandIV {
 	export class GameLoader {
 		// These are the stuff to load
-		public GameData: IGame | null = null; // TODO: Game
+		public GameData: IGame | null = null;
 		public ProvinceSettings: ProvinceSettings | null = null;
 		public GameSettings: GameSettings | null = null;
 		public PixiResources: PIXI.loaders.Resource | null = null;
@@ -42,7 +42,7 @@ namespace IslandIV {
 		}
 
 		private loadOtherStuff() {
-			if (this.GameData === null) throw new Error("GAhhh");
+			if (this.GameData === null) { throw new Error("GAhhh"); }
 
 			console.log("Loading other stuff");
 			let provinceRequest = new XMLHttpRequest();
@@ -51,7 +51,7 @@ namespace IslandIV {
 			provinceRequest.onload = () => {
 				console.log("Got provinceresponse");
 				this.saveProvinceSettings(provinceRequest.response); // TODO: Check response, fail => call cb
-				if (this.GameSettings) this.loadImages();
+				if (this.GameSettings) { this.loadImages(); }
 			};
 
 			let settingsRequest = new XMLHttpRequest();
@@ -60,7 +60,7 @@ namespace IslandIV {
 			settingsRequest.onload = () => {
 				console.log("Got settingsresponse");
 				this.GameSettings = settingsRequest.response; // TODO: Check response, fail => call cb
-				if (this.ProvinceSettings) this.loadImages();
+				if (this.ProvinceSettings) { this.loadImages(); }
 			};
 
 			provinceRequest.send();
@@ -68,18 +68,14 @@ namespace IslandIV {
 		}
 
 		private loadImages() {
-			if (this.ProvinceSettings === null || this.GameSettings === null) throw new Error("Gah");
+			if (this.ProvinceSettings === null || this.GameSettings === null) { throw new Error("Gah"); }
 			console.log("Loading images");
 
-			// Not very sophisticated atm, just loads all hardcoded images
 			let pixiLoader: PIXI.loaders.Loader = new PIXI.loaders.Loader('./img/');
 			pixiLoader.add('map', this.ProvinceSettings.mapIMG);
-			// pixiLoader.add('unit', this.GameSettings.unitIMG); // Prolly temporary, if using spritesheets
-			// pixiLoader.add('province', this.GameSettings.provinceIMG);
 			pixiLoader.add('bunny', 'bunny.png');
-			this.GameSettings.defaultIMGs.forEach((img, i) => { if (img !== "") pixiLoader.add(SettingsIMGnames[i], img) });
+			this.GameSettings.defaultIMGs.forEach((img, i) => pixiLoader.add(SettingsIMGnames[i], img));
 			this.GameSettings.playerIMGs.forEach((pImgs, pInd) => pImgs.forEach((img, i) => { if (img !== "") pixiLoader.add(pInd + SettingsIMGnames[i], img) }));
-			// this.GameSettings.playerIMGs[0], this.GameSettings.playerIMGs[0]); // Prolly temporary, if using spritesheets
 
 			// TODO: Do we want spritesheets? TexturePacker produces simple spritesheets with JSON, is free
 			// loader.add(sprite_sheets_arr);
@@ -96,20 +92,7 @@ namespace IslandIV {
 			this.ProvinceSettings!.provinces.forEach((province: ProvinceData, index: number) => {
 				if (province.x === undefined) throw new Error("Provincedata error: (" + index + ") No x-coord!");
 				if (province.y === undefined) throw new Error("Provincedata error: (" + index + ") No y-coord!");
-				
-				/* TODO: Move these to "after creating everything" -validation			
-				if (province.neighbours === undefined) throw new Error("Provincedata error: (" + index + ") No neighbours!");
-				if (province.neighbours.length === 0) throw new Error("Provincedata error: (" + index + ") Empty neighbours!");
-				if (province.neighbours.some((neighbour: ProvinceNeighbour) => { return neighbour.neighbourIndex === index; }))
-					throw new Error("Provincedata error: (" + index + ") Self as neighbour!");
-
-				province.neighbours.forEach((neighbour) => {
-					if (!this.ProvinceSettings!.provinces[neighbour.neighbourIndex].neighbours.some(
-						(candidate) => { return index === candidate.neighbourIndex; }))
-					{
-						throw new Error("Provincedata error: (" + index + ") No pair neighbour with (" + neighbour + ")!");
-					}
-				});*/
+				// TODO: Validate settingsdata
 			});
 		}
 	}

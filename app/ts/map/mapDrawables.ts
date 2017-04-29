@@ -1,4 +1,5 @@
 /// <reference path="../main.ts" />
+/// <reference path="../drawable/draw_settings.ts" />
 /// <reference path="../input/draggable.ts" />
 /// <reference path="../input/selectable.ts" />
 /// <reference path="../../../common/settings.ts" />
@@ -23,7 +24,7 @@ namespace IslandIV {
 			if (data.unit_x === undefined) data.unit_x = data.x;
 			if (data.unit_y === undefined) data.unit_y = data.y;
 
-			this.color = ColorToNumber(this.Owner ? this.Owner.color : "GRAY");
+			this.color = ColorToNumber(this.Owner ? this.Owner.color : DEFAULT_COLOR);
 			this.Borders = data.borders.map(n => {
 				let border: MapBorder | undefined = MapBorder.AllBorders[n];
 				if (border) return border;
@@ -166,7 +167,6 @@ namespace IslandIV {
 		public Type: BorderType;
 		public Points: MapBorderPoint[] = [];
 		public SameOwner: boolean = false;
-		public Color: number = 0xFFB6C1;
 		public Selectable: Selectable;
 
 		private graphic: PIXI.Graphics;
@@ -236,7 +236,7 @@ namespace IslandIV {
 			// this.graphic.filters = [Effects.SHADER];
 
 			let widthToUse: number = (this.SameOwner || CurrentGame.EditorMode) ? 2 : 5;
-			let colorToUse: number = CurrentGame.EditorMode ? 0x990000 : 0x000000; // this.SameOwner ? this.Color : 0x000000;
+			let colorToUse: number = CurrentGame.EditorMode ? 0x990000 : 0x000000;
 			let sum: [number, number] = [0, 0];
 
 			// Thick line needs two rounds

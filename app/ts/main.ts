@@ -1,6 +1,7 @@
 /// <reference path="game.ts" />
 /// <reference path="loader.ts" />
 /// <reference path="ui.ts" />
+/// <reference path="drawable/effects.ts" />
 /// <reference path="map/mapContainer.ts" />
 /// <reference path="../pixi-typescript/pixi.js.d.ts" />
 
@@ -12,6 +13,7 @@
 // Use 'NOTE: asdf' to mention important stuff in comments
 // Publics Uppercase, privates lowercase, _accessor _privates, CONST CAPS
 // Singleline getters and setters are OK
+// Singleline control structures are OK, but use brackets! if (a) { meh(); }
 // Operator and comma whitespaces (1 + 1, 2)
 // Set first element of enum = 1 to avoid if(var) checking issues
 
@@ -22,9 +24,6 @@ namespace IslandIV {
 	export const Renderer: PIXI.CanvasRenderer | PIXI.WebGLRenderer = PIXIApp.renderer;
 	export const Ticker: PIXI.ticker.Ticker = PIXIApp.ticker;
 	export const View: HTMLCanvasElement = PIXIApp.view;
-
-	// Settings
-	// PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST; // MAJOR NOTE: Pls don't scale anything < 1 since we try to use pixel graphics without blending
 
 	export let TickerTime: number = 0;
 	export let PixiResources: PIXI.loaders.Resource;
@@ -37,6 +36,7 @@ namespace IslandIV {
 	document.body.onload = () => IslandIV.Init();
 
 	// TODO: Somehow sort in a better way
+	// All children in Stage have names beginning with a number, they are sorted here
 	export function SortStage() {
 		Stage.children.sort((a, b) => a.name !== null && b.name !== null && a.name < b.name ? -1 : 1 );
 	}
@@ -52,6 +52,7 @@ namespace IslandIV {
 		{
 			Effects.SHADER = new PIXI.Filter(undefined, resources['shader'].data, { 'iChannel0': { 'type': 'samplerXX', 'value': 10 }});
 
+			// Load game-specific stuff
 			// TODO: Load gamedata from multiple games?
 			let gameLoader = new IslandIV.GameLoader(() => {
 				if (!gameLoader.Validate) throw new Error("Loader failed :(");

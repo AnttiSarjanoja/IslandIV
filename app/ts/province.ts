@@ -2,6 +2,7 @@
 /// <reference path="main.ts" />
 /// <reference path="input/selectable.ts" />
 /// <reference path="drawable/drawable.ts" />
+/// <reference path="drawable/draw_settings.ts" />
 /// <reference path="map/mapDrawables.ts" />
 /// <reference path="../../common/interfaces.ts" />
 /// <reference path="../../common/player_color.ts" />
@@ -19,7 +20,6 @@ namespace IslandIV {
 		readonly resources: string[];
 
 		public MapProvince: MapProvince;
-		// public Neighbours: Province[] = [];
 
 		get Name(): string { return this.settings.name; };
 		set Name(s: string) { if (CurrentGame.EditorMode) this.settings.name = s; };
@@ -27,7 +27,7 @@ namespace IslandIV {
 			let mapProvinces: MapProvince[] = MapProvince.AllProvinces.filter(mp => mp !== this.MapProvince && mp.Borders.some(b => this.MapProvince.Borders.some(bb => b === bb)));
 			return CurrentGame.AllProvinces().filter(p => mapProvinces.some(mp => mp === p.MapProvince));
 		};
-		get Color(): PlayerColor { return this.Owner ? this.Owner.color : "GRAY"; };
+		get Color(): PlayerColor { return this.Owner ? this.Owner.color : DEFAULT_COLOR; };
 		get Text(): PIXI.Text | undefined {
 			let text: PIXI.DisplayObject = this.Container.getChildByName("3_text");;
 			return text instanceof PIXI.Text ? text : undefined;
@@ -50,11 +50,11 @@ namespace IslandIV {
 				x: settings.unit_x - settings.x,
 				y: settings.unit_y - settings.y,
 				name: "3_provincepic",
-				scale: 0.7
+				scale: PROVINCE_SCALE
 			});
 			this.Container.x = this.settings.x;
 			this.Container.y = this.settings.y;
-			this.AddText(settings.name, 0, 0, this.settings.r ? this.settings.r : 0, this.settings.s ? this.settings.s : 1);
+			this.AddText(settings.name, PROVINCE_FONT, 0, 0, this.settings.r ? this.settings.r : 0, this.settings.s ? this.settings.s : 1);
 			this.Container.name = "2_province";
 
 			this.MapProvince = new MapProvince(settings, this.Owner);
@@ -73,26 +73,31 @@ namespace IslandIV {
 			}
 
 			for (let army of data.armies) {
-				let newArmy: Army = new Army(army, this.Color, this);
+				let newArmy: Army = new Army(army, this);
 				newArmy.Container.x = this.settings.unit_x;
-				newArmy.Container.y = this.settings.unit_y + 30;
+				newArmy.Container.y = this.settings.unit_y + PROVINCE_ARMY_POS;
 				this.armies.push(newArmy);
 				Stage.addChild(newArmy.Container);
 				this.MapProvince.ArmyContainers.push(newArmy.Container);
 			}
 
-			this.changeTint(ColorToNumber(this.Color));
+			this.ChangeTint(ColorToNumber(this.Color));
 			Province.currentID++;
 		}
 
 		// IMPORTANT NOTE: RemoveUnit is never needed since there should not be any situation where unit actually leaves its Province in GUI
 		public AddToken(token: UnitToken) {
-			this.armies[0].AddToken(token); // TEMP	
+			this.armies[0].AddToken(token); // TODO: Multiple armies
 		}
 
 
 		// --- Editor stuff ---
+
+		// Editor statics
+		private static SCALE_AMT = 0.05;
+		private static ROTATE_AMT = 0.05; 
 		private static currentID = 0;
+
 		public static Dummy(p: PIXI.Point) {
 			let dummydata: ProvinceData = {x: p.x, y: p.y, r: 0, s: 0, unit_x: p.x, unit_y: p.y, name: "NO_NAME", terrain: "Plains", borders: []};
 			let province: Province = new Province(
@@ -103,18 +108,18 @@ namespace IslandIV {
 			CurrentGame.EditorProvinces.push(province);
 			CurrentGame.ProvinceSettings.provinces.push(dummydata);
 		}
+
 		public Destroy() {
 			if (CurrentGame.EditorMode) {
 				this.Container.destroy();
 				this.MapProvince.Destroy();
-				// Works?
 			}
 		}
 
 		public ChangeTextPos(d: [number, number], g: PIXI.Point) {
 			if (CurrentGame.EditorMode) {
-				this.settings.x = Math.max(Math.min(g.x, CurrentGame.MapContainer.MaxX), 0) | 0; //point.x | 0;
-				this.settings.y = Math.max(Math.min(g.y, CurrentGame.MapContainer.MaxY), 0) | 0; //point.x | 0;
+				this.settings.x = Math.max(Math.min(g.x, CurrentGame.MapContainer.MaxX), 0) | 0;
+				this.settings.y = Math.max(Math.min(g.y, CurrentGame.MapContainer.MaxY), 0) | 0;
 				if (this.Text) {
 					this.Text.position.x += d[0];
 					this.Text.position.y += d[1];
@@ -122,13 +127,11 @@ namespace IslandIV {
 			}
 		}
 
-		private static SCALE_AMT = 0.05;
-		private static ROTATE_AMT = 0.05; 
 		public ScaleUp() {
 			if (CurrentGame.EditorMode) {
 				this.Text!.scale.x += Province.SCALE_AMT;
 				this.Text!.scale.y += Province.SCALE_AMT;
-				if (this.settings.s === undefined) this.settings.s = 1;
+				if (this.settings.s === undefined) { this.settings.s = 1; }
 				this.settings.s = +(this.settings.s + Province.SCALE_AMT).toFixed(2);
 			}
 		}
@@ -136,21 +139,21 @@ namespace IslandIV {
 			if (CurrentGame.EditorMode) {
 				this.Text!.scale.x -= Province.SCALE_AMT;
 				this.Text!.scale.y -= Province.SCALE_AMT;
-				if (this.settings.s === undefined) this.settings.s = 1;
+				if (this.settings.s === undefined) { this.settings.s = 1; }
 				this.settings.s = +(this.settings.s - Province.SCALE_AMT).toFixed(2);
 			}
 		}
 		public RotateClockwise() {
 			if (CurrentGame.EditorMode) {
 				this.Text!.rotation += Province.ROTATE_AMT;
-				if (this.settings.r === undefined) this.settings.r = 0;
+				if (this.settings.r === undefined) { this.settings.r = 0; }
 				this.settings.r = +(this.settings.r + Province.ROTATE_AMT).toFixed(2);
 			}
 		}
 		public RotateCounterClockwise() {
 			if (CurrentGame.EditorMode) {
 				this.Text!.rotation -= Province.ROTATE_AMT;
-				if (this.settings.r === undefined) this.settings.r = 0;
+				if (this.settings.r === undefined) { this.settings.r = 0; }
 				this.settings.r = +(this.settings.r - Province.ROTATE_AMT).toFixed(2);
 			}
 		}

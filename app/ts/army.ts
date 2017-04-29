@@ -1,84 +1,66 @@
 /// <reference path="drawable/drawable.ts" />
+/// <reference path="drawable/draw_settings.ts" />
+/// <reference path="province.ts" />
 /// <reference path="unitToken.ts" />
 /// <reference path="../../common/interfaces.ts" />
-/// <reference path="../../common/player_color.ts" />
 
 namespace IslandIV {
 	// An army consists of all units of a single player in a single province / order
 	export class Army extends Drawable implements IArmy {
-		readonly ownerID: number | null = null; 
-		readonly units: UnitList = {};
+		readonly ownerID: number | undefined = undefined; 
+		readonly units: UnitList = {}; // This contains original values
 		readonly Province: Province;
-		private amounts: UnitList = {};
-		public Order: Order | null = null; // Any better solution?
+
+		public Order: Order | undefined = undefined; // TODO: Mb better solution for checking if army is in a order?
+
+		private _amounts: UnitList = {}; // This contains modified values
 		private tokens: UnitToken[] = [];
 
+		get Amounts(): UnitList { return this._amounts; }
 		get Empty(): boolean { return this.tokens.length <= 0; }
 
-		constructor(data: IArmy | null, color: PlayerColor, province: Province, id: number | null = null) {
+		constructor(data: IArmy | undefined, province: Province) {
 			super(); // Does not have a basic picture
 			this.Container.name = "4_army";
-			this.ownerID = id; // TODO:
 			this.Province = province;
 
-			if (data === null) return; // Must be able to create empty containers
+			if (data === undefined) { return; } // Must be able to create empty containers e.g. for orders
+			this.ownerID = data.ownerID;
+
+			// Create tokens by type and amount
 			this.units = data.units;
 			for (var key in this.units) {
 				for (var i = 0; i < this.units[key]; i++) {
-					this.AddToken(new UnitToken(this, <UnitType>key)); // TODO: Sooo ugly, works?
+					this.AddToken(new UnitToken(this, <UnitType>key));
 				}
 			}
-			this.changeTint(ColorToNumber(color));
 		}
 
 		public AddToken(token: UnitToken): void {
 			token.Army = this;
-
-			// This horrible hack works with optional string literal type indices
-			let amount: number | undefined = this.amounts[token.Type] !== undefined ? this.amounts[token.Type] : 0;
-			if (amount !== undefined) this.amounts[token.Type] = amount + 1;
-
 			this.tokens.push(token);
+			this._amounts[token.Type] = this._amounts[token.Type] !== undefined ? this._amounts[token.Type]! + 1 : 1;
 			this.Container.addChild(token.Container);
 			this.rearrangeTokens();
 		}
 
+		// NOTE: This does not destroy the PIXI Container, it is callers duty
 		public RemoveToken(token: UnitToken): void {
-			let index: number = this.tokens.indexOf(token);
-			if (index > -1) {
-				token.Container.x = 0; // Just to be sure
-				token.Container.y = 0;
-
-				let amount: number | undefined = this.amounts[token.Type];
-				if (amount) this.amounts[token.Type] = amount - 1;
-
-				this.tokens.splice(index, 1);
+			if (this.tokens.some(t => t == token)) {
+				this.tokens.splice(this.tokens.indexOf(token), 1);
+				this._amounts[token.Type] = this._amounts[token.Type]! - 1;
+				token.Container.position.set(0, 0); // Just to be sure
 				this.Container.removeChild(token.Container);
 				this.rearrangeTokens();
 			}
-			else console.log("Något gick fel!");
-			// TODO: if this.tokens.length === 0
 		}
 
-		public Amounts(): UnitList {
-			return this.amounts;
-		}
-
-		// This sorts the tokens by type, shows them over a baseline with a small x between tokens
-		private rearrangeTokens () {
+		// This sorts the tokens by type with a small x between tokens
+		private rearrangeTokens() {
 			// TODO: Proper sorting!
-			this.tokens.sort((a, b) => {
-				if (a.Type === "cavalry" && b.Type !== "cavalry") return -1;
-				else return 1;
-			});
-			let childArray: PIXI.DisplayObject[] = []; // So ugly
-			this.tokens.forEach((token, i) => {
-				childArray.push(token.Container);
-				token.Container.x = i * 12;
-				// token.Container.y = -(token.Container.height / 2);
-			});
-			this.Container.children = childArray;
-
+			this.tokens.sort((a, b) => a.Type === "cavalry" ? -1 : 1);
+			this.tokens.forEach((token, i) => token.Container.x = i * ARMY_TOKEN_GAP);
+			this.Container.children = this.tokens.map(t => t.Container);
 			this.CenterContainer(true);
 		}
 	}

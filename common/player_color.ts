@@ -6,7 +6,7 @@ type PlayerColor =
 	"PURPLE" |
 	"ORANGE" |
 	"GRAY" |
-	"ERROR" // TODO: Should use this?
+	"ERROR"
 
 function ColorToNumber(color: PlayerColor) : number {
 	switch(color) {
@@ -18,6 +18,6 @@ function ColorToNumber(color: PlayerColor) : number {
 	case "ORANGE": return 0xFFA500;
 	case "GRAY":   return 0xBBBBBB;
 	}
-	console.log("Faulty player color warning!");
-	return 0xFFFFFF; // TODO: Error color
+	console.log("Error color warning!");
+	return 0xFFB6C1; // Pink, error color
 }

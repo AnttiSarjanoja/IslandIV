@@ -25,9 +25,9 @@ namespace IslandIV {
 		// NOTE: Orders are smart and contain complex structures with sprites etc.
 		//	In this function the obsolete stuff are stripped and only IOrder specific data is sent
 		public static SendOrders() {
-			let strippedOrders: IOrder[] = this.NewOrders.map(order => {
-				return { turn: order.turn, type: order.type, state: order.state, parameters: order.parameters };
-			});
+			let strippedOrders: IOrder[] = this.NewOrders.map(order =>
+				({ turn: order.turn, type: order.type, state: order.state, parameters: order.parameters })
+			);
 			let sentObj: Object = { player: CurrentGame.CurrentPlayer.id, turn: CurrentGame.turn, orders: strippedOrders };
 			console.log(JSON.stringify(sentObj));
 
@@ -38,25 +38,20 @@ namespace IslandIV {
 		}
 	}
 
-	// Only parameters-array should be given to new orders, turn and state are optional for old orders
+	// TODO: Separate file
 	export class MoveOrder extends Order {
-		// Ok, something like this:
 		// Type = 'Move'
 		// Parameter[1] = From where moves
-		// Parameter[2] = What moves
-		// Parameter[3] = Where moves (may be a path through provinces?)
-
-		// private static created: MoveOrder[] = [];
-
-		// TODO: Tidy this, order is somewhat messy
+		// Parameter[2] = Where moves (may be a path through provinces?)
+		// Parameter[3] = What moves, type = UnitList
+		
 		public static Create(fromProvince: Province, toProvince: Province, unit: UnitToken) {
-			// 1. Validate
 			if (fromProvince !== toProvince && !fromProvince.Neighbours.some(n => n === toProvince)) {
 				console.log("Not a neighbour!");
 				return;
 			}
 
-			if (unit.Order === null && fromProvince === toProvince) return;
+			if (unit.Order === null && fromProvince === toProvince) { return; }
 
 			// Remove from old Order and check if returning to Province
 			if (unit.Order !== null && unit.Order instanceof MoveOrder) {
@@ -66,22 +61,17 @@ namespace IslandIV {
 					return;
 				}
 			}
-			else unit.Army.RemoveToken(unit);
+			else { unit.Army.RemoveToken(unit); }
 
 			// Check if identical order already exists
-			let found: Order[] = Order.NewOrders.filter(function (order: Order) {
-				return (
-					order instanceof MoveOrder &&
-					order.parameters[0] === fromProvince.id.toString() &&
-					order.parameters[1] === toProvince.id.toString()
-				);
-			});
-			if (found.length > 0) {
-				let mOrder: Order = found[0];
-				if (mOrder instanceof MoveOrder) {
-					mOrder.AddToken(unit);
-					return;
-				}
+			let found: Order | undefined = Order.NewOrders.find(order =>
+				order instanceof MoveOrder &&
+				order.parameters[0] === fromProvince.id.toString() &&
+				order.parameters[1] === toProvince.id.toString()	
+			);
+			if (found && found instanceof MoveOrder) {
+				found.AddToken(unit);
+				return;
 			}
 
 			// Otherwise create new and store it
@@ -97,9 +87,7 @@ namespace IslandIV {
 
 		private static remove(order: MoveOrder) {
 			let index: number = Order.NewOrders.indexOf(order);
-			if (index > -1) {
-				Order.NewOrders.splice(index, 1);
-			}
+			if (index > -1) {	Order.NewOrders.splice(index, 1);	}
 		}
 
 		private army: Army;
@@ -122,9 +110,9 @@ namespace IslandIV {
 
 			this.Container.x = mapPos.x;
 			this.Container.y = mapPos.y;
-			this.AddGraphics("Arrow", calcStart, calcEnd); // This does not even need CenterContainer()
+			this.AddGraphics("Arrow", calcStart, calcEnd);
 
-			this.army = new Army(null, CurrentGame.CurrentPlayer.color, province); // Dummyarmy for order
+			this.army = new Army(undefined, province); // Dummyarmy for order
 			this.army.Order = this;
 			this.army.Container.x = calcEnd.x;
 			this.army.Container.y = calcEnd.y - 10;
@@ -137,18 +125,17 @@ namespace IslandIV {
 		// These exist only to update parameters
 		public AddToken(unit: UnitToken) {
 			this.army.AddToken(unit);
-			this.parameters[2] = this.army.Amounts();
+			this.parameters[2] = this.army.Amounts;
 		}
 		public RemoveToken(unit: UnitToken) {
 			// TODO: Update parameters
 			this.army.RemoveToken(unit);
-			if (this.army.Empty) {
-				this.Destroy();
-			}
-			else this.parameters[2] = this.army.Amounts();
+			if (this.army.Empty) { this.Destroy(); }
+			else { this.parameters[2] = this.army.Amounts; }
 		}
 
 		public Destroy() {
+			this.army.Container.destroy();
 			this.Container.destroy();
 			MoveOrder.remove(this);
 			Ticker.remove(this.TickFn);

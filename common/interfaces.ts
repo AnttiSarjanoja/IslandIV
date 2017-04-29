@@ -66,7 +66,7 @@ interface IProvince {
 
 interface IArmy {
 	// UnitType is used in combination with config files
-	ownerID: number | null, // PlayerID as in index in game.players[], or null as in "non-player"
+	ownerID: number | undefined, // PlayerID as in index in game.players[], or null as in "non-player"
 	units: UnitList,
 }
 
