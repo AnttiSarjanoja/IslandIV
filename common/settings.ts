@@ -24,6 +24,9 @@ interface ProvinceData {
 }
 type Terrain =
 	"Plains" |
+	"Flood plains" |
+	"Forest" |
+	"Mountains" |
 	"Sea" |
 	"Deep sea"
 interface Border {

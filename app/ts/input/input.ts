@@ -35,7 +35,7 @@ namespace IslandIV {
 		private static keylock: boolean = false;
 		// TODO: Should work, just feels a bit shady. Could use a sorted array of handlers of (evt) => boolean
 		private static handleKeyUp (evt: KeyboardEvent) {
-			if (this.keylock) return;
+			if (this.keylock) { return; }
 			if (CurrentGame.EditorMode) {
 				// Province modifications
 				if (evt.keyCode === 78 && this.province) { // 'n', new text
@@ -44,14 +44,16 @@ namespace IslandIV {
 						this.province![0].Name = s;
 					});
 				}
-				if (evt.keyCode === 82 && this.province) this.province[0].RotateClockwise(); // 'r'
-				if (evt.keyCode === 84 && this.province) this.province[0].RotateCounterClockwise(); // 't'
-				if (evt.keyCode === 70 && this.province) this.province[0].ScaleUp(); // 'f'
-				if (evt.keyCode === 71 && this.province) this.province[0].ScaleDown(); // 'g'
+				if (evt.keyCode === 69 && this.province) this.province[0].RotateClockwise(); // 'e'
+				if (evt.keyCode === 82 && this.province) this.province[0].RotateCounterClockwise(); // 'rs'
+				if (evt.keyCode === 68 && this.province) this.province[0].ScaleUp(); // 'd'
+				if (evt.keyCode === 70 && this.province) this.province[0].ScaleDown(); // 'f'
 				if (evt.keyCode === 65 && this.province && this.border) { // 'a'
 					this.province[0].MapProvince.ToggleBorder(this.border[0]);
 					SortStage();
 				}
+
+				if (evt.keyCode === 84 && this.province) { this.province[0].SwitchTerrain(); }
 
 				// Borderpoint modifications
 				if (evt.keyCode === 80) { // 'p'
@@ -68,7 +70,7 @@ namespace IslandIV {
 						this.changeMode("Normal");
 					});
 				}
-				if (evt.keyCode === 73 && this.borderpoint) this.borderpoint[0].invis = !this.borderpoint[0].invis;
+				if (evt.keyCode === 73 && this.borderpoint) { this.borderpoint[0].invis = !this.borderpoint[0].invis; }
 				if (evt.keyCode === 88) { // 'x'
 					let destroyed: boolean = false;
 					if (this.province) {

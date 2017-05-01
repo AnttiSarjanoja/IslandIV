@@ -11,7 +11,6 @@ namespace IslandIV {
 	export class MapProvince {
 		public static AllProvinces: MapProvince[] = [];
 
-		public Terrain: Terrain;
 		public Borders: MapBorder[];
 		public Points: MapBorderPoint[]; // To help drawing
 		public ArmyContainers: (PIXI.Sprite | PIXI.Container)[] = [];
@@ -20,9 +19,12 @@ namespace IslandIV {
 		private unitloc: PIXI.Graphics | undefined; // Unit position
 		private color: number;
 
+		get Terrain(): Terrain { return this.data.terrain; }
+
 		constructor (public data: ProvinceData, public Owner: Player | undefined) {
-			if (data.unit_x === undefined) data.unit_x = data.x;
-			if (data.unit_y === undefined) data.unit_y = data.y;
+			if (data.unit_x === undefined) { data.unit_x = data.x; }
+			if (data.unit_y === undefined) { data.unit_y = data.y; }
+			if (data.terrain === undefined) { data.terrain = "Plains"; }
 
 			this.color = ColorToNumber(this.Owner ? this.Owner.color : DEFAULT_COLOR);
 			this.Borders = data.borders.map(n => {
@@ -133,7 +135,7 @@ namespace IslandIV {
 			this.unitloc.position.x = this.data.unit_x;
 			this.unitloc.position.y = this.data.unit_y;
 			this.unitloc.lineStyle(0);
-			this.unitloc.beginFill(0xFF0000, 0.85);
+			this.unitloc.beginFill(this.data.terrain === "Sea" || this.data.terrain === "Deep sea" ? 0x0000FF : 0xFF0000, 0.85);
 			this.unitloc.drawCircle(0, 0, 10);
 			this.unitloc.endFill();
 
@@ -237,6 +239,10 @@ namespace IslandIV {
 
 			let widthToUse: number = (this.SameOwner || CurrentGame.EditorMode) ? 2 : 5;
 			let colorToUse: number = CurrentGame.EditorMode ? 0x990000 : 0x000000;
+			let seaBorder: boolean =
+				MapProvince.AllProvinces
+				.filter(mp => mp.Borders.some(b => b === this))
+				.some(mp => mp.Terrain === "Sea" || mp.Terrain === "Deep sea");
 			let sum: [number, number] = [0, 0];
 
 			// Thick line needs two rounds
@@ -249,7 +255,7 @@ namespace IslandIV {
 					this.graphic!.lineStyle(
 						(p.invis || (i > 0 && a[i - 1].invis)) && !CurrentGame.EditorMode ? 0 : widthToUse,
 						(p.invis || (i > 0 && a[i - 1].invis)) && CurrentGame.EditorMode ? 0x00AAAA : colorToUse,
-						!CurrentGame.EditorMode && this.SameOwner ? 0.2 : 1);
+						!CurrentGame.EditorMode && seaBorder ? 0.5 : !CurrentGame.EditorMode && this.SameOwner ? 0.2 : 1);
 					i == 0 ? this.graphic!.moveTo(p.x, p.y) : this.graphic!.lineTo(p.x, p.y);
 					sum[0] += p.x;
 					sum[1] += p.y;

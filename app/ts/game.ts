@@ -72,7 +72,8 @@ namespace IslandIV {
 				"'p' + mouseclick = new borderpoint",
 				"'o' + mouseclick = new province",
 				"'b' = define new / modify old border",
-				"'r,t' and 'f,g' rotate + scale text",
+				"'e,r' and 'd,f' rotate + scale text",
+				"'t' to toggle terrain type",
 				"'n' to enter new text",
 				"'i' to toggle selected point invis",
 				"'q' to load current layout",
@@ -80,7 +81,7 @@ namespace IslandIV {
 				]) : UI.PermaToRight([":3"]);
 			this.AllProvinces().forEach(province => {
 				this._editorMode ? MakeDraggable(province.Text!, province, (d, g) => province.ChangeTextPos(d, g)) : UnmakeDraggable(province.Container);
-				if (province.Img) province.Img.visible = !this._editorMode;
+				if (province.Img) province.Img.visible = province.Terrain !== "Sea" && province.Terrain !== "Deep sea" && !this._editorMode;
 			});
 			this.EditorProvinces.forEach(p => p.Container.visible = this._editorMode); // ??
 			MapBorderPoint.AllPoints.forEach(p => p.ReDraw());

@@ -36,16 +36,15 @@ namespace IslandIV {
 			let img: PIXI.DisplayObject = this.Container.getChildByName("3_provincepic");
 			return img instanceof PIXI.Sprite ? img : undefined;
 		}
-		get Armypos(): PIXI.Point {
-			return new PIXI.Point(this.settings.unit_x, this.settings.unit_y);
-		}
+		get Armypos(): PIXI.Point { return new PIXI.Point(this.settings.unit_x, this.settings.unit_y); }
+		get Terrain(): Terrain { return this.settings.terrain; }
 
 		public constructor(
 			private settings: ProvinceData,
 			data: IProvince, 
 			public readonly Owner?: Player) 
 		{
-			super({
+			super(settings.terrain === "Sea" || settings.terrain === "Deep sea" ? undefined : {
 				image: Owner && PixiResources[Owner.id + Province.IMG] ? Owner.id + Province.IMG : Province.IMG,
 				x: settings.unit_x - settings.x,
 				y: settings.unit_y - settings.y,
@@ -98,7 +97,7 @@ namespace IslandIV {
 		private static ROTATE_AMT = 0.05; 
 		private static currentID = 0;
 
-		public static Dummy(p: PIXI.Point) {
+		public static Dummy(p: PIXI.Point): void {
 			let dummydata: ProvinceData = {x: p.x, y: p.y, r: 0, s: 0, unit_x: p.x, unit_y: p.y, name: "NO_NAME", terrain: "Plains", borders: []};
 			let province: Province = new Province(
 				dummydata,
@@ -109,14 +108,14 @@ namespace IslandIV {
 			CurrentGame.ProvinceSettings.provinces.push(dummydata);
 		}
 
-		public Destroy() {
+		public Destroy(): void {
 			if (CurrentGame.EditorMode) {
 				this.Container.destroy();
 				this.MapProvince.Destroy();
 			}
 		}
 
-		public ChangeTextPos(d: [number, number], g: PIXI.Point) {
+		public ChangeTextPos(d: [number, number], g: PIXI.Point): void {
 			if (CurrentGame.EditorMode) {
 				this.settings.x = Math.max(Math.min(g.x, CurrentGame.MapContainer.MaxX), 0) | 0;
 				this.settings.y = Math.max(Math.min(g.y, CurrentGame.MapContainer.MaxY), 0) | 0;
@@ -127,7 +126,19 @@ namespace IslandIV {
 			}
 		}
 
-		public ScaleUp() {
+		// TODO:
+		public SwitchTerrain(): void {
+			if (CurrentGame.EditorMode) {
+				switch (this.settings.terrain) {
+					case "Plains": this.settings.terrain = "Sea"; break;
+					case "Sea": this.settings.terrain = "Deep sea"; break;
+					case "Deep sea": this.settings.terrain = "Plains"; break;
+				};
+				this.MapProvince.Borders.forEach(b => b.ReDraw(true));
+			}
+		}
+
+		public ScaleUp(): void {
 			if (CurrentGame.EditorMode) {
 				this.Text!.scale.x += Province.SCALE_AMT;
 				this.Text!.scale.y += Province.SCALE_AMT;
@@ -135,7 +146,7 @@ namespace IslandIV {
 				this.settings.s = +(this.settings.s + Province.SCALE_AMT).toFixed(2);
 			}
 		}
-		public ScaleDown() {
+		public ScaleDown(): void {
 			if (CurrentGame.EditorMode) {
 				this.Text!.scale.x -= Province.SCALE_AMT;
 				this.Text!.scale.y -= Province.SCALE_AMT;
@@ -143,14 +154,14 @@ namespace IslandIV {
 				this.settings.s = +(this.settings.s - Province.SCALE_AMT).toFixed(2);
 			}
 		}
-		public RotateClockwise() {
+		public RotateClockwise(): void {
 			if (CurrentGame.EditorMode) {
 				this.Text!.rotation += Province.ROTATE_AMT;
 				if (this.settings.r === undefined) { this.settings.r = 0; }
 				this.settings.r = +(this.settings.r + Province.ROTATE_AMT).toFixed(2);
 			}
 		}
-		public RotateCounterClockwise() {
+		public RotateCounterClockwise(): void {
 			if (CurrentGame.EditorMode) {
 				this.Text!.rotation -= Province.ROTATE_AMT;
 				if (this.settings.r === undefined) { this.settings.r = 0; }
