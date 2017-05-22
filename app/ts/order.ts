@@ -2,6 +2,7 @@
 /// <reference path="main.ts" />
 /// <reference path="player.ts" />
 /// <reference path="drawable/drawable.ts" />
+/// <reference path="drawable/shapes.ts" />
 /// <reference path="../../common/interfaces.ts" />
 
 namespace IslandIV {
@@ -110,7 +111,7 @@ namespace IslandIV {
 
 			this.Container.x = mapPos.x;
 			this.Container.y = mapPos.y;
-			this.AddGraphics("Arrow", calcStart, calcEnd);
+			this.Container.addChild(Shapes.MapMoveArrow(calcStart, calcEnd));
 
 			this.army = new Army(undefined, province); // Dummyarmy for order
 			this.army.Order = this;

@@ -18,6 +18,7 @@ namespace IslandIV {
 
 		get Amounts(): UnitList { return this._amounts; }
 		get Empty(): boolean { return this.tokens.length <= 0; }
+		get Owner(): Player | undefined { return CurrentGame.GetPlayer(this.ownerID); }
 
 		constructor(data: IArmy | undefined, province: Province) {
 			super(); // Does not have a basic picture
@@ -59,7 +60,12 @@ namespace IslandIV {
 		private rearrangeTokens() {
 			// TODO: Proper sorting!
 			this.tokens.sort((a, b) => a.Type === "cavalry" ? -1 : 1);
-			this.tokens.forEach((token, i) => token.Container.x = i * ARMY_TOKEN_GAP);
+			let currentX: number = 0;
+			this.tokens.forEach((token, i) => {
+				token.Container.x = currentX;
+				token.Container.y = 10 - token.Container.height;
+				currentX += token.Container.width + ARMY_TOKEN_GAP;
+			});
 			this.Container.children = this.tokens.map(t => t.Container);
 			this.CenterContainer(true);
 		}

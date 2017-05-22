@@ -4,12 +4,14 @@
 namespace IslandIV {
 	export const MAP_ZOOM_LEVEL: number = 2;
 
-	export const ARMY_TOKEN_GAP: number = 12;
+	export const ARMY_TOKEN_GAP: number = 1; // Gap between token images, can be negative
 
 	export const TOKEN_SCALE: number = 0.2;
 
 	export const PROVINCE_SCALE: number = 0.7;
 	export const PROVINCE_ARMY_POS: number = 30;
+
+	// export const POPULATION_SCALE: number = 
 
 	export const DEFAULT_COLOR: PlayerColor = "GRAY";
 	export const ERROR_COLOR: PlayerColor = "ERROR";

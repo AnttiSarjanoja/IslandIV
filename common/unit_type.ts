@@ -1,4 +1,5 @@
 type UnitType =
-	"infantry" | 
-	"cavalry" | 
-	"ship";
+	"infantry" |
+	"cavalry" |
+	"ship" |
+	"city";

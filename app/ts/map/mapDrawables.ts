@@ -13,7 +13,7 @@ namespace IslandIV {
 
 		public Borders: MapBorder[];
 		public Points: MapBorderPoint[]; // To help drawing
-		public ArmyContainers: (PIXI.Sprite | PIXI.Container)[] = [];
+		public SubContainers: PIXI.Container[] = [];
 
 		public Polygon: PIXI.Graphics; // Area
 		private unitloc: PIXI.Graphics | undefined; // Unit position
@@ -29,8 +29,8 @@ namespace IslandIV {
 			this.color = ColorToNumber(this.Owner ? this.Owner.color : DEFAULT_COLOR);
 			this.Borders = data.borders.map(n => {
 				let border: MapBorder | undefined = MapBorder.AllBorders[n];
-				if (border) return border;
-				else throw new Error("Broken provincedata: no Border in index " + n);
+				if (border) { return border; }
+				else { throw new Error("Broken provincedata: no Border in index " + n); }
 			});
 			this.UpdateBorders();
 			MapProvince.AllProvinces.push(this);
@@ -41,13 +41,13 @@ namespace IslandIV {
 				MapProvince.AllProvinces.splice(MapProvince.AllProvinces.indexOf(this), 1);
 				CurrentGame.ProvinceSettings.provinces.splice(CurrentGame.ProvinceSettings.provinces.indexOf(this.data), 1);
 				this.Polygon.destroy();
-				if (this.unitloc) this.unitloc.destroy();
+				if (this.unitloc) { this.unitloc.destroy(); }
 			}
 		}
 
 		public ToggleBorder(border: MapBorder): void {
-			if (this.Borders.some(b => b === border)) this.removeBorder(border);
-			else this.addBorder(border);
+			if (this.Borders.some(b => b === border)) { this.removeBorder(border); }
+			else { this.addBorder(border); }
 		}
 		private addBorder(border: MapBorder): void {
 			console.log("Added border");
@@ -66,15 +66,15 @@ namespace IslandIV {
 		public UpdateBorders(): void {
 			this.Borders.forEach(b => {
 				let mp: MapProvince | undefined = MapProvince.AllProvinces.find(mp => mp !== this && mp.Borders.some(bb => b === bb));
-				if (mp) b.SameOwner = this.Owner === mp.Owner;
+				if (mp) { b.SameOwner = this.Owner === mp.Owner; }
 			});
 			this.UpdatePoints();
 		}
 
 		public UpdatePoints(): void {
+			// Get all points to an array and filter uniques
 			this.Points = [].concat.apply([], this.Borders.map(b => b.Points));
-			this.Points = this.Points.filter( // Filter uniques
-				(p, pos, a) => { return a.findIndex(pp => (p.x == pp.x && p.y == pp.y)) == pos; });
+			this.Points = this.Points.filter((p, pos, a) => a.findIndex(pp => (p.x == pp.x && p.y == pp.y)) == pos);
 
 			// Sort clockwise, thanks to @ciamej from stackoverflow
 			let center: [number, number] = [0, 0];
@@ -112,7 +112,7 @@ namespace IslandIV {
 		}
 
 		private draw(): void {
-			if (this.Polygon) this.Polygon.destroy();
+			if (this.Polygon) { this.Polygon.destroy() };
 			if (this.Points.length > 0) {
 				this.Polygon = new PIXI.Graphics();
 				this.Polygon.name = "1_ProvincePoly";
@@ -132,30 +132,22 @@ namespace IslandIV {
 			if (!CurrentGame.EditorMode) return;
 			this.unitloc = new PIXI.Graphics();
 			this.unitloc.name = "2_UnitLoc";
-			this.unitloc.position.x = this.data.unit_x;
-			this.unitloc.position.y = this.data.unit_y;
-			this.unitloc.lineStyle(0);
-			this.unitloc.beginFill(this.data.terrain === "Sea" || this.data.terrain === "Deep sea" ? 0x0000FF : 0xFF0000, 0.85);
-			this.unitloc.drawCircle(0, 0, 10);
-			this.unitloc.endFill();
+			this.unitloc.position.set(this.data.unit_x, this.data.unit_y);
+			this.unitloc
+				.lineStyle(0)
+				.beginFill(this.data.terrain === "Sea" || this.data.terrain === "Deep sea" ? 0x0000FF : 0xFF0000, 0.85)
+				.drawCircle(0, 0, 10)
+				.endFill();
 
 			MakeSelectable(this.unitloc, this);
 			MakeDraggable(this.unitloc, this, (d: [number, number], g: PIXI.Point) => {
 				this.data.unit_x = Math.max(Math.min(g.x, CurrentGame.MapContainer.MaxX), 0) | 0;
 				this.data.unit_y = Math.max(Math.min(g.y, CurrentGame.MapContainer.MaxY), 0) | 0;
-				this.unitloc!.position.x = this.data.unit_x;
-				this.unitloc!.position.y = this.data.unit_y;
-
-				this.ArmyContainers.forEach(c => {
-					if (c instanceof PIXI.Sprite) {
-						c.position.x += d[0];
-						c.position.y += d[1];
-					}
-					else {
-						c.position.x = this.data.unit_x;
-						c.position.y = this.data.unit_y;
-					}
-				}); // TODO: Different with many armies?
+				this.unitloc!.position.set(this.data.unit_x, this.data.unit_y);
+				this.SubContainers.forEach(c => {
+					c.position.x += d[0];
+					c.position.y += d[1];
+				});
 			});
 			Stage.addChild(this.unitloc);
 		}
@@ -182,8 +174,8 @@ namespace IslandIV {
 		constructor (public data: Border) {
 			this.Points = data.borderPoints.map(bp => {
 				let point: MapBorderPoint | undefined = MapBorderPoint.AllPoints[bp];
-				if (point) return point;
-				else throw new Error("Broken provincedata: no Borderpoint in index " + bp);
+				if (point) { return point; }
+				else { throw new Error("Broken provincedata: no Borderpoint in index " + bp); }
 			});
 			this.draw();
 			MapBorder.AllBorders.push(this);
@@ -232,7 +224,7 @@ namespace IslandIV {
 		}
 
 		private draw(others: boolean = false): void {
-			if (this.graphic) this.graphic.destroy();
+			if (this.graphic) { this.graphic.destroy(); }
 			this.graphic = new PIXI.Graphics();
 			this.graphic.name = this.SameOwner ? "2_Subborder" : "3_Border";
 			// this.graphic.filters = [Effects.SHADER];
@@ -262,10 +254,11 @@ namespace IslandIV {
 				});
 			}
 			if (CurrentGame.EditorMode) {
-				this.graphic.lineStyle(0, 0, 0);
-				this.graphic.beginFill(0x0000AA, 1);
-				this.graphic.drawCircle(sum[0] / this.Points.length, sum[1] / this.Points.length, 7);
-				this.graphic.endFill();
+				this.graphic
+					.lineStyle(0, 0, 0)
+					.beginFill(0x0000AA, 1)
+					.drawCircle(sum[0] / this.Points.length, sum[1] / this.Points.length, 7)
+					.endFill();
 				this.Selectable = MakeSelectable(this.graphic, this);
 			}
 			Stage.addChild(this.graphic);
@@ -340,13 +333,13 @@ namespace IslandIV {
 			if (!CurrentGame.EditorMode) return;
 
 			this.graphic = new PIXI.Graphics();
-			this.graphic.position.x = this.x;
-			this.graphic.position.y = this.y;
+			this.graphic.position.set(this.x, this.y);
 			this.graphic.name = "4_BorderPoint";
-			this.graphic.lineStyle(0);
-			this.graphic.beginFill(this.invis ? 0x00FFFF : 0xFF0000, 0.85);
-			this.graphic.drawCircle(0, 0, 4);
-			this.graphic.endFill();
+			this.graphic
+				.lineStyle(0)
+				.beginFill(this.invis ? 0x00FFFF : 0xFF0000, 0.85)
+				.drawCircle(0, 0, 4)
+				.endFill();
 			Stage.addChild(this.graphic);
 
 			MakeSelectable(this.graphic, this);

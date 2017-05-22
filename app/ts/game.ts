@@ -36,7 +36,8 @@ namespace IslandIV {
 			MapBorderPoint.InitPoints(this.ProvinceSettings.points);
 			MapBorder.InitBorders(this.ProvinceSettings.borders);
 
-			data.players.forEach((playerData, index) => this.players.push(new Player(playerData, index, this.ProvinceSettings)));
+			data.players.forEach((playerData, index) => this.players.push(new Player(playerData, index)));
+			this.players.forEach((p, i) => p.Init(data.players[i], this.ProvinceSettings));
 			data.neutralProvinces.forEach(provinceData =>
 				this.neutralProvinces.push(new Province(this.ProvinceSettings.provinces[provinceData.id], provinceData))
 			);
@@ -58,6 +59,10 @@ namespace IslandIV {
 		}
 		public GetProvinceUnder(point: PIXI.Point): Province | undefined {
 			return this.AllProvinces().find(p => p.MapProvince.Polygon.containsPoint(point));
+		}
+		public GetPlayer(n?: number): Player | undefined {
+			console.log(n);
+			return n === undefined ? undefined : this.players[n];
 		}
 
 		public EditorProvinces: Province[] = [];

@@ -3,6 +3,7 @@
 /// <reference path="input/selectable.ts" />
 /// <reference path="drawable/drawable.ts" />
 /// <reference path="drawable/draw_settings.ts" />
+/// <reference path="drawable/shapes.ts" />
 /// <reference path="map/mapDrawables.ts" />
 /// <reference path="../../common/interfaces.ts" />
 /// <reference path="../../common/player_color.ts" />
@@ -44,21 +45,30 @@ namespace IslandIV {
 			data: IProvince, 
 			public readonly Owner?: Player) 
 		{
-			super(settings.terrain === "Sea" || settings.terrain === "Deep sea" ? undefined : {
+			super( /* settings.terrain === "Sea" || settings.terrain === "Deep sea" ? undefined : {
 				image: Owner && PixiResources[Owner.id + Province.IMG] ? Owner.id + Province.IMG : Province.IMG,
 				x: settings.unit_x - settings.x,
 				y: settings.unit_y - settings.y,
 				name: "3_provincepic",
 				scale: PROVINCE_SCALE
-			});
-			this.Container.x = this.settings.x;
-			this.Container.y = this.settings.y;
+			} */ );
+
+			// <TEMP>
+			if (settings.terrain === undefined) { settings.terrain = "Plains"; }
+			// </ TEMP>
+
+			this.Container.position.set(this.settings.x, this.settings.y);
+			
+			this.MapProvince = new MapProvince(settings, this.Owner);
+			if (this.Img) { this.MapProvince.SubContainers.push(this.Img); } // For editor
+			MakeSelectable(this.Container, this, (over: boolean) => over ? UI.TextsToRight([this.Name, this.population.toString()]) : null);
+
+			this.UpdateTerrain();
+
 			this.AddText(settings.name, PROVINCE_FONT, 0, 0, this.settings.r ? this.settings.r : 0, this.settings.s ? this.settings.s : 1);
 			this.Container.name = "2_province";
 
-			this.MapProvince = new MapProvince(settings, this.Owner);
-			if (this.Img) this.MapProvince.ArmyContainers.push(this.Img); // For editor
-			MakeSelectable(this.Container, this, (over: boolean) => over ? UI.TextsToRight([this.Name, this.population.toString()]) : null);
+
 			Stage.addChild(this.Container);
 			
 			// Go through data
@@ -67,8 +77,12 @@ namespace IslandIV {
 			this.population = data.population;
 			this.resources = data.resources;
 
-			for (let i = 0; i < this.population; i++) {
-				this.AddSprite({ image: 'population', x: settings.unit_x - settings.x - 40 + (i % 3) * -15, y: settings.unit_y - settings.y, scale: 0.2 });
+			for (let i = 0; i < this.size; i++) {
+				let popGraphic: PIXI.Graphics = i < this.population ? Shapes.Population(ColorToNumber(this.Color)) : Shapes.EmptyPopulation();
+				popGraphic.position.set(settings.unit_x - settings.x - 40 - i * (popGraphic.width + 1), settings.unit_y - settings.y);
+				this.Container.addChild(popGraphic);
+				this.MapProvince.SubContainers.push(popGraphic);
+				// this.AddSprite({ image: 'population', x: settings.unit_x - settings.x - 40 + (i % 3) * -15, y: settings.unit_y - settings.y, scale: 0.2 });
 			}
 
 			for (let army of data.armies) {
@@ -77,10 +91,10 @@ namespace IslandIV {
 				newArmy.Container.y = this.settings.unit_y + PROVINCE_ARMY_POS;
 				this.armies.push(newArmy);
 				Stage.addChild(newArmy.Container);
-				this.MapProvince.ArmyContainers.push(newArmy.Container);
+				this.MapProvince.SubContainers.push(newArmy.Container);
 			}
 
-			this.ChangeTint(ColorToNumber(this.Color));
+			// this.ChangeTint(ColorToNumber(this.Color));
 			Province.currentID++;
 		}
 
@@ -89,6 +103,14 @@ namespace IslandIV {
 			this.armies[0].AddToken(token); // TODO: Multiple armies
 		}
 
+		public UpdateTerrain() {
+			if (this.Container.getChildByName("ProvinceTerrain")) { this.Container.getChildByName("ProvinceTerrain").destroy(); }
+			let shape: PIXI.Graphics = Shapes.Terrain(this.Terrain);
+			shape.position.set(this.settings.unit_x - this.settings.x, this.settings.unit_y - this.settings.y);
+			ChangeTint(shape, ColorToNumber(this.Color));
+			this.Container.addChildAt(shape, 0);
+			this.MapProvince.SubContainers.push(shape);
+		}
 
 		// --- Editor stuff ---
 
@@ -130,11 +152,16 @@ namespace IslandIV {
 		public SwitchTerrain(): void {
 			if (CurrentGame.EditorMode) {
 				switch (this.settings.terrain) {
-					case "Plains": this.settings.terrain = "Sea"; break;
+					case "Plains": this.settings.terrain = "Forest"; break;
+					case "Forest": this.settings.terrain = "Hills"; break;
+					case "Hills": this.settings.terrain = "Mountains"; break;
+					case "Mountains": this.settings.terrain = "Flood plains"; break;
+					case "Flood plains": this.settings.terrain = "Sea"; break;
 					case "Sea": this.settings.terrain = "Deep sea"; break;
 					case "Deep sea": this.settings.terrain = "Plains"; break;
 				};
-				this.MapProvince.Borders.forEach(b => b.ReDraw(true));
+				this.MapProvince.Borders.forEach(b => b.ReDraw(true)); // Must update borders for sea provinces
+				this.UpdateTerrain();
 			}
 		}
 

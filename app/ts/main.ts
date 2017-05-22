@@ -14,6 +14,7 @@
 // Publics Uppercase, privates lowercase, _accessor _privates, CONST CAPS
 // Singleline getters and setters are OK
 // Singleline control structures are OK, but use brackets! if (a) { meh(); }
+// Singleline without brackets is ok in singleline lambdas () => { if (a) meh(); }
 // Operator and comma whitespaces (1 + 1, 2)
 // Set first element of enum = 1 to avoid if(var) checking issues
 

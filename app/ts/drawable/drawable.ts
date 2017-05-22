@@ -1,3 +1,4 @@
+/// <reference path="shapes.ts" />
 /// <reference path="../../pixi-typescript/pixi.js.d.ts" />
 
 // Base class for all drawable objects, such as units, effects, move-orders (?)
@@ -11,6 +12,16 @@ namespace IslandIV {
 		y?: number,
 		scale?: number
 	};
+	// TODO: Prolly obsolete after proper images
+	// Goes through whole PIXI object tree and changes tints
+	// Pls use 0xFFFFFF like numbers
+	export function ChangeTint(obj: PIXI.Container, tint: number): void {
+		function recursiveTint(child: PIXI.Container, tint: number) {
+			if (child instanceof PIXI.Sprite || child instanceof PIXI.Graphics) { child.tint = tint; }
+			child.children.forEach(c => { if(c instanceof PIXI.Container) recursiveTint(c, tint); });
+		}
+		recursiveTint(obj, tint);
+	}
 
 	export class Drawable {
 		private sprites: PIXI.Sprite[] = [];
@@ -49,26 +60,6 @@ namespace IslandIV {
 			this.Container.addChild(newText);
 		}
 
-		// TODO: Atm only for 'Arrow'
-		public AddGraphics(type: string, point: PIXI.Point, point2?: PIXI.Point) {
-			if (point2 === undefined) return;
-			let shadow: PIXI.Graphics = new PIXI.Graphics();
-			shadow.lineStyle(3, 0x000000, 0.7);
-			shadow.moveTo(point.x, point.y);
-			shadow.lineTo(point2.x, point2.y);
-			this.Container.addChild(shadow);
-
-			let arrow: PIXI.Graphics = new PIXI.Graphics();
-			arrow.lineStyle(4, 0xFF0000);
-			arrow.moveTo(point.x, point.y);
-			arrow.quadraticCurveTo(
-				0, -30, // Curve peak is always at x = 0
-				point2.x,
-				point2.y);
-			arrow.drawEllipse(point2.x, point2.y, 12, 6);
-			this.Container.addChild(arrow);
-		}
-
 		// TODO: Mb one day use combined sprites to RenderTexture, which is used as images
 		public AddSprite(spritedata: DrawableSprite) {
 			let sprite: PIXI.Sprite = new PIXI.Sprite(PixiResources[spritedata.image].texture);
@@ -84,17 +75,6 @@ namespace IslandIV {
 			if (spritedata.scale !== undefined) sprite.scale.set(spritedata.scale, spritedata.scale);
 
 			this.Container.addChild(sprite);
-		}
-
-		// TODO: Prolly obsolete after proper images
-		// Goes through whole PIXI object tree and changes tints
-		// Pls use 0xFFFFFF like numbers
-		public ChangeTint(tint : number) : void {
-			function recursiveTint(child: PIXI.DisplayObject, tint: number) {
-				if (child instanceof PIXI.Sprite) { child.tint = tint; }
-				else if(child instanceof PIXI.Container) { child.children.forEach(c => recursiveTint(c, tint));	}
-			}
-			recursiveTint(this.Container, tint);
 		}
 	}
 }

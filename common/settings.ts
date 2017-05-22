@@ -26,6 +26,7 @@ type Terrain =
 	"Plains" |
 	"Flood plains" |
 	"Forest" |
+	"Hills" |
 	"Mountains" |
 	"Sea" |
 	"Deep sea"

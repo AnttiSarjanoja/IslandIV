@@ -34,7 +34,7 @@ namespace IslandIV {
 			);
 		}
 
-		constructor(data: IPlayer, id: number, provinceSettings: ProvinceSettings) {
+		constructor(data: IPlayer, id: number) {
 			this.id = id; // From game?
 			this.color = data.color;
 			this.name = data.name;
@@ -44,7 +44,9 @@ namespace IslandIV {
 			this.mp = data.mp;
 			this.faith = data.faith;
 			this.techs = data.techs;
+		}
 
+		public Init(data: IPlayer, provinceSettings: ProvinceSettings) {
 			data.provinces.forEach(provinceData =>
 				this.provinces.push(new Province(provinceSettings.provinces[provinceData.id], provinceData, this))
 			);
